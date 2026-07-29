@@ -1,0 +1,629 @@
+                                        Integrating LTL Constraints into PPO for Safe Reinforcement Learning
+                                               Maifang Zhang1,∗ , Hang Yu2,∗ , Qian Zuo1,∗ , Cheng Wang3 , Vaishak Belle1 , and Fengxiang He1,†
+
+
+                                           Abstract— This paper proposes Proximal Policy Optimiza-                    in LTL [6], [7], and embeds these constraints into PPO
+                                        tion with Linear Temporal Logic Constraints (PPO-LTL), a                      agents. LTL provides a rigorous and machine-verifiable tool
+                                        framework that integrates safety constraints written in LTL                   to encode temporal properties, such as “always avoid unsafe
+                                        into PPO for safe reinforcement learning. LTL constraints offer
+                                        rigorous representations of complex safety requirements, such                 states,” “eventually reach a goal,”, and regulatory rules,
+                                        as regulations that broadly exist in robotics, enabling systematic            like “stop at a red light until it turns green,” as logic
+                                        monitoring of safety requirements. Violations against LTL con-                specifications.
+                                        straints are monitored by limit-deterministic Büchi automata,                   We design a logic-to-cost mechanism that systematically
+
+
+
+
+arXiv:2603.01292v1 [cs.LG] 1 Mar 2026
+                                        and then translated by a logic-to-cost mechanism into penalty                 translates violations of temporal logic constraints into cost
+                                        signals. The signals are further employed for guiding the policy
+                                        optimization via the Lagrangian scheme. Extensive experiments                 signals that guide policy learning. This mechanism can be in-
+                                        on the Zones and CARLA environments show that our PPO-                        stantiated in a wide range of environments, serving as a plug-
+                                        LTL can consistently reduce safety violations, while maintaining              and-play solution. Each LTL specification is first compiled
+                                        competitive performance, against the state-of-the-art methods.                into an ω-automaton, typically a limit-deterministic Büchi
+                                        The code is at https://github.com/EVIEHub/PPO-LTL.                            automaton (LDBA) [8], [9]. The automaton encodes the
+                                                                                                                      satisfaction conditions of the temporal property by defining
+                                                                  I. I NTRODUCTION                                    a finite set of states and labeled transitions based on atomic
+                                                                                                                      propositions. During execution, it evolves synchronously
+                                           Reinforcement Learning (RL) has achieved remarkable                        with the agent-environment interaction, effectively acting as
+                                        success across diverse domains, including robotics [1]. In                    a runtime monitor that checks whether the agent’s trajectory
+                                        RL, Proximal Policy Optimization (PPO) is a widely adopted                    satisfies the specification.
+                                        on-policy method, which constrains policy updates with                           When a violation occurs, the monitor emits a cost signal
+                                        a clipped surrogate objective, striking a balance between                     to reflect the severity of the violation, determined by a set
+                                        exploration and stability [2]. Deploying RL in safety-critical                of pre-defined weights associated with different safety rules.
+                                        environments remains highly challenging, where violations                     These violation costs are aggregated over time and integrated
+                                        against safety constraints can lead to catastrophic outcomes.                 into the safe reinforcement learning framework. The resulting
+                                        Safe RL has been comprehensively reviewed and addresses                       signals are then combined with policy optimization via the
+                                        this challenge in the framework of constrained optimization,                  Lagrangian scheme, allowing the agent to optimize task
+                                        where the agent seeks to maximize reward whilst bounding                      performance while ensuring that safety requirements are sat-
+                                        cumulative safety costs [3]. Within this family, constrained                  isfied. Unlike handcrafted penalties, this approach provides a
+                                        PPO via the Lagrangian scheme (PPO-Lagrangian) has                            principled, generalizable, and modular way to encode high-
+                                        emerged as a major approach [4].                                              level safety requirements into the learning process.
+                                           Despite these advances, a critical limitation remains: the                    We provide a rigorous theoretical analysis of our approach.
+                                        constraints need to be written in analytic inequalities of the                We formulate PPO-LTL as an inexact projected primal–dual
+                                        agent’s state and action. This is not compatible with a large                 method driven by biased stochastic gradient oracles. Specif-
+                                        family of abstract safety constraints, such as regulations that               ically, we view two usual components in PPO, clipped
+                                        broadly exist in robotics. For example, the British High-                     surrogate objective and finite-epoch minibatch updates, as
+                                        way Code regulates driving behavior [5], which is difficult                   mechanisms that yield biased stochastic approximations to
+                                        to translate to the aforementioned inequalities. This calls                   the true Lagrangian gradient. We then prove an ergodic
+                                        for machine-computable and principled safety specifications                   stationarity guarantee for the projected primal-dual dynamics
+                                        within the RL training process.                                               that underpin PPO-LTL. This result shows that despite the
+                                           To address this issue, we propose Proximal Policy Op-                      biased and noisy gradient estimates, our algorithm consis-
+                                        timization with Linear Temporal Logic Constraints (PPO-                       tently converges to a neighborhood of a stationary point.
+                                        LTL), a novel method that represents abstract constraints                     Practically, it means PPO-LTL can stably reduce constraint
+                                          ∗ Equal Contribution.
+                                                                                                                      violations without relying on exact gradient evaluations,
+                                          † Corresponding author. Email: F.He@ed.ac.uk.                               highlighting its robustness in challenging settings such as
+                                           1 M. Zhang, Q. Zuo, V. Belle, and F. He were with the School of            autonomous driving.
+                                        Informatics, University of Edinburgh, Edinburgh EH8 9AB, Scotland.               We conduct comprehensive experiments to evaluate PPO-
+                                           2 H. Yu was with the School of Computer Science, Faculty of Engineering,
+                                                                                                                      LTL across diverse benchmark environments, including
+                                        University of Sydney, Darlington NSW 2008, Australia.
+                                           3 C. Wang was with the School of Engineering and Physical Sciences,        ZonesEnv (continuous control with logical regions) [10] and
+                                        Heriot-Watt University, Edinburgh EH14 4AS, Scotland.                         CARLA (autonomous driving simulator) [11]. Our method
+is compared against PPO [2], as the baseline, and a range          probability of selecting action a at state s. Let θ ∈ Θ ⊂ Rp
+of state-of-the-art safe RL methods, including TIRL-PPO,           denote the parameters of a stochastic policy πθ (·|s). For a
+TIRL-SAC [12], PPO-Mask, PPO-Shielding [13], [14], and             given policy πθ , define the Pdiscounted occupancy measure
+                                                                                                    ∞
+PPO-Lagrangian. The empirical results demonstrate con-             over S × A as dγθ = (1 − γ) t=0 γ t Pπθ (st = s, at = a|µ).
+sistent reductions in safety violations while maintaining          We define reward value function and cost value function as,
+competitive task performance. Extensive ablation study and
+sensitivity analysis further verify our contributions.              JR (θ) = E(s,a)∼dγθ [r(s, a)] , JC (θ) = E(s,a)∼dγθ [c(s, a)] .
+                                                                   The constrained optimization objective is as follows,
+                    II. R ELATED W ORK
+    Shielding. Shielding approaches enforce safety by pre-                         max JR (θ)     s.t.   JC (θ) ≤ d,
+                                                                                   θ∈Θ
+empting unsafe actions online using verified policies or                        PK
+model-checking over abstract models [13], [14]. This yields        where d = i=1 wi di is the aggregated safety budget. The
+binary-safe behavior with strong formal guarantees but can         corresponding Lagrangian function is defined as L(θ, λ) =
+restrict exploration and lead to non-stationary data distribu-     JR (θ) − λ(JC (θ) − d), where λ ∈ [0, Λ] is the Lagrangian
+tions. In contrast, soft-integration methods map violations        multiplier with Λ < ∞.
+into cost signals through a logic-to-cost mechanism, provid-          Proximal Policy Optimization (PPO). Policy gradient
+ing dense feedback that is compatible with gradient-based          methods directly optimize the policy but could suffer from
+optimization and constrained MDP solvers [4], [15]. Using          instability if updates are too large [22]. PPO addresses this
+LTL monitors to emit per-rule costs further enables modular        issue by clipping updates, effectively putting a “safety belt”
+handling of multiple constraints, compositional reasoning          on learning. The clipped surrogate objective LPPO (π) is
+across specifications, and straightforward scalability to large    defined as follows,
+rule sets [7], [16]. Compared with runtime action filtering                 h                                           i
+strategies, PPO-LTL incorporates temporal logic constraints              Et min ρt (π)At , clip(ρt (π), 1 − ϵ, 1 + ϵ)At ,
+directly within the policy optimization loop, providing dense                                 t |st )
+feedback signals that support learning under complex tem-          where ρt (π) = ππ(a   old (at |st )
+                                                                                                       is the importance ratio, At is
+poral requirements.                                                the advantage estimate (measuring how good an action is
+    Logic tools in RL. Beyond LTL, other formal logics             compared to the average), and ϵ is a clipping parameter
+have also been explored in reinforcement learning. Signal          that prevents drastic updates. In practice, PPO optimizes
+Temporal Logic (STL) [17] extends temporal reasoning               this objective using multiple epochs of mini-batch stochastic
+to real-valued signals, while deontic logics [18] express          gradient updates over collected rollouts.
+normative concepts like obligations and permissions. These            Linear Temporal Logic (LTL). LTL is a formal language
+approaches offer richer expressiveness but often come with         used to specify temporal properties over infinite sequences
+higher computational costs and task-specific design com-           of system states. A formula in LTL, called a specification,
+plexity, limiting their practicality. Probabilistic Logic Pro-     defines a desired temporal behavior of the system. An LTL
+gramming (PLP) [19] has also been introduced to model              formula is constructed from a finite set of atomic propositions
+uncertainty in logical reasoning, allowing agents to encode        P, which represent fundamental facts about the environment
+probabilistic constraints. In contrast, LTL achieves a balance:    (e.g., “collision occurred” or “goal reached”). Each propo-
+it is lightweight, easy to compile into automata, and sufficient   sition is a Boolean statement about the system state that is
+to capture temporal safety properties [20]. Recent work [21]       either true or false, such as whether the vehicle is currently in
+applies LTL in a model-based driving framework via product         a safe zone or whether a traffic light is green. These proposi-
+MDPs and linear programming for policy synthesis, while            tions are combined using Boolean connectives (¬, ∧, ∨) and
+our method focuses on learning-based constrained optimiza-         temporal operators such as G (always), F (eventually), X
+tion rather than model-based synthesis.                            (next), and U (until) to express more complex requirements
+                                                                   over time. The semantics of an LTL formula specify the
+                    III. P RELIMINARIES                            precise conditions under which a specification is considered
+   Markov Decision Process (MDP). We consider a dis-               satisfied. They are defined over a trajectory σ = s0 s1 s2 . . . ,
+counted constrained MDP M = (S, A, P, r, c, µ, γ), where           where σ, t |= φ indicates that the specification φ holds at
+S and A denote the state and action spaces, respectively,          time t — in other words, the system’s behavior up to time
+P (s′ |s, a) represents the transition probability of moving       t conforms to the property described by φ. For example,
+from state s to state s′ given action a, r : (s, a) →              G¬collision requires that collisions never occur, while
+[0, Rmax ] is the reward function,       a) → [0, Cmax ] is the    F goal means the goal state must eventually be reached.
+                             PK c : (s,(i)
+aggregated cost c(s, a) =           w
+                                i=1 i c    (s, a) where wi are                             IV. PPO-LTL
+fixed weights for i ∈ [K], µ is the initial-state distribution,
+and γ ∈ (0, 1) is the discount factor controlling how much         A. Constraints as LTL Specifications
+the agent values future rewards. A policy π : S → P(A) is             In real-world applications, many safety requirements de-
+a mapping from the state space to the space of probability         pend simultaneously on the environment’s state (e.g., po-
+distribution over the action space and π(a | s) denotes the        sition, distance to obstacles) and the temporal structure of
+                                                                  Constraint Monitoring
+                         Environment                    Labeling Function
+                                                                                            LTL Monitors                        Logic → Cost
+                                                          L: S → 2
+                                                s        Propositions:           L s       Temporal Checking: violations       Translation:
+                                                             collision                      G collision                  Weighted Aggregation
+                                                             lane_inv                       G lane_inv                      c    ∑ w c
+                                                            off_track                         go ∪ green                     w ,w ,w ⋯
+                                                            overspeed                            ⋯
+
+                        s                                                                                                              c
+                                     a
+                                                                      Policy Learning
+                     Policy 𝝅𝜽                                                                 PPO-Lagrangian
+                                                                      action a
+                                                                                       a     Mixed advantage:
+                    state s                          Actor Network
+                                                                                       V              Âₘᵢₓ    Âᵣ        ∑ 𝜆ₖÂ
+                     Input                                            value V
+                                                                                             Dual update:
+                                 Encoder   Feature
+                                                     Critic Network
+                                                                                                    𝜆ₖ ← max 0, 𝜆ₖ        𝛼 Ĵ         𝑑ₖ
+
+
+Fig. 1: PPO-LTL: environment states are labeled with atomic propositions, monitored by LTL checkers to generate constraint
+costs, which are integrated with task rewards for policy optimization.
+
+
+                                                                                                                  (i)
+events (e.g., their order and timing) [3], [4], [16], [23].                       nonnegative cost signal ct , whose magnitude is determined
+For example, requirements like “reach the goal eventually                         by a rule-specific weight reflecting its relative importance.
+after visiting a checkpoint” cannot be simply encoded as                          Multiple monitors may generate costs simultaneously, and all
+scalar penalties. They require temporal reasoning over se-                        violation costs are aggregated to guide policy optimization in
+                                                                                                                PK (i)
+quences of states [24], [20]. To formally represent such                          the CMDP framework: ct = i=1 ct . Safety-critical rules
+requirements, we define them as LTL specifications. Each                          contribute larger costs, while goal-oriented requirements
+specification is a logical formula describing desired temporal                    maintain elevated costs until the condition is satisfied.
+behavior over system trajectories and serves as a formal                             Reach-Avoid Decomposition. To further simplify policy
+requirement that the agent’s policy should satisfy. A pilot                       optimization, each compiled automaton can be decomposed
+work has been in the literature that represents traffic laws                      into a sequence of reach-avoid subtasks [24], [25]. Each
+as LTL specifications. LTL combines temporal operators                            subtask consists of (1) a reach condition: the state or event
+with Boolean connectives to specify complex behaviors, e.g.,                      that must eventually occur, and (2) an avoid condition: the
+always avoiding collisions while eventually reaching a desti-                     event that must never happen. For example, F(goal) ∧
+nation (G¬collision ∧ F destination), or requiring                                G¬collision is decomposed into two subtasks: “always
+that entering an intersection is eventually followed by a green                   avoid collisions” and “eventually reach the goal.” This trans-
+light (G(intersection → F green)). This expressive-                               formation reduces policy search complexity while preserving
+ness enables compact modeling of multi-stage driving rules                        the original temporal semantics.
+in autonomous driving scenarios.                                                     Logic-to-Cost Mechanism. The final environment feed-
+                                                                                  back is therefore given by: (st+1 , rt , ct , info), where rt
+B. Logic-to-Cost Mechanism                                                        encodes task performance, ct represents aggregated con-
+   Büchi Automata and LDBA. Each LTL specification                               straint costs, and info provides diagnostic information for
+can be translated into a Büchi automaton (BA), a state-                          each rule. This runtime logic-to-cost conversion is domain-
+transition structure that monitors whether the agent’s event                      agnostic and can be applied across diverse environments,
+sequence satisfies the temporal rule. The automaton reads                         guiding reinforcement learning toward policies that satisfy
+the interaction trajectory, and satisfaction is achieved when                     temporal logic constraints while optimizing performance.
+designated accepting states are visited infinitely often during
+execution. For reinforcement learning, we adopt a simpli-                         C. The Langragian Scheme in PPO-LTL
+fied variant called the limit-deterministic Büchi automaton                         Given the per-step violation costs produced by the logic-
+(LDBA), which provides more predictable checking and                              to-cost mechanism, PPO-LTL incorporates them directly into
+improved computational efficiency. The LDBA enables high-                         the policy optimization process. We solve the constrained
+level temporal logic to be evaluated step by step during                          optimization problem using a primal-dual approach, where
+training, forming the basis for converting symbolic rules into                    constraint information influences policy updates through a
+                                                                                                                          PK         (k)
+numerical signals that guide policy learning.                                     mixed advantage signal Âmix = Âr − k=1 λk Âc , where
+                                                                                             (k)
+   Monitors. During training, temporal specifications are                         Âr and Âc are generalized advantage estimates for reward
+checked by runtime monitors that evolve synchronously with                        and cost, respectively. After each PPO update, the multipliers
+the environment. Each monitor observes the trajectory and                         are updated via projected gradient ascent:
+determines whether a specification ϕi is satisfied. When a                                                
+                                                                                                                         (k)     
+violation-related transition is detected, the monitor emits a                                 λk ← max 0, λk + αλ JˆC − dk .
+When costs exceed their pre-defined limits, λk increases,                        TABLE I: Results in ZonesEnv.
+strengthening the penalty applied to violations. Conversely,         Method              Reward       Hit Wall Rate      λ
+when the costs remain within acceptable bounds, λk de-
+creases or stays constant, enabling the policy to continue           PPO               17.95 ± 0.84     3.7 ± 2.1%        -
+                                                                     PPO-Mask          10.14 ± 2.82     6.0 ± 2.0%        -
+improving task performance.                                          PPO-Shielding     15.92 ± 0.55    12.0 ± 2.0%        -
+                                                                     PPO-Lagrangian    23.23 ± 1.51     6.0 ± 2.0%      0.00
+                V. T HEORETICAL G UARANTEE
+                                                                     PPO-LTL-A         17.86 ± 0.73     4.3 ± 3.5%     0.0048
+  In this section, we analyze the convergence properties             PPO-LTL-B         18.61 ± 0.67     4.7 ± 3.1%     0.0018
+of PPO-LTL. We formulate the learning process within
+a Product MDP framework: the state space is treated as
+an augmented space S = Senv × Q, where Senv is the
+environment state, and Q is the LDBA state. The temporally        where ∆L = supΘ×[0,Λ] L(θ, λ) − inf Θ×[0,Λ] L(θ, λ) <
+dependent LTL cost becomes strictly Markovian,    allowing        ∞, Umax           =      supθ∈Θ |JC (θ) − d|, Gmax           =
+                                       PK
+defining the cost function as c(s, a) = k=1 wk c(k) (s, a).       sup(θ,λ) ∥∇θ L(θ, λ)∥, and O(·) hides problem-dependent
+Correspondingly, PPO-LTL generates an iterate sequence            constants independent of T .
+{(θt , λt )}t≥0 as follows:                                          A detailed proof is given in Section VII. Theorem 1
+                                                                  establishes an ergodic stationarity guarantee for the projected
+   θt+1 = ΠΘ (θt + αĝt ),   λt+1 = Π[0,Λ] (λt + β ût ),   (1)   primal-dual dynamics underlying PPO-LTL. It demonstrates
+                                                                  that despite the biased and noisy gradient estimates inherent
+where Π denotes Euclidean projection, α, β > 0 are the
+                                                                  to PPO (e.g., due to clipping and minibatch sampling,
+learning rates, ĝt is a stochastic ascent direction for the
+                                                                  captured by the variance and bias terms σ and a, b), the
+primal objective, and ût is a stochastic estimate of the
+                                                                  algorithm reliably converges to a neighborhood of the sta-
+constraint residual JˆC (θt ) − d. We further abstract PPO-
+                                                                  tionary point. In practice, this implies that PPO-LTL can
+LTL in an inexact projected primal-dual framework with
+                                                                  stably minimize constraint violations without requiring exact
+biased stochastic gradient oracles: the clipped surrogate
+                                                                  gradient computation, confirming its robustness in complex
+optimization and finite-epoch minibatch updates in PPO are
+                                                                  environments like autonomous driving.
+modeled as producing biased stochastic estimates of the true
+Lagrangian gradient. For given learning rates α, β > 0,
+                                                                                       VI. E XPERIMENTS
+define the primal and dual gradient mappings as follows:
+                1                                                    We conduct extensive experiments on ZonesEnv and
+      G(θ, λ) :=  (ΠΘ (θ + α∇θ L(θ, λ)) − θ) ,                    CARLA, which fully support our algorithm.
+                α
+                1                                                   Baselines and Comparison Methods. PPO is used as
+      H(θ, λ) := Π[0,Λ] (λ + β(JC (θ) − d)) − λ ,                 an unconstrained baseline. TIRL-PPO and TIRL-SAC are
+                β
+                                                                  included as standard Safe RL baselines to evaluate the
+quantifying first-order stationarity of this problem under
+                                                                  performance of alternative constrained optimization tech-
+projection.
+                                                                  niques. PPO-Mask is a heuristic safety filter that preemp-
+   The theory relies on two mild assumptions on the primal
+                                                                  tively overrides imminent unsafe actions with predefined safe
+domain and stochastic gradient, given in Sec VII, follow-
+                                                                  fallbacks (e.g., hard braking). We include this to illustrate
+ing usual practice [26], [2], [27]. We prove the following
+                                                                  the limitations (e.g., deadlocks and over-conservatism) of
+theorem.
+                                                                  purely reactive, rule-based interventions. PPO-Shielding is
+   Theorem 1: Conditioned on Assumptions 1 and 2 and the
+                                                                  our main competitor in the experiments. PPO-Lagrangian
+learning rates 0 < α ≤ 1/(4LL ) and β > 0, let {θt , λt }t≥0
+                                                                  is included as a standard constrained RL method. For fair
+be defined by (1). Then, for all T ≥ 1,
+                                                                  comparison, all methods use a CNN backbone, consisting
+         T −1                                                     of 6 convolutional layers with ReLU activations, followed
+      1 X
+            E[∥G(θt , λt )∥]                                      by policy and value networks with 2-layer MLPs containing
+      T t=0
+     r                          q                               [500, 300] units each.
+        2(∆L + 2ΛUmax )                2    2                        Environments and Implementation. We evaluate on
+    ≤                        +O       σθ + a + α
+               αT                                                 two environments using a 256-dimensional CustomMultiIn-
+                                                                  putExtractor [28] and 3 random seeds. (1) ZonesEnv: A
+                             1/4 
+      + O G2max + σθ2 + a2           ,
+                                                                  Safety Gymnasium [10] grid-world where a point robot nav-
+         T −1                                                     igates colored zones representing atomic propositions (e.g.,
+      1 X
+            E[∥H(θt , λt )∥]                                      “avoid blue until green”). Wall collisions yield penalties,
+      T t=0
+     s            s                                 !             and LTL violations generate costs. Models are trained for
+        ∆L                                     G2
+                                                max
+                                                                  200k steps. (2) CARLA: An autonomous driving simula-
+    ≤       +O         2
+                     Umax    + σλ2 + b2 + α2 +                    tor [11] (v0.9.13, Town02). Observations include semantic
+        βT                                       β
+                                                                segmentation, ego-states, and the one-hot LDBA state. LTL
+             α
+                q
+      +O √        G2max + σθ2 + a2 ,                              monitors map events to generate deterministic costs for PPO-
+              β                                                   Lagrangian updates. Models are trained for 100k steps.
+            TABLE II: Results in CARLA. Arrows (↑, ↓) indicate the direction where values are strictly better.
+        Methods             Collision Rate ↓         Routes ↑        Distance     Speed    Length     Col. Num      Cent. Dev   Cost    λ
+        PPO                  0.262 ± 0.115        0.013 ± 0.008       6.58        0.45      4030           8.0        0.77        -      -
+        TIRL-PPO             0.173 ± 0.129        0.083 ± 0.111       6.37        0.07      9460           7.3        0.87        -      -
+        TIRL-SAC             0.336 ± 0.063        0.027 ± 0.011       6.92        0.92       926          57.3        0.12        -      -
+        PPO-Mask             0.408 ± 0.058        0.010 ± 0.012       2.38        1.06      1338          38.0        0.37        -      -
+        PPO-Shielding        0.267 ± 0.056        0.072 ± 0.036       18.87       10.63       93         164.3        0.52        -      -
+        PPO-Lagrangian       0.233 ± 0.089        0.077 ± 0.051       7.78        0.96      6616         103.0        0.60      0.00   0.01
+        PPO-LTL-A            0.143 ± 0.110        0.077 ± 0.107       5.96         3.57     703          154.3        0.52      0.25   0.03
+        PPO-LTL-B            0.170 ± 0.148        0.236 ± 0.037       12.79        1.48     4859          10.0        0.73      0.08   0.00
+
+
+                                 TABLE III: Ablation studies and sensitivity analyses in CARLA.
+        Configuration        Collision Rate ↓         Routes ↑       Distance     Speed     Length     Col. Num     Cent. Dev   Cost    λ
+                                                              Ablation of LTL Components
+        No collision          0.159 ± 0.027        0.009 ± 0.003        2.71       0.68      4123            11.0     0.64      0.07   0.00
+        No off-track          0.275 ± 0.129        0.032 ± 0.044        3.29       0.06     10501             5.7     0.62      0.07   0.00
+        No lane invasion      0.207 ± 0.046        0.024 ± 0.009        6.17       1.98     14323            21.7     0.57      0.06   0.01
+                                               Sensitivity of Cost Limit (cl) and Dual Learning Rate (αλ )
+        cl = 0.001            0.229 ± 0.153        0.033 ± 0.035        5.19       1.10      4749         21.0        0.78      0.06   0.01
+        cl = 0.05             0.273 ± 0.199        0.020 ± 0.023        3.04       4.65       907        228.7        0.56      0.22   0.71
+        cl = 0.5              0.395 ± 0.130        0.045 ± 0.059        4.86       0.09      6614         11.7        0.91      0.01   0.00
+        αλ = 0.00001          0.160 ± 0.059        0.062 ± 0.063        8.67       0.89      2957         11.7        0.95      0.01   0.00
+        αλ = 0.0001           0.243 ± 0.081        0.053 ± 0.033        8.98       0.54      3029          9.7        0.63      0.07   0.00
+        αλ = 0.01             0.233 ± 0.097        0.099 ± 0.065        8.28       2.05      3776          8.3        0.86      0.06   0.03
+                                                      Constraint Strictness & Mixed Formulations
+        Relaxed high          0.258 ± 0.067        0.042 ± 0.040        4.51       0.09      3380            13.3     0.62      0.01   0.00
+        Relaxed moderate      0.205 ± 0.100        0.056 ± 0.053        3.79       1.50      2787            53.7     0.53      0.01   0.00
+        Collision focused     0.233 ± 0.206        0.010 ± 0.008        0.07       0.22      3020            15.7     0.39      0.00   0.00
+        Ultra loose           0.393 ± 0.110        0.141 ± 0.098        8.81       1.04      3996            18.0     0.77      0.00   0.00
+        Mixed light           0.282 ± 0.076        0.042 ± 0.056        3.37       0.64      4218            18.0     0.90      0.01   0.00
+        Mixed light loose     0.242 ± 0.018        0.041 ± 0.033        2.86       0.26      5728             7.0     0.48      0.01   0.00
+        Mixed medium          0.229 ± 0.131        0.044 ± 0.029        5.62       3.69      3248            50.7     0.81      0.06   0.00
+                                                     Collision-Only Variants Without Temporal LTL
+        Col-only (cl=0.5)     0.243 ± 0.079        0.033 ± 0.043        4.93       0.52      4155            11.3     1.04      0.00   0.00
+        Col-only (cl=0.1)     0.248 ± 0.228        0.028 ± 0.030        6.10       0.40      3573            14.3     0.90      0.00   0.00
+        Col-only mid          0.346 ± 0.175        0.158 ± 0.200        9.07       2.07      1584            52.0     0.86      0.01   0.00
+        Col-only loose        0.193 ± 0.081        0.269 ± 0.297       12.66       0.93      9531            9.3      0.56      0.00   0.00
+
+
+
+   Evaluation Metrics. We assess both task performance and                      violation cost of 56.98. Standard PPO maintains a low
+constraint satisfaction. Safety metrics include violation rates                 hit-wall rate 3.7% but cannot enforce complex temporal
+for each constraint type (collision, off-track, lane invasion,                  specifications. In contrast, both PPO-LTL variants provide
+heading, weaving, overspeed, steering jerk), computed as                        well-balanced policies. They significantly outperform Mask
+the ratio of violation events to total steps (e.g., VR =                        and Shielding in valid rewards while strictly adhering to LTL
+Nvio /Ntotal ) [4]. Task metrics include route completion rate                  constraints with competitive hit-wall rates 4.3% and 4.7%.
+(RCR), average speed v̄, and total distance traveled Dtotal ,
+where RCR = dcompleted /dtarget . Constraint dynamics       are                    Comparison Results in CARLA. Table II compares PPO-
+measured by the average episodic cost JˆC = N1 i Ci , the
+                                                   P                            LTL-A (strict cost limit 0.02) and PPO-LTL-B (relaxed limit
+final Lagrange multiplier λ∗ , and the convergence behavior                     0.1) against baselines. PPO fails to balance safety and live-
+over training.                                                                  ness. Standard Safe RL baselines exhibit severe pathologies:
+                                                                                TIRL-PPO suffers from the freezing robot problem (near-
+   Comparison Results in ZonesEnv. Table I presents per-                        zero speed despite 9460-step survival), while TIRL-SAC
+formance across 3 seeds. PPO-LTL-A prioritizes stability,                       fails to converge safely (0.336 collision rate). Furthermore,
+while PPO-LTL-B slightly relaxes constraints. Baselines                         PPO-Shielding shows a reckless driving pattern: despite
+exhibit distinct flaws: heuristic PPO-Mask severely restricts                   deceptive high speeds, it crashes rapidly (93-step length,
+exploration 10.14 reward, while PPO-Shielding struggles                         164.3 collisions) with minimal route completion (0.072).
+with continuous dynamics, yielding the highest hit-wall rate                    Conversely, PPO-Mask’s sudden stops cause conservative
+12.0%. Although PPO-Lagrangian achieves the highest ap-                         deadlocks (2.38 distance) and ironically higher collisions
+parent reward 23.23, this is deceptive; lacking LTL memory,                     (0.408). PPO-Lagrangian’s lack of temporal foresight limits
+it ignores temporal rules and incurs a massive unshown                          progress (7.78 distance). In contrast, PPO-LTL balances
+TABLE IV: Sensitivity analysis of cost limit and Lagrangian          The dual signal ût satisfies E[ût |Ft ] = (JC (θt ) − d) +
+learning rate (αλ ) in ZonesEnv for PPO-LTL.                         bt where ∥bt ∥ ≤ b, and has bounded variance E[(ût −
+  Cost Limit     αλ       Reward ↑        Hit Wall Rate ↓     λ
+                                                                     E[ût |Ft ])2 |Ft ] ≤ σλ2 . The bias terms at and bt capture ap-
+                                                                     proximation effects including clipping mismatch, minibatch
+     0.03       0.008    18.04 ± 1.30       6.7 ± 1.2%      0.0072
+     0.05       0.010    17.86 ± 0.73       4.3 ± 3.5%      0.0048   updates and estimation errors.
+     0.07       0.015    18.61 ± 0.67       4.7 ± 3.1%      0.0018   Proof. For a fixed t, we define the true gradient θ̃t+1 :=
+     0.10       0.020    18.35 ± 1.42       5.7 ± 2.1%      0.0002   ΠΘ (θt + α∇θ L(θt , λt )). Thus, it holds θ̃t+1 − θt =
+                                                                     αG(θt , λt ). By Assumption 1, we have
+                                                                          L(θ̃t+1 , λt ) ≥L(θt , λt ) + ⟨∇θ L(θt , λt ), θ̃t+1 − θt ⟩
+proactive safety and task liveness, avoiding both over-
+                                                                                             LL                2
+conservatism and reckless speed. PPO-LTL-A achieves the                                   −         θ̃t+1 − θt .
+lowest collision rate (0.143, a 45% reduction over standard                                   2
+PPO). PPO-LTL-B achieves the highest route completion                Since for all θ, ⟨θ̃t+1 − (θt + α∇θ L(θt , λt )), θt − θ̃t+1 ⟩ ≥ 0,
+(0.236) and maintains long, stable episodes.                         choosing θ = θt gives
+   Ablation Study and Sensitivity Analysis. Table III                                                           1
+evaluates diverse constraint configurations, constraint con-                  ⟨∇θ L(θt , λt ), θ̃t+1 − θt ⟩ ≥     ∥θ̃t+1 − θt ∥2 .
+                                                                                                                α
+tributions through systematic removal, and hyperparameter
+robustness on the CARLA environment. The results verify              Then it yields
+                                                                                                             
+the necessity of carefully balancing LTL constraints: sim-                                            1   LL
+                                                                        L(θ̃t+1 , λt ) − L(θt , λt ) ≥  −       ∥θ̃t+1 − θt ∥2 ,
+plistic or overly relaxed bounds can easily induce naive                                             α     2
+speed or reckless driving, while appropriately tuned temporal                                        
+                                                                                                          αLL
+                                                                                                                
+logic ensures safe and effective task execution. Further-                                          =α 1 −          ∥G(θt , λt )∥2 .
+                                                                                                             2
+more, removing individual constraints confirms that multi-
+component LTL constraints are essential for balanced driving         Under α < 4L1L , we have 1 − αL2 L ≥ 78 , and hence
+performance. Table IV presents a sensitivity analysis of PPO-                                             7                2
+LTL across varying cost limits and Lagrangian learning rates                  L(θ̃t+1 , λt ) − L(θt , λt ) ≥α ∥G(θt , λt )∥ .    (2)
+                                                                                                          8
+on ZonesEnv. Across a threefold range of cost limits, the
+framework maintains stable behavior, demonstrating that the          Now let δt := ĝt − ∇θ L(θt , λt ) denote the gap be-
+constraint mechanism provides interpretable and consistent           tween ĝt and the gradient of L(θt , λt ). Thus, it holds
+control over policy behavior.                                        ∥θt+1 − θ̃t+1 ∥ ≤ α∥δt ∥. Since θt+1 = ΠΘ (θt +
+   Computational Costs. PPO-LTL incurs negligible over-              α(∇θ L(θt , λt ) + δt )), for all θ ∈ Θ, we have
+head compared to standard PPO. Over 3 random seeds,                  ⟨θt+1 − (θt + α(∇θ L(θt , λt ) + δt )) , θ − θt+1 ⟩ ≥ 0. Choose
+training PPO-LTL (vs. PPO) took 235.3s ± 0.9s (vs. 226.3s            θ = θ̃t+1 , then,
+± 0.5s) for 200k steps in ZonesEnv, and 2557.3s ± 97.8s (vs.                        ⟨∇θ L(θt , λt ) + δt , θt+1 − θ̃t+1 ⟩               (3)
+2536.3s ± 39.0s) for 100k steps in CARLA. This confirms                             1
+that LTL monitoring and Lagrangian dual updates introduce                          ≥ ⟨θt+1 − θt , θt+1 − θ̃t+1 ⟩.
+                                                                                    α
+minimal computational burden, maintaining practical effi-
+ciency for real-world applications.                                  Similarly, from the definition of θ̃t+1 ,
+                                                                                                         1
+                           VII. P ROOF                                ⟨∇θ L(θt , λt ), θ̃t+1 −θt+1 ⟩ ≥     ⟨θ̃t+1 −θt , θ̃t+1 −θt+1 ⟩. (4)
+                                                                                                         α
+   Assumption 1: The primal domain Θ is compact and                    We decompose
+convex, which models the bounded iterates induced by trust-
+region regularization, clipping, or explicit projection in (1).         ⟨∇θ L(θt , λt ), θt+1 − θt ⟩
+The value functions JR (θ) and JC (θ) are continuously                =⟨∇θ L(θt , λt ), θ̃t+1 − θt ⟩ + ⟨∇θ L(θt , λt ), θt+1 − θ̃t+1 ⟩.
+differentiable on Θ, and their gradients are Lipschitz:
+                                                                     For the second term, rearranging (3) yields
+            ∥∇θ JR (θ) − ∇θ JR (θ′ )∥ ≤ LR ∥θ − θ′ ∥                 ⟨∇θ L(θt , λt ), θt+1 − θ̃t+1 ⟩ ≥ α1 ⟨θt+1 − θt , θt+1 − θ̃t+1 ⟩ −
+            ∥∇θ JC (θ) − ∇θ JC (θ′ )∥ ≤ LC ∥θ − θ′ ∥.                ⟨δt , θt+1 − θ̃t+1 ⟩. Combining these terms and using the
+                                                                     geometric identity ⟨x, x − y⟩ = 12 (∥x∥2 + ∥x − y∥2 − ∥y∥2 )
+Thus, for any λ ∈ [0, Λ], the Lagrangian L(θ, λ) is LL -             yields
+smooth in θ with LL = LR + ΛLC .
+  Assumption 2: Let Ft denote the σ-field generated by all                                               1
+                                                                         ⟨∇θ L(θt , λt ), θt+1 − θt ⟩ ≥    ∥θ̃t+1 − θt ∥2
+randomness up to the beginning of t. The estimate ĝt satisfies                                         2α
+                                                                                                   α
+                                                                          − ⟨δt , θt+1 − θ̃t+1 ⟩ ≥ ∥G(θt , λt )∥2 − α∥δt ∥2 .           (5)
+                 E[ĝt |Ft ] = ∇θ L(θt , λt ) + at ,                                                2
+                                                                     By LL -smoothness again, for any x, y ∈ Θ,
+where ∥at ∥ ≤ a, and
+                                                                                                                           LL
+                 E[∥ĝt − E[ĝt |Ft ]∥2 |Ft ] ≤ σθ2 .                L(x, λt ) ≥ L(y, λt ) + ⟨∇θ L(y, λt ), x − y⟩ −          ∥x − y∥2 .
+                                                                                                                            2
+Choosing x = θt+1 and y = θt , we have                                        Combining E[L(θT , λT −1 ) − L(θ0 , λ0 )] ≤ ∆L , we obtain
+       L(θt+1 , λt ) ≥L(θt , λt ) + ⟨∇θ L(θt , λt ), θt+1                         T −1
+                                                                               αX
+                                 LL                                                  E[∥G(θt , λt )∥2 ] ≤ ∆L + C1 αT (σθ2 + a2 ) + C2 T α2
+                       − θt ⟩ −      ∥θt+1 − θt ∥2 .                           2 t=0
+                                  2                                                                         q
+Using (5) and ∥θt+1 − θt ∥ ≤ α(∥∇θ L(θt , λt )∥ + ∥δt ∥), we                         + 2ΛUmax + αT ΛGC 2(G2max + σθ2 + a2 ).
+obtain                                                                        Therefore,
+                                 α
+     L(θt+1 , λt )−L(θt , λt ) ≥ ∥G(θt , λt )∥2 − α∥δt ∥2                                   T −1
+                                                                                          1 X
+                                 2                                                              E[∥G(θt , λt )∥2 ]
+                    − LL α2 ∥∇θ L(θt , λt )∥2 + ∥δt ∥2 .
+                                                          
+                                                                                          T t=0
+Since Θ × [0, Λ] is compact and ∇θ L is continuous, there                                 2(∆L + 2ΛUmax )
+                                                                                      ≤                   + 2C1 (σθ2 + a2 ) + 2C2 α
+exists Gmax < ∞ such that ∥∇θ L∥ ≤ Gmax . Thus, it yields                                       αTq
+                            α                                                             + 2ΛGC      2(G2max + σθ2 + a2 ).
+L(θt+1 , λt )−L(θt , λt ) ≥ ∥G(θt , λt )∥2 −C1 α∥δt ∥2 −C2 α2 ,
+                            2
+                                                                              By Jensen’s inequality and the elementary bound, we get
+where C1 , C2 > 0 are constants independent of T . Rear-
+                                                                              the result. Since λ̃t+1 = Π[0,Λ] (λt + βut ) and λt+1 =
+ranging and summing it from t = 0 to T − 1 and taking
+expectations gives                                                            Π[0,Λ] (λt + β ût ), we have λ̃t+1 − λt = βH(θt , λt ). We
+                                                                              let εt := ût − ut be the dual estimation error. For any fixed
+   T −1
+                              "T −1                               #
+αX h                    2
+                          i    X                                              θt , we have
+        E ∥G(θt , λt )∥ ≤E          (L(θt+1 , λt ) − L(θt , λt ))
+ 2 t=0                         t=0                                                           L(θt , λt+1 ) − L(θt , λt )                   (6)
+                                          T −1
+                                          X            2                                   = − (λ̃t+1 − λt )ut − (λt+1 − λ̃t+1 )ut .
+                                 + C1 α          E ∥δt ∥ + C2 T α2 .
+                                          t=0                                 Since for all λ ∈ [0, Λ], ⟨λ̃t+1 − (λt + βut ), λ − λ̃t+1 ⟩ ≥ 0,
+Moreover,                                                                     taking λ = λt gives
+  T −1                                                                                                           1
+  X
+        (L(θt+1 , λt ) − L(θt , λt ))                                                         (λ̃t+1 − λt )ut ≥    (λ̃t+1 − λt )2 ,
+                                                                                                                 β
+  t=0
+                                                                                                               ≥ β∥H(θt , λt )∥2 .         (7)
+                                   T
+                                   X −1
+=L(θT , λT −1 ) − L(θ0 , λ0 ) +           (L(θt , λt−1 ) − L(θt , λt )).      Since
+                                    t=1
+                                                                                  |λt+1 − λ̃t+1 |
+We define the true dual ascent direction ut := JC (θt ) − d,
+get the corresponding projection λ̃t+1 := Π[0,Λ] (λt + βut ),                   =|Π[0,Λ] (λt + β(ut + εt )) − Π[0,Λ] (λt + βut )| ≤ β|εt |,
+and recall L(θ, λ) = JR (θ) − λ(JC (θ) − d), the second term                  it yields
+becomesPTL(θ
+           −1
+              t , λt−1 ) − L(θt , λt ) = (λt − λt−1 )ut . Define                               −(λt+1 − λ̃t+1 )ut ≤ β|εt ||ut |.           (8)
+ST := t=1 (λt − λt−1 )ut and it yields
+                                                                              Combining (6), (7) and (8), we obtain
+                                          T −2
+                                                                              L(θt , λt+1 ) − L(θt , λt ) ≤ −β∥H(θt , λt )∥2 + β|εt ||ut |,
+                                          X
+        ST = λT −1 uT −1 − λ0 u1 −               λt (ut+1 − ut ) .
+                                          t=1                                                                                  β        β
+                                                                                                          ≤ −β∥H(θt , λt )∥2 + ε2t + u2t .
+Since JC (θ) is bounded on Θ, there exists Umax < ∞ such                                                                       2         2
+that |ut | ≤ Umax for all t. Therefore, |λT −1 uT −1 − λ0 u1 | ≤               Moreover, |λt+1 − λt | ≤ β(|ut | + |εt |) and
+2ΛUmax . Since Θ is compact and ∇θ JC (θ) is continu-
+ous, there exists GC < ∞ such that |ut+1 − ut | =                             −(λt+1 −λt )ut+1 = −(λt+1 −λt )ut −(λt+1 −λt )(ut+1 −ut )
+|JC (θt+1 ) − JC (θt )| ≤ GC ∥θt+1 − θt ∥. Hence, Cauchy-                     for all t. Therefore, apply Young’s inequality and it yields
+Schwarz and Jensen’s inequalities give
+                                                                               |(λt+1 − λt )(ut+1 − ut )| ≤ β(|ut | + |εt |)GC ∥θt+1 − θt ∥,
+ T −2                              T −2
+                                                                                   β
+ X                                 X
+        λt (ut+1 − ut ) ≤ ΛGC             ∥θt+1 − θt ∥ ,                        ≤ (u2t + ε2t ) + 2βG2C ∥θt+1 − θt ∥2 .
+  t=1                               t=1                                            4
+                             √             T
+                                           X −2
+                                                                   !1/2       By Assumption 2, E[ε2t |Ft ] ≤ σλ2 + b2 . Combining all terms
+                                                               2              together and using
+                         ≤       T ΛGC            ∥θt+1 − θt ∥            .
+                                            t=1
+                                                                                   L(θt+1 , λt+1 ) − L(θt+1 , λt ) = −(λt+1 − λt )ut+1 ,
+Since  ∥θt+1 − θt ∥ ≤ α (∥∇θ L(θt , λt )∥ +
+                                            ∥δt ∥), it holds
+                                                                              we obtain
+  
+E ∥θt+1 − θt ∥2 ≤ 2α2 G2max + σθ2 + a2 . Combining the
+above bounds yields                                                              E[L(θt+1 , λt+1 ) − L(θt+1 , λt )]
+                                q
+    E[|ST |] ≤ 2ΛUmax + αT ΛGC 2(G2max + σθ2 + a2 ).                          ≤ − βE[∥H(θt , λt )∥2 ] + βC3 (Umax
+                                                                                                              2
+                                                                                                                  + σλ2 + b2 ) + βC4 α2 ,
+where C3 , C4 are constants independent of T . Summing the                                          R EFERENCES
+decomposition over t = 0 to T − 1 yields
+                                                                        [1] D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. Van
+                                                                            Den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam,
+               T −1
+               X                                                            M. Lanctot, et al., “Mastering the game of go with deep neural
+                      E[L(θt+1 , λt+1 ) − L(θt , λt )]                      networks and tree search,” nature, vol. 529, no. 7587, pp. 484–489,
+               t=0                                                          2016.
+                                                                        [2] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov,
+               = E[L(θT , λT ) − L(θ0 , λ0 )] ≥ −∆L .                       “Proximal policy optimization algorithms,” arXiv preprint
+                                                                            arXiv:1707.06347, 2017.
+Since                                                                   [3] J. Garcı́a and F. Fernández, “A comprehensive survey on safe rein-
+                                                                            forcement learning,” Journal of Machine Learning Research, vol. 16,
+                                                                            no. 42, pp. 1437–1480, 2015.
+  (L(θt+1 , λt+1 ) − L(θt , λt ))                                       [4] A. Ray, J. Achiam, and D. Amodei, “Benchmarking safe exploration
+= (L(θt+1 , λt ) − L(θt , λt )) + (L(θt+1 , λt+1 ) − L(θt+1 , λt )),        in deep reinforcement learning,” in Safe Machine Learning Workshop
+  |            {z             } |                {z               }         at NeurIPS, 2019.
+                :=At                                  :=Bt              [5] C. Tennant, C. Neels, G. Parkhurst, P. Jones, S. Mirza, and J. Stilgoe,
+                                                                            “Code, culture, and concrete: Self-driving vehicles and the rules of
+we sum it over t = 0, . . . , T − 1 gives                                   the road,” Frontiers in Sustainable Cities, vol. 3, p. 710478, 2021.
+                                                                        [6] A. Pnueli, “The temporal logic of programs,” 18th Annual Symposium
+                   T −1                     T −1
+                                                                            on Foundations of Computer Science (SFCS 1977), pp. 46–57, 1977.
+                   X                        X                           [7] C. Baier and J.-P. Katoen, Principles of Model Checking. MIT press,
+                          E[Bt ] ≥ −∆L −           E[At ].                  2008.
+                   t=0                      t=0                         [8] M. Y. Vardi, “Automata-theoretic model checking revisited,” in Veri-
+                                                                            fication: Theory and Practice. Springer, 1996, pp. 137–150.
+By LL -smoothness, we have                                              [9] S. Sickert, J. Esparza, B. Finkbeiner, and M. Leucker, “Limit-
+                                                                            deterministic büchi automata for linear temporal logic,” in Computer
+                                           LL                               Aided Verification. Springer, 2016, pp. 312–332.
+           At ≤ Gmax ∥θt+1 − θt ∥ +           ∥θt+1 − θt ∥2 .          [10] J. Ji, J. Zhou, B. Zhang, J. Dai, X. Pan, R. Sun, W. Huang, Y. Geng,
+                                            2                               M. Liu, and Y. Yang, “Omnisafe: An infrastructure for accelerating
+                                                                            safe reinforcement learning research,” Journal of Machine Learning
+Taking expectation and applying Young’s inequality yields                   Research, vol. 25, no. 285, pp. 1–6, 2024.
+        G2
+E[At ] ≤ max
+          2   + 1+L               2
+                   2 E∥θt+1 − θt ∥ . Thus,
+                    L                                                  [11] A. Dosovitskiy, G. Ros, F. Codevilla, A. Lopez, and V. Koltun, “Carla:
+                                                                            An open urban driving simulator,” in Conference on robot learning.
+                                                                            PMLR, 2017, pp. 1–16.
+    T −1                                 T −1
+    X                     G2max   1 + LL X                             [12] T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine, “Soft actor-critic: Off-
+            E[At ] ≤ T          +             E∥θt+1 − θt ∥2 .              policy maximum entropy deep reinforcement learning with a stochastic
+    t=0
+                            2        2   t=0                                actor,” in International conference on machine learning. Pmlr, 2018,
+                                                                            pp. 1861–1870.
+                                                                    [13] M. Alshiekh, R. Bloem, R. Ehlers, B. Könighofer, S. Niekum, and
+Using E ∥θt+1 − θt ∥2 ≤ 2α2 G2max + σθ2 + a2 , we have                      U. Topcu, “Safe reinforcement learning via shielding,” in Proceedings
+                                                                            of the AAAI conference on artificial intelligence, vol. 32, no. 1, 2018.
+ T −1                                                                  [14] N. Jansen, B. Könighofer, S. Junges, A. Serban, and R. Bloem,
+ X                 G2max
+                         T + (1 + LL )T α2 G2max + σθ2 + a2 .
+                                                           
+        E[At ] ≤                                                            “Safe reinforcement learning using probabilistic shields,” in 31st
+ t=0
+                     2                                                      International Conference on Concurrency Theory (CONCUR 2020).
+                                                                            Schloss Dagstuhl–Leibniz-Zentrum für Informatik, 2020, pp. 3–1.
+                                                                       [15] E. Altman, Constrained Markov Decision Processes. CRC Press,
+Collecting terms dividing by βT , it yields                                 2021.
+                                                                       [16] A. Camacho, R. T. Icarte, T. Q. Klassen, R. A. Valenzano, and S. A.
+              T −1                                                          McIlraith, “Ltl and beyond: Formal languages for reward function
+            1 X
+                  E[∥H(θt , λt )∥2 ]                                        specification in reinforcement learning,” in IJCAI, vol. 19, 2019, pp.
+            T t=0                                                           6065–6073.
+                                                                       [17] O. Maler and D. Nickovic, “Monitoring temporal properties of con-
+          ∆L                                  G2                            tinuous signals,” in International symposium on formal techniques in
+        ≤           2
+             + C3 (Umax + σλ2 + b2 ) + C4 α2 + max                          real-time and fault-tolerant systems. Springer, 2004, pp. 152–166.
+          βT                                   2β
+                                                                       [18] P. Y. Chan, X. Li, Y. Lu, Y. Lin, and A. Bundy, “Formalise regulations
+          α2                                                                for autonomous vehicles with right-open temporal deontic defeasible
+             (1 + LL )(G2max + σθ2 + a2 ) .
+                                         
+        +
+          β                                                                 logic,” in International Conference on Innovative Techniques and
+                                                                            Applications of Artificial Intelligence. Springer, 2024, pp. 194–207.
+Finally, applying Jensen’s inequality and the elementary               [19] L. De Raedt and A. Kimmig, “Probabilistic (logic) programming
+                                                                            concepts,” Machine Learning, vol. 100, no. 1, pp. 5–47, 2015.
+bound completes the proof.                            □                [20] J. Chen, S. E. Li, and M. Tomizuka, “Interpretable end-to-end urban
+                                                                            autonomous driving with latent deep reinforcement learning,” IEEE
+                                                                            Transactions on Intelligent Transportation Systems, vol. 23, no. 6, pp.
+                           VIII. C ONCLUSION                                5068–5078, 2021.
+                                                                       [21] S. Qi, Z. Zhang, Z. Sun, and S. Haesaert, “Risk-aware autonomous
+   This paper introduces a PPO-LTL framework that aug-                      driving with linear temporal logic specifications,” in 2025 IEEE/RSJ
+ments PPO with safety specifications expressed in LTL                       International Conference on Intelligent Robots and Systems (IROS).
+                                                                            IEEE, 2025, pp. 14 877–14 883.
+through the Lagrangian scheme, providing a precise way                 [22] R. S. Sutton and A. G. Barto, Reinforcement Learning: An
+to encode complex safety requirements, such as regulatory                   Introduction, 2nd ed. Cambridge, MA: MIT Press, 2018. [Online].
+rules. Theoretical guarantee on convergence is provided.                    Available: http://incompleteideas.net/book/the-book-2nd.html
+                                                                       [23] Y. Li, F. He, M. Xue, et al., “Temporal logic guided safe reinforcement
+Experiments in the Zones and CARLA environments are in                      learning,” in Proceedings of the 37th AAAI Conference on Artificial
+full support of our method.                                                 Intelligence, 2023.
+[24] P. Vaezipoor, A. C. Li, R. A. T. Icarte, and S. A. Mcilraith, “Ltl2action:
+     Generalizing ltl instructions for multi-task rl,” in International Con-
+     ference on Machine Learning. PMLR, 2021, pp. 10 497–10 508.
+[25] M. Jackermeier and A. Abate, “Deepltl: Learning to efficiently satisfy
+     complex ltl specifications for multi-task rl,” in The Thirteenth Inter-
+     national Conference on Learning Representations, 2025.
+[26] J. Baxter and P. L. Bartlett, “Infinite-horizon policy-gradient estima-
+     tion,” journal of artificial intelligence research, vol. 15, pp. 319–350,
+     2001.
+[27] J. Achiam, D. Held, A. Tamar, and P. Abbeel, “Constrained policy
+     optimization,” in International conference on machine learning. Pmlr,
+     2017, pp. 22–31.
+[28] A. Raffin, A. Hill, A. Gleave, A. Kanervisto, M. Ernestus, and
+     N. Dormann, “Stable-baselines3: Reliable reinforcement learning im-
+     plementations,” in Journal of Machine Learning Research, vol. 22,
+     2021, pp. 1–8.
+

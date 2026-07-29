@@ -1,0 +1,493 @@
+                                                       Interactive Learning from Natural Language
+                                                     and Demonstrations using Signal Temporal Logic
+
+                                                                                             A P REPRINT
+
+
+                                                Sara Mohammadinejad                       Jesse Thomason                      Jyotirmoy V. Deshmukh
+                                            University of Southern California      University of Southern California       University of Southern California
+                                                     LA, CA, USA                            LA, CA, USA                             LA, CA, USA
+
+
+
+
+arXiv:2207.00627v1 [cs.FL] 1 Jul 2022
+                                                 saramoha@usc.edu                       jessetho@usc.edu                        jdeshmuk@usc.edu
+
+
+                                                                                              July 5, 2022
+
+                                                                                             A BSTRACT
+                                                 Natural language is an intuitive way for humans to communicate tasks to a robot. While natural
+                                                 language (NL) is ambiguous, real world tasks and their safety requirements need to be communicated
+                                                 unambiguously. Signal Temporal Logic (STL) is a formal logic that can serve as a versatile, expressive,
+                                                 and unambiguous formal language to describe robotic tasks. On one hand, existing work in using STL
+                                                 for the robotics domain typically requires end-users to express task specifications in STL – a challenge
+                                                 for non-expert users. On the other, translating from NL to STL specifications is currently restricted to
+                                                 specific fragments. In this work, we propose D IALOGUE STL, an interactive approach for learning
+                                                 correct and concise STL formulas from (often) ambiguous NL descriptions. We use a combination of
+                                                 semantic parsing, pre-trained transformer-based language models, and user-in-the-loop clarifications
+                                                 aided by a small number of user demonstrations to predict the best STL formula to encode NL task
+                                                 descriptions. An advantage of mapping NL to STL is that there has been considerable recent work
+                                                 on the use of reinforcement learning (RL) to identify control policies for robots. We show we can
+                                                 use Deep Q-Learning techniques to learn optimal policies from the learned STL specifications. We
+                                                 demonstrate that D IALOGUE STL is efficient, scalable, and robust, and has high accuracy in predicting
+                                                 the correct STL formula with a few number of demonstrations and a few interactions with an oracle
+                                                 user.
+
+                                        Keywords Natural Language Processing ⋅ Human Robot Interactions ⋅ Signal Temporal Logic
+
+                                        1    Introduction
+                                        Natural language is an easy and end-user friendly way for humans to convey their intended tasks to robots. However,
+                                        natural language descriptions are usually ambiguous and can have multiple meanings. For example, “pick up the door
+                                        key and open the door” implicitly carries urgency to a human if there is a fire in the room. However, a robot system
+                                        needs to infer timing constraints, as well as underspecified information like which door when there are multiple and
+                                        whether pausing between getting and using the key is acceptable.
+                                        Signal Temporal Logic (STL) Maler and Nickovic [2004] has been used as a flexible, expressive, and unambiguous
+                                        language to describe robotic tasks that involve time-series data and signals. For instance, STL can be used to formulate
+                                        properties such as “the robot should immediately extinguish fires but can accept delays in opening doors.” From a
+                                        grammar-based perspective, an STL formula can be viewed as atomic formulas combined with logical and temporal
+                                        operators Mohammadinejad et al. [2020]. In this work, we match different components of a natural language description
+                                        with atoms and operators to form candidate STL formulas, and use dialogue with users to resolve ambiguities.
+                                        Formalizing behavior using temporal logics such as STL require the user to specify the correct temporal logic
+                                        specification Balakrishnan and Deshmukh [2019], Puranic et al. [2021]—a difficult and error-prone task for untrained
+                                        human users. Translating a sentence written in a natural and ambiguous language into a more general and concise
+                                        formal language is an open challenge He et al. [2021].
+                                  Learning Logical Formulas from Natural Language                            A P REPRINT
+
+
+
+
+Figure 1: We infer a STL formula and optimal policy from a given natural language description, a few demonstrations,
+and questions to the user.
+
+
+Seminal works in Gavran et al. [2020] considers the problem of interactive synthesis of robot policies from natural
+language specifications. The authors consider similar environments as ours but expect specifications to be provided in
+structured English that is then translated to LTL formulas. The main objective is to explore the space of specifications
+using user demonstrations and constraint-based methods to identify the precise specifications, which are then used
+to synthesize robot policies using reactive synthesis methods. In our work, the emphasis is on directly learning the
+structure of the task objective using modern natural language processing tools and employ a dialogue-based method
+to refine the specification. Furthermore, we use recently developed RL methods to learn optimal policies from STL
+instead of LTL synthesis approaches.
+Prior work closest to ours, DeepSTL He et al. [2021], translates informal English requirements to STL by training a
+sequence-to-sequence transformer on synthetic data generated from a hand-defined STL-to-English grammar. DeepSTL
+is restricted to a specific fragment of STL covered by the hand-defined grammar. For example, it allows the conjunction
+and disjunction of only two atomic propositions, and some nested formulas are not supported. Further, DeepSTL
+directly translates natural language into STL without any interaction with the user, meaning language that is missing
+required information for the target STL simply cannot be correctly understood. Natural language is vague, and we
+propose clarifying interactions to arrive at the correct STL formula.
+We propose an interactive and flexible approach, D IALOGUE STL. Figure. 1 shows the high-level flow of our framework,
+whose input consists of natural language description (NL) and a few demonstrations (demos) of a robotic task. After
+clarifying ambiguities with the user via dialogue, our framework produces the optimal policy as outcome. We
+demonstrate that our method is efficient and scalable, and note that in most cases the user has to provide only a few
+demonstrations—often only one—of a successful behavior for our framework to arrive at the correct STL formula using
+dialogue interactions.
+
+2   Background
+Definition 1 (Demonstration) Demonstration is a finite sequence of state-action pairs.                  Formally, d =
+{(s0 , a0 ), (s1 , a1 ), ..., (s` , a` )} defines a demonstration with length `, where si ∈ S and ai ∈ A. S is the set of
+all possible states and A is the set of all possible actions in an environment.
+
+Definition 2 (Time-Series, Traces, Signals) A trace x is a mapping from time domain T to value domain D, x ∶ T →
+                ≥0       n
+D where, T ⊆ R , D ⊆ R , T ≠ ∅, and the variable n denotes the trace dimension.
+
+Signal Temporal Logic (STL). Signal Temporal Logic (STL) is a logic to reason about properties of real-valued
+signals. The basic primitive in STL is called atomic predicate or atom. Atoms are formulated as f (x) ∼ c, where x
+is a trace, f is a scalar-valued function over the trace x, ∼ ∈ {≥, ≤, =}, and c ∈ R. For instance, x ≤ 1 is an atomic
+predicate, where f (x) = x, ∼ is ≤, and c = 1. Temporal specifications are created by adding operators such as G
+(always), F (eventually) and U (until) to atoms. For example, G(x ≤ 1) means that signal x is always less than or
+equal to 1. Each temporal operator is indexed by an interval I ∶= (a, b) ∣ (a, b] ∣ [a, b) ∣ [a, b], where a, b ∈ T, and
+T ∈ R is the time domain.
+Formally,
+                                  ϕ ∶= true ∣ f (x) ∼ c ∣ ¬ϕ ∣ ϕ1 ∧ ϕ2 ∣ ϕ1 UI ϕ2 ,                                   (1)
+where c ∈ R. G and F operators are special instances of U operator FI ϕ ≜ true UI ϕ, and GI ϕ ≜ ¬FI ¬ϕ.
+The Boolean satisfaction of an atomic predicate is true if the predicate is satisfied and false if it is violated, and the
+semantics of logical and temporal operators are defined as:
+
+
+                                                            2
+                                   Learning Logical Formulas from Natural Language                          A P REPRINT
+
+
+
+
+Figure 2: The robot tries to reach the lamp placed at location (0, 0) in 15 seconds while avoiding wall (black) and
+water (blue) tiles. Both green (—) and red (—) demonstrations satisfy the formula F[0,15] (robotAt(0,0)); in the next 15
+seconds, the robot should eventually reach to the location (0, 0).
+
+
+       • ¬ϕ is satisfied if ϕ is not satisfied or ϕ is violated.
+       • ϕ1 ∧ ϕ2 holds if both ϕ1 and ϕ2 are satisfied.
+       • ϕ1 ∨ ϕ2 holds if either ϕ1 or ϕ2 is satisfied.
+       • ϕ1 → ϕ2 is equivalent to ¬ϕ1 ∨ ϕ2 , which means that either ϕ1 should not hold or ϕ2 should hold.
+       • GI ϕ means ϕ must hold for all instances of interval I.
+       • FI ϕ means ϕ must hold at least once in interval I.
+       • ϕ1 UI ϕ2 means ϕ1 must hold in I until ϕ2 is satisfied.
+
+Example 1 Consider the grid world environment illustrated in Fig. 2. While both demonstrations reach the lamp,
+only the green demonstration satisfies the formulas G(¬(robotAtWall)) and G(¬(robotAtWater)). The formula
+G(¬(robotAtWall)) means that the robot should never climb walls. The formula G(¬(robotAtWater)) means that the
+robot should not step in water. The red demonstration intersects with both walls and water tiles.
+
+Parametric Signal Temporal Logic (PSTL). A PSTL Asarin et al. [2011] formula is an extension of STL formula
+where constants are replaced by parameters. A STL formula is obtained by pairing a PSTL formula with a valuation
+function that assigns a value to each parameter variable. For example, consider the PSTL formula ϕ(x, y, τ ) =
+F[0,τ ] (robotAt(x,y)) with parameters τ , x and y. The STL formula F[0,15] (robotAt(0,0)), which is an instance of ϕ, is
+obtained with the valuation ν = {τ ↦ 15, x ↦ 0, y ↦ 0}. From a grammar-based perspective, a PSTL formula can be
+viewed as atomic formulas combined with unary or binary operators Mohammadinejad et al. [2020].
+                                     ϕ ∶= atom ∣ unaryOp(ϕ) ∣ binaryOp(ϕ, ϕ)
+                                     unaryOp ∶= ¬ ∣ F ∣ G                                                            (2)
+                                     binaryOp ∶= ∨ ∣ ∧ ∣ UI ∣⇒
+
+For instance, PSTL formula F[0,τ ] (¬robotAt(a,b) ∨ robotAt(c,d)) consist of atoms robotAt(a,b) and robotAt(c,d),
+unary operators ¬, F and binary operator ∨ .
+
+3   D IALOGUE STL: Learning PSTL Candidates
+In this section, we propose an interactive approach to learn candidate Parametric STL (PSTL) formulas from the natural
+language description of a task or constraints provided by user. The overall structure of our approach is shown in
+Algo. 1. As a running example, consider the command “turn on the lamp and pick up the cube” for the grid world
+environment shown in Fig. 2. The high-level view of our method for the running example is illustrated in Fig. 3, and the
+method for converting NL to candidate PSTL formulas is formalized in Algo. 1. The inputs of the algorithm consist
+of NL description of the task (taskNL), a few sample data for each atomic predicate (sampleAtoms) and operator
+(sampleOps) that we generate manually, and a threshold  on the confidence of an atom predictor. We first generate a
+set of data for atom predictor (AtomPredictor) using a GPT-3 based paraphrase generator (GPT3ParaphGen) and learn a
+                                                                 1
+model for predicting likely atoms from individual verb phrases. For a given NL description, verb phrases are extracted
+and matched with atoms and operators, and candidate PSTL formulas with length in the range [l, u] are enumerated
+using predicted atoms and operators. We now explain each part of Algo. 2 step-by-step.
+
+
+                                                              3
+                                          Learning Logical Formulas from Natural Language                                   A P REPRINT
+
+
+
+
+     Figure 3: We infer a STL formula ϕbest = F[0,15] (lampOn ∧ F[0,10] (itemOnRobot(purpleCube))) and an optimal
+     policy from a given natural language description “Turn on the lamp and pick up the cube", a demonstration (—), and
+     interactions with the user. NL splitter extracts components of the Natural Language (i.e., “Turn on the lamp", “and",
+     “pick up the cube"). Each component is mapped to an atom or operator using the Atom and Operator Predictors (“Turn
+     on the lamp":lampOn, “and":∧, “pick up the cube":itemOnRobot). Next, candidate PSTL formulas are generated
+     from the predicted atoms and operators. Asking questions from the user can help learn parameters of PSTL formulas
+     and therefore, learning the best STL formula. Finally, Deep RL techniques are employed to learn an optimal policy
+     from the learned STL formula.
+
+     Algorithm 1: Natural Language to PSTL algorithm
+   Input: taskNL, sampleAtoms, sampleOps, =0.3
+   Output: PSTLFormulas
+   // Generate data for atom predictor
+ 1 atoms ≔ GPT3ParaphGen(sampleAtoms)
+ 2 trainAtoms, testAtoms ≔ TrainTestSplit(atoms)
+ 3 AtomPredictor ≔ train(trainAtoms)                                                                                       // Train
+ 4 Accuracy ≔ test(testAtoms)                                                                                               // Test
+   // Avg. embedding for each operator
+ 5 opEmbeddings ≔ computeOpsBertEmbeddings(sampleOps)
+ 6 taggedTokens ≔ partOfSpeechTagger(taskNL)
+   // Extract verb phrases, conjunctions and adverbs based on the tags
+ 7 vPhrases, Conjs, Advbs ≔ NLSplitter(taggedTokens)
+ 8 for vPhrase ∈ vPhrases do                                                                                 // Find best atoms
+ 9     atom, confidence ≔ AtomPredictor(vPhrase) if confidence ≤  then
+10         vPhrase ≔ ParaphrasedByUser(vPhrase)
+11         atom, confidence ≔ AtomPredictor(vPhrase)
+
+   // Find best operators
+12 ops ≔ findBestOps(opEmbeddings, Conjs, Advbs)
+   // Bounds on the length of PSTL formula
+13 l, u ≔ 2⋅∣vPhrases∣−1, 2⋅∣vPhrases∣+∣Conjs∣+∣Advbs∣
+   // Enumerative, interactive PSTL synthesis
+14 PSTLFormulas ≔ genPSTLEnum(atoms, ops, l, u)
+
+
+
+
+     Atom Predictor Data. We overcome the brittleness of a language-to-STL predictor based on hand-crafted grammar He
+     et al. [2021] using a state-of-the-art paraphrase generation tool for data augmentation over a small manual set.
+     GPT-3 Brown et al. [2020] is a large, pretrained language model able to generate natural language texts that can be
+     hard to distinguish from human-authored content Dale [2021]. We prime GPT-3 with a few examples such as “hi" and
+     “hello" to establish the paraphrase task. Then, we input manually generated verb phrases corresponding to STL atoms in
+     our grid world. We check the paraphrase quality of the GPT-3 outputs manually. For the grid world demonstrated in
+     Fig. 2, there are a total of 15 atoms, and we generate a total of 81 verb phrase samples for the 15 atoms. For example,
+        1
+          We denote a verb phrase loosely as a group of words that contains a verb, such as “turn on the lamp," “if fire is on," and “open
+     the door."
+
+
+                                                                      4
+                                   Learning Logical Formulas from Natural Language                              A P REPRINT
+
+
+
+our GPT-3-based paraphrase generator gets “Turn off the fire" as input and generates “Extinguish the fire" as one output
+paraphrase, and both can be paired with the atom fireOff as training data.
+Atom Predictor. Given a set of verb phrases and their corresponding atomic formulas from the aforementioned data
+generation, we learn a model that given a verb phrase can output the most similar atom to the verb phrase. We reserve
+80% of the data generated by GPT-3 for training and 20% for validation. We use DIET Bunk et al. [2020], a lightweight
+transformer-based architecture that outperforms fine-tuning BERT Devlin et al. [2018] and is about six times faster to
+train. We trained DIET for 100 epochs, which took 14 seconds and resulted in training accuracy of 100% and validation
+accuracy of 93%.
+Operator Predictor. We compute an average word embedding for each operator. To do so, we map each operator
+with a few words in natural language that correspond to that operator. For example, the words “and” and “and then"
+correspond to ∧ operator. The word embedding of each operator is computed as the average BERT embedding of the
+words corresponding to that operator. The computed word embedding will be used to match each conjunction or adverb
+with the most similar operator.
+Natural Language Splitting. To extract verb phrases, we first run a part-of-speech tagger, Flair. Flair Akbik et al.
+[2019] is a state-of-the-art tagger based on contextual string embeddings and neural character language models. We
+divide the language description based on the position of verbs, resulting in, for example, “turn on the lamp" and “pick
+up the cube". We extract conjunctions from the words that connect the verb phrases, such as “and”. We also extract any
+adverbs, since, for example, “always" can correspond to the globally operator G. We try to match each verb phrase
+with an atom using the trained atom predictor and each conjunction or adverb with an operator using cosine similarity
+between the operators’ and words’ BERT embeddings. We always add F to the list of candidate operators because it is
+a common operator. For our running example, we extract atoms = [lampOn, itemOnRobot] and operators = [ ∧ , F].
+If the verb phrase to atom correspondence confidence is low, we ask user to paraphrase the word sequence that has low
+confidence.
+PSTL Generation. We must bound the lower and upper lengths of possible PSTL formulas to enumerate possibilities.
+We consider the lower bound as l = ∣vPhrases∣ + ∣vPhrases∣ − 1 because n verb phrases need n − 1 connectors. We
+consider u = 2 ⋅ ∣vPhrases∣ + ∣Conj∣ + ∣Adv∣ as the length upper bound. We multiply ∣vPhrases∣ by 2 because each
+verb phrase can require a F operator. Each conjunction or adverb might also be converted to an operator. Next, we
+use systematic PSTL enumeration Mohammadinejad et al. [2020] to generate candidate PSTL formulas within the
+range l and u using the extracted atoms and operators in increasing order of their length. We remove enumerated PSTL
+formulas that do not contain all the atoms or contain more than one instance from each atom.
+Causal and Temporal Dependency. We shrink the space of candidate PSTL formulas using the idea of causal or
+temporal dependency between atoms. Atom2 is causally dependent on Atom1 if Atom1 should happen before Atom2 ,
+which eliminates formulas such as F(Atom1 ) ∧ F(Atom2 ) and Atom2 ∧ F(Atom1 ).
+For our running example, we ask the user whether the tasks “turn on the lamp" and “pick up the cube" should run in
+sequence or not. Alternatively, we could ask user if “turn on the lamp and then pick up the cube" is acceptable or not.
+If the answer is “Yes”, this means that the atom itemOnRobot is causally dependent on lampOn, and hence, formulas
+F(lampOn) ∧ F(itemOnRobot) and itemOnRobot ∧ F(lampOn) would be omitted. For our running example, the
+reason for causal dependency is that if room is dark, it would be difficult for the robot to identify the cube and pick it up.
+From the 9 generated PSTL formulas 6 of them are removed resulting in 3 remaining candidate PSTL formulas.
+                                        ϕ1 = lampOn ∧ itemOnRobot
+                                        ϕ2 = lampOn ∧ FI (itemOnRobot)
+                                        ϕ3 = FI (lampOn ∧ FI (itemOnRobot))
+
+
+
+4   D IALOGUE STL: Selecting Correct STL
+
+We find the parameters of the PSTL candidates by searching in the initial language description and by interacting with
+the user (Algo. 2). We use 4 question types: order of tasks, atom parameters, operator parameters, and for paraphrasing
+a verb phrase.
+D IALOGUE STL takes positive and negative demonstrations as input. Asking the user to generate many demonstrations
+makes for a tedious interface. We use only a few demonstrations from the user and use them to automatically generate
+more positive and negative demonstrations.
+
+
+                                                              5
+                                          Learning Logical Formulas from Natural Language                                     A P REPRINT
+
+
+
+     To generate negative examples, we use the principle of “no excessive effort” Gavran et al. [2020]. Any prefix of the
+     demonstrated positive example is assumed insufficient and considered a negative example. Intuitively, if a prefix of d
+     would already be a good example, then the user would not have given the full demo d. We also add delays between
+     different actions and asking the user to categorize whether each is a positive or negative example.
+     To convert each PSTL formula to its corresponding STL formula, all parameter values must be discovered. For instance,
+     operator F needs a time interval and atom itemOnRobot requires the name of the item that should be picked up.
+     We search for parameter values in NL description, and if any of the parameter values cannot be found, we find it by
+     interaction with user. We replace the parameter valuations in PSTL formulas which result in STL candidates. Finally,
+     we choose the STL formula that satisfies positive demos and does not satisfy the negative demos. In our running
+     example, among the three candidate STL formulas, ϕ3 is chosen as the best STL formula.
+     If no STL formula can be found, it may be that the language description was not correctly split into its components,
+     or that one or more of the predicted atoms and operators were not correct. In the future, we can improve the splitting
+     algorithm by learning from incorrect predictions, and use beam search in enumeration to move to the next high rank
+     atom or operator when the first set fails.
+
+     Algorithm 2: Learning the best STL formula
+   Input: taskNL, atoms, ops, PSTLFormulas, Demos d
+   Output: ϕbest
+   // Generate more positive, negative demos
+     +   −
+ 1 d , d ≔ generateMoreDemos(d)
+   // Finding atoms’ parameters
+ 2 for atom ∈ atoms do
+ 3     atomParams ≔ findAtomParams(taskNL, atom)
+ 4     if atomParams not found then
+ 5          atomParams ≔ getParamsByInteractionWithUser()
+
+   // Finding operators’ parameters
+ 6 for op ∈ ops do
+ 7     opParams ≔ findOpParams(taskNL, op)
+ 8     if opParams not found then
+ 9          opParams ≔ getParamsByInteractionWithUser()
+
+10 for ϕ(p) ∈ PSTLFormulas do
+       // Set parameters of the PSTL formula
+11     ϕ(v(p)) ≔ setParams(ϕ(p), atomParams, opParams)
+       // Check if the STL formula ϕ(v(p)) satisfies positive demos and does not satisfy negative
+           demos
+                      +               −
+12     if ϕ(v(p)) ⊨ d and ϕ(v(p)) ⊭ d then
+13         ϕbest ≔ ϕ(v(p))
+14         return ϕbest
+
+15   return ∅
+
+
+
+     5       Learning optimal policies
+     Previous works have used the robustness of an STL formula, or the signed distance of a given trajectory from satisfying
+     or violating a given formula as rewards to guide the RL algorithm Puranic et al. [2021], Balakrishnan and Deshmukh
+     [2019]. Here, we only provide an example of learning optimal policy from a given STL formula using those existing
+     techniques. We use Deep Q-Learning Mnih et al. [2015] because of scalability to environments with a large number
+                                                                                                 2
+     of states. In our grid world environment (Fig. 2), there are more than 8 billion states. The algorithm takes the STL
+     specification of the task ϕtask , the goal state and the hyper-parameters (i.e., M , C, γ, and etc.) as input, and generates
+     the optimal policy that respects ϕtask as output. The main RL loop runs for ∣episodes∣. In each episode, first, the state
+     is set to initial state and the partial trajectory is set to ∅. While the robot has not reached the final state or maximum
+     number of states is not reached, the robot explores the grid environment and the reward is computed as robustness of
+     the partial trajectory with respect to ϕtask . The robot experiences are recorded in replay memory to be used later for
+         2
+          Each state is a tuple of 16 elements consist of robot and each of the items’ (door key, green and purple cube) positions, state of
+     the lamp and fire (on or off), and state of the door (open or close).
+
+
+                                                                       6
+                                                         Learning Logical Formulas from Natural Language                                   A P REPRINT
+
+
+
+
+            Figure 4: The learned policy (—) from the ϕtask = F[0,15] (lampOn ∧ F[0,10] (itemOnRobot(purpleCube))).
+
+                          —User Input—                                                          —D IALOGUE STL—
+    Type         Pre-paraphrase Natural Lan-                         #Ds   #EFs   #UIs    SR     RT         Most Frequent STL Prediction
+                 guage
+                 Always don’t hit into walls.                          2    4.2    1.0    80%    2.75                                G[0,1000] (¬robotAtWall)
+    C
+                 Always do not walk into water.                        2    4.9    1.0    90%    2.73                               G[0,1000] (¬robotAtWater)
+                 Pick up the purple cube.                              1    2.0    1.1   100%    2.46                        F[0,15] (itemOnRobot(purpleCube))
+    S
+                 Turn off the fire.                                    1    2.0    1.1    80%    2.31                                           F[0,8] (fireOff)
+                 Open the door and then charge yourself.               1    3.1    3.0    90%    3.28           F[0,10] (doorOpen ∧ F[0,15] (chargerPlugged))
+                 Go to location (7, 4) and pick up the green cube.     1    2.7    3.1    72%    2.87   F[0,15] (robotAt(7,4) ∧ F[0,4] (itemOnRobot(greenCube))
+    Q
+                 Turn on the lamp before picking up the purple         1   45.1    3.1    77%    5.79        F[0,10] (lampOn U[0,8] itemOnRobot(purpleCube))
+                 cube.
+                 Open the gate before picking up the green cube.       1   26.9    3.0    71%   14.76      F[0,6] (doorOpened U[0,6] itemOnRobot(greenCube))
+                 Turn on the lamp or turn on the fire.                 2    2.0    1.1    81%    4.48                                F[0,20] (lampOn ∨ fireOn)
+    M
+                 Sit on the chair or pick up the purple cube.          2    2.0    1.1   100%    4.29   F[0,20] (robotSittingOnChair ∨ itemOnRobot(purpleCube))
+
+
+Table 1: D IALOGUE STL performance on sample natural language inputs across 107 GPT-3 paraphrases of the inputs
+for fixed user demonstrations per row (#Ds). We report the number of enumerated formulas (#EFs), average user
+interactions (#UIs) to select a final formula, success rate (SR) of finding the exact match correct formula, and average
+runtime in seconds(RT). The task types include (C)onstraint, (s)ingle, se(Q)uence and (M)ultiple-choice.
+training the Q network. Whenever the replay buffer size exceeds M , we start training the Q network using the bellman
+equation. We update the weights of target action-value function Q̂ with the weights of Q in every C episodes. For our
+running example, with ϕtask = F[0,15] (lampOn ∧ F[0,10] (itemOnRobot(purpleCube))), the reward converges in less
+than 15000 episodes, and the learned policy is illustrated in Fig. 4.
+
+6           Experiments
+To evaluate D IALOGUE STL, we qualitatively and quantitatively examine its performance in our gridworld (Fig. 2) on
+natural language specifications whose underlying STL formulas exhibit various qualities.
+Table 1 shows a set of manually curated natural language sentences describing a variety of tasks and user constraints
+paired with the most frequent STL formulas ultimately predicted by D IALOGUE STL. We use the GPT-3 based
+paraphrase generator to generate 107 paraphrases each for the sample sentences in Table 1. We also design an Oracle
+user to interact with D IALOGUE STL to answer posed interaction questions. The Oracle user is a simple, rule-based
+program that provides the correct answer to any given question about the true, underlying STL formula. Table 1 shows
+the source language input, before paraphrasing, the number of provided demonstrations, and the D IALOGUE STL
+                                                                                       3
+average number of enumerated formulas, user interactions, success rate, and run-time.
+
+6.1          Results Across Description Types
+
+User Constraints. A human (Oracle) provides the general constraints for a task, and one positive demonstration that
+satisfies the constraint and negative one that does not satisfy or violates it. The human user is asked “For how many
+seconds do you want the constraint to be satisfied?", and answers “1000 seconds”, and so the best STL formula is
+predicted as ϕ = G[0,1000] (¬robotAtWall): “Always, in the next 1000 seconds, the robot should not run into walls".
+        3
+     The time for loading the model, initializing the tools and getting the demo from the user are excluded from run-time. The
+run-time only measures the main part, i.e., converting natural language to STL. We run the experiments on an Intel Core-i7 Macbook
+Pro with 2.7 GHz processors and 16 GB RAM.
+
+
+                                                                                   7
+                                 Learning Logical Formulas from Natural Language                            A P REPRINT
+
+
+
+Single Tasks. A human user provides a single task, such as “Pick up the purple cube", and a positive demonstration of
+the task. Negative examples are generated from this positive example based on the principle of “no excessive effort".
+The user is asked about timing requirements, such as: “In how many seconds, should the robot complete the task?", and
+in this case answers “15 seconds”. The formula ϕ = F[0,15] (itemOnRobot(PurpleCube)) is predicted, which means
+“In the next 15 seconds, the purple cube should be picked up by robot".
+Sequence of Tasks. A sequential task, such as “Go to location (7, 4) and pick up the green cube", requires the
+robot to do one thing before another—a temporal dependency. The STL formulas that do not give such guarantee
+can be eliminated from the candidate formulas, and in this case D IALOGUE STL predicts F[0,15] (robotAt(7,4) ∧
+F[0,4] (itemOnRobot(greenCube)): “In the next 15 seconds, the robot should reach to location (7, 4) and after robot
+reaches (7, 4), it should pick up the green cube in the next 4 seconds".
+Another example of a sequential task is “Turn on the lamp before picking up the purple cube". The word “before" implies
+the temporal dependency, and the formula predicted is F[0,10] (lampOnU[0,8] itemOnRobot(purpleCube)): “Turn on
+the lamp" happens in the past of “pick up the purple cube".
+Multiple-choice Tasks. “Turn on the lamp or turn on the fire" means that the robot is required to complete at least one
+of the two tasks. In such cases, the user can provide two positive demonstrations showcasing the alternative goals. The
+STL formula predicted for this example is F[0,20] (lampOn ∨ fireOn): “In the next 20 seconds, the lamp should be on
+or the fire should be on".
+
+7   Related works & Conclusions
+Prior work has used STL for reinforcement learning applications. Quantitative semantics of STL can be used as reward
+functions for evaluating robotic behaviors Balakrishnan and Deshmukh [2019]. STL formulas can be used to rank the
+quality of demonstrations in robotic domain and also computing the reward for RL problems Puranic et al. [2021].
+However, those works put the burden of specifying the correct STL formulas on users, and can require 3x more demose
+than D IALOGUE STL despite using a similar environment Puranic et al. [2021].
+There has been a tremendous effort in learning temporal logic languages from natural human languages Gavran et al.
+[2020], He et al. [2021], Nelken and Francez [1996], Ranta [2011], Kress-Gazit et al. [2008], Autili et al. [2015]. These
+works variously assume a particular format for natural language, are limited to a specific fragment of formal logic,
+or have scalability and robustness issues. Our work addresses these shortcomings by operating over the space of all
+possible STL formulas, leveraging interaction with the user to repair ambiguities, and scaling to a larger state space.
+
+References
+Oded Maler and Dejan Nickovic. Monitoring temporal properties of continuous signals. In Formal Techniques,
+ Modelling and Analysis of Timed and Fault-Tolerant Systems, pages 152–166. Springer, 2004.
+Sara Mohammadinejad, Jyotirmoy V Deshmukh, Aniruddh G Puranic, Marcell Vazquez-Chanlatte, and Alexandre
+  Donzé. Interpretable classification of time-series data using efficient enumerative techniques. In Proceedings of the
+  23rd International Conference on Hybrid Systems: Computation and Control, pages 1–10, 2020.
+Anand Balakrishnan and Jyotirmoy V Deshmukh. Structured reward shaping using signal temporal logic specifications.
+  International Conference on Intelligent Robots and Systems (IROS), 2019.
+Aniruddh Puranic, Jyotirmoy Deshmukh, and Stefanos Nikolaidis. Learning from demonstrations using signal temporal
+  logic. In Proceedings of the 2020 Conference on Robot Learning, 2021.
+Jie He, Ezio Bartocci, Dejan Ničković, Haris Isakovic, and Radu Grosu. From english to signal temporal logic. arXiv
+   preprint arXiv:2109.10294, 2021.
+Ivan Gavran, Eva Darulova, and Rupak Majumdar. Interactive synthesis of temporal specifications from examples and
+  natural language. Proceedings of the ACM on Programming Languages, 4(OOPSLA):1–26, 2020.
+Eugene Asarin, Alexandre Donzé, Oded Maler, and Dejan Nickovic. Parametric identification of temporal properties.
+  In International Conference on Runtime Verification, pages 147–160. Springer, 2011.
+Tom B Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan,
+  Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. arXiv preprint
+  arXiv:2005.14165, 2020.
+Robert Dale. Gpt-3: What’s it good for? Natural Language Engineering, 27(1):113–118, 2021.
+
+
+                                                           8
+                                Learning Logical Formulas from Natural Language                         A P REPRINT
+
+
+
+Tanja Bunk, Daksh Varshneya, Vladimir Vlasov, and Alan Nichol. Diet: Lightweight language understanding for
+  dialogue systems. arXiv preprint arXiv:2004.09936, 2020.
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional
+  transformers for language understanding. arXiv preprint arXiv:1810.04805, 2018.
+Alan Akbik, Tanja Bergmann, Duncan Blythe, Kashif Rasul, Stefan Schweter, and Roland Vollgraf. Flair: An easy-to-
+  use framework for state-of-the-art nlp. In NAACL 2019, 2019 Annual Conference of the North American Chapter of
+  the Association for Computational Linguistics (Demonstrations), pages 54–59, 2019.
+Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A Rusu, Joel Veness, Marc G Bellemare, Alex Graves,
+  Martin Riedmiller, Andreas K Fidjeland, Georg Ostrovski, et al. Human-level control through deep reinforcement
+  learning. nature, 518(7540):529–533, 2015.
+Rani Nelken and Nissim Francez. Automatic translation of natural language system specifications into temporal logic.
+  In International Conference on Computer Aided Verification, pages 360–371. Springer, 1996.
+Aarne Ranta. Translating between language and logic: what is easy and what is difficult. In International Conference
+  on Automated Deduction, pages 5–25. Springer, 2011.
+Hadas Kress-Gazit, Georgios E Fainekos, and George J Pappas. Translating structured english to robot controllers.
+  Advanced Robotics, 22(12):1343–1359, 2008.
+Marco Autili, Lars Grunske, Markus Lumpe, Patrizio Pelliccione, and Antony Tang. Aligning qualitative, real-time,
+  and probabilistic property specification patterns using a structured english grammar. IEEE Transactions on Software
+  Engineering, 41(7):620–638, 2015.
+
+
+
+
+                                                         9
+

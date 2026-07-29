@@ -1,0 +1,665 @@
+                                          Safe Reinforcement Learning with Free-form Natural Language
+                                                  Constraints and Pre-Trained Language Models
+                                                             Xingzhou Lou∗                                              Junge Zhang∗†                                     Ziyan Wang
+                                                   Institute of Automation, CAS                                Institute of Automation, CAS                        King’s College London
+                                                           Beijing, China                                              Beijing, China                            London, the United Kingdom
+                                                    louxingzhou2020@ia.ac.cn                                       jgzhang@nlpr.ia.ac.cn                            ziyan.wang@kcl.ac.uk
+
+                                                                                           Kaiqi Huang∗                                            Yali Du†
+
+
+
+
+arXiv:2401.07553v3 [cs.LG] 15 May 2024
+                                                                                 Institute of Automation, CAS                             King’s College London
+                                                                                         Beijing, China                                 London, the United Kingdom
+                                                                                    kqhuang@nlpr.ia.ac.cn                                    yali.du@kcl.ac.uk
+
+                                         ABSTRACT                                                                                   and Pre-Trained Language Models. In Proc. of the 23rd International Confer-
+                                         Safe reinforcement learning (RL) agents accomplish given tasks                             ence on Autonomous Agents and Multiagent Systems (AAMAS 2024), Auckland,
+                                                                                                                                    New Zealand, May 6 – 10, 2024, IFAAMAS, 9 pages.
+                                         while adhering to specific constraints. Employing constraints ex-
+                                         pressed via easily-understandable human language offers consider-
+                                         able potential for real-world applications due to its accessibility and
+                                                                                                                                    1    INTRODUCTION
+                                         non-reliance on domain expertise. Previous safe RL methods with                            In recent years, great success has been achieved with reinforce-
+                                         natural language constraints typically adopt a recurrent neural net-                       ment learning (RL) algorithms on multiple domains such as robotic
+                                         work, which leads to limited capabilities when dealing with various                        control [20], resource allocation [43] and games [9, 26, 35]. In real-
+                                         forms of human language input. Furthermore, these methods often                            world settings such as autonomous driving [14], RL agents are not
+                                         require a ground-truth cost function, necessitating domain exper-                          given complete freedom for safety, fairness or other concerns and
+                                         tise for the conversion of language constraints into a well-defined                        must adhere to specific constraints provided by humans. To this
+                                         cost function that determines constraint violation. To address these                       end, safe RL is widely studied, following the constrained Markov
+                                         issues, we proposes to use pre-trained language models (LM) to                             Decision Process (CMDP) [2] framework, where agents must sat-
+                                         facilitate RL agents’ comprehension of natural language constraints                        isfy the constraints given by auxiliary costs when optimizing their
+                                         and allow them to infer costs for safe policy learning. Through                            policies to maximize the objective function.
+                                         the use of pre-trained LMs and the elimination of the need for a                               To learn a safe policy, safe RL algorithms [1, 13, 28, 38, 40] utilize
+                                         ground-truth cost, our method enhances safe policy learning under                          ground-truth cost value given by a well-defined cost function in
+                                         a diverse set of human-derived free-form natural language con-                             CMDP. Because the conditions for violating constraints are differ-
+                                         straints. Experiments on grid-world navigation and robot control                           ent, cost functions need to be defined for all constraints case by
+                                         show that the proposed method can achieve strong performance                               case and require task-specific domain knowledge, which can be
+                                         while adhering to given constraints. The usage of pre-trained LMs                          very expensive and inefficient. For example, in a navigation task,
+                                         allows our method to comprehend complicated constraints and                                the agent should not get close to objects that may cause damage
+                                         learn safe policies without the need for ground-truth cost at any                          to it. To define such a cost function, one must be aware of all the
+                                         stage of training or evaluation. Extensive ablation studies are con-                       harmful objects in the environment, otherwise the agent may be
+                                         ducted to demonstrate the efficacy of each part of our method.                             harmed by some unexpected hazards. This severely limits safe RL’s
+                                                                                                                                    application to general and complex tasks where transforming con-
+                                         KEYWORDS                                                                                   straints into cost functions can be expensive and requires specific
+                                                                                                                                    domain knowledge.
+                                         Safe Reinforcement Learning, Natural Language Constraints, Lan-
+                                                                                                                                        One intuitive and easily-accessible approach to regulate safe RL
+                                         guage Models
+                                                                                                                                    agents is to provide constraints via human language [19, 21, 27, 39].
+                                         ACM Reference Format:                                                                      By providing natural language constraints, potential end users
+                                         Xingzhou Lou, Junge Zhang, Ziyan Wang, Kaiqi Huang, and Yali Du. 2024.                     can easily regularize and interact with agents. However, without
+                                         Safe Reinforcement Learning with Free-form Natural Language Constraints                    a ground-truth cost function, it is difficult to determine whether
+                                         ∗ Also with School of Artificial Intelligence, University of Chinese Academy of Sciences   natural language constraints are violated. To avoid using ground-
+                                         † Correspondence.                                                                          truth costs, previous method [39] learns to identify entities relevant
+                                                                                                                                    to the natural language constraints in the environment so that
+                                                                   This work is licensed under a Creative Commons Attribution       agents can predict whether the constraints are violated. However,
+                                                                   International 4.0 License.                                       it requires additional computation to model the entities and may
+                                                                                                                                    result in inaccurate predictions in complex environments. And
+                                         Proc. of the 23rd International Conference on Autonomous Agents and Multiagent Systems     since the model is trained in a supervised fashion, it is incapable
+                                         (AAMAS 2024), N. Alechina, V. Dignum, M. Dastani, J.S. Sichman (eds.), May 6 – 10, 2024,
+                                         Auckland, New Zealand. © 2024 International Foundation for Autonomous Agents and           of handling free-form or new natural language constraints from
+                                         Multiagent Systems (www.ifaamas.org).                                                      humans.
+         “You have a pair of
+         magic shoes to walk
+                                                    “Do not go into water”
+         on lava and meadow.                                                                          ℎ&                     )̂ = 1
+        But you cannot swim”                                Condensed
+               Constraint )                                 constraint )                                              If * ≥ 6
+
+
+                                                                                                      * = cos_012 ℎ& , ℎ'
+
+
+                                     Decoder LM                                                                       Else
+                                                                                  Encoder LM
+                                                                                                     ℎ'                      )̂ = 0
+                                                         Text-based
+                                                         observation
+
+
+            Environment           Observation "
+
+Figure 1: Cost prediction in the proposed method. The decoder LM condenses the semantic meaning of the constraint to
+eliminate ambiguity and redundancy. The encoder LM encodes the condensed constraints and text-based observations into
+embeddings according to their semantic meaning. If cosine similarity between the embeddings is greater than threshold 𝑇 , the
+model will predict the constraint is violated (predicted cost 𝑐ˆ = 1), otherwise 𝑐ˆ = 0. Embedding ℎ𝑐 is also used later as input to
+condition the policy network.
+
+
+   In this paper, to deal with the problem of constraint violation         both reward and cost without the need for ground-truth costs at any
+prediction in safe RL with natural language constraints, we propose        stage of training or evaluation. Experimental results demonstrate
+to adopt pre-trained language models (LM) [4, 8] to comprehend             that the proposed method is able to constrain the agents effectively.
+and encode the constraints and predict costs for policy learning.          Extensive ablation studies show the decoder LM and encoder LM
+Specifically, a decoder-based LM (such as GPT [4]) is adopted to           are both necessary in order to predict costs accurately.
+eliminate ambiguity and redundancy and extract semantic mean-                 Contributions of this paper are three-fold:
+ing from the constraints. As decoder LMs are pre-trained on a
+very large corpus of data and align with human values, they are               (1) We introduce pre-trained LMs to safe RL with natural lan-
+able to generate high-quality constraints with condensed seman-                   guage constraints to replace the recurrent neural network in
+tic meaning if we prompt them properly. To condition the policy                   previous works, which can only handle structured or fixed-
+which is parameterized by neural networks with natural language                   form natural language constraints.
+constraints, an encoder-based LM (such as BERT [8]) encodes con-              (2) An encoder LM and a decoder LM are adopted for accurate
+straints into embeddings according to their semantic meaning. We                  cost prediction, which is essential for safe policy learning.
+also use the encoder LM to encode the text-based observations.                    The LM-based cost prediction enables agents to learn safe
+By computing the semantic similarities between constraint embed-                  policy without the need for ground-truth cost at any stage
+dings and description embeddings, we can determine whether the                    of training.
+constraint is violated. To distinct constraint embeddings from each           (3) Experiments on grid-world navigation and robot control
+other, we adopt a contrastive loss to fine-tune the encoder LM so                 both show the proposed method can make agent learn safe
+that constraints have similar embeddings only when they have                      policies to follow the constraints. Extensive ablation studies
+similar semantic meaning.                                                         confirm the efficacy of our LM-based cost prediction module.
+   We empirically validate the effectiveness of our method in two
+environments: Hazard-World-Grid [6] and SafetyGoal from Safety-
+Gymnasium [18]. Hazard-World-Grid is a grid-world navigation               2 RELATED WORK
+task, and SafetyGoal is aimed at safe robot control. In both en-           2.1 Safe Reinforcement Learning
+vironments, agents must navigate the world to achieve the goal             Safe RL predominantly aims to train policies that maximize re-
+and avoid potential hazards according to the constraints given by          wards while obeying specific constraints[11, 14]. Safety is a signifi-
+free-form natural language constraints from humans. Compared to            cant practical problem in RL’s real-world applications, especially
+constraints given by structured language in previous works [27, 39],       in safety-critical scenarios such as autonomous driving [22] and
+pre-trained LMs’ strong capabilities in natural language processing        power allocation [23]. The most straightforward safe RL algorithm
+allow our method to deal with much more complicated forms of               is PPO-Lagrangian [28], which uses adaptive penalty coefficients
+constraints. Our method achieves strong performance regarding              to enforce constraints with a Lagrangian multiplier to the reward
+sum objective and solve the problem by solving the equivalent max-      and encoder LMs to provide extrinsic rewards to encourage agents
+min optimization method. Constrained Policy Optimization (CPO)          to achieve the generated goal and explore the environment. Hu
+[1] is a policy search algorithm that derives policy improvement        et al. [17] used pre-trained LMs to generate policies conditioned
+steps that guarantee both an increase in reward and satisfaction        on human instructions and help RL agents converge to equilibria
+of constraints on costs. Projection-Based Constrained Policy Op-        aligned with human preferences, which significantly boosted their
+timization (PCPO) [40] first performs local reward improvement          human-AI coordination performance. Nottingham et al. [24] pro-
+update and then projects the updated policy to the constraint set       posed to utilize pre-trained LMs to hypothesize a world model to
+to make sure the updated policy is always safe. However, typical        guide RL agents’ exploration and improve sample efficiency. The
+safe RL algorithms require ground-truth costs to do policy updates,     hypothesized world model is also verified by world experience of
+which are often unavailable in tasks where constraints are only         RL agents from interactions. But to the best of our knowledge, our
+given by natural language.                                              work is the first to apply pre-trained LMs to the field of safe RL.
+
+2.2    Reinforcement Learning with Natural                              3     PRELIMINARIES
+       Language                                                         Safe RL mostly models problems as Constrained Markov Decision
+Multiple previous studies have combined reinforcement learning          Process (CMDP) [2]. CMDP consists of a tuple < 𝑆, 𝐴,𝑇 , 𝑅, 𝛾, 𝐶 >,
+with natural language. RL is widely used in text-based tasks such as    where 𝑆 is the state space, 𝐴 is the action space, 𝑇 is the state
+machine translation [37] and text games [7] to achieve strong per-      transition function, 𝑅 is the reward function, 𝐶 is some given cost
+formance. Similarly, He et al. [15] studied RL agents with a natural    function and 𝛾 is the discount factor. The objective for the agent is
+                                                                                                                     Í
+language action space. Natural language can be used to instruct or      to maximize accumulated reward 𝐽 = E𝜋 [ 𝛾 𝑡 𝑅𝑡 ] and minimize
+                                                                                                                    𝑡 =0
+inform agents to get higher rewards. Kaplan et al. [19] used natural                                     Í
+                                                                        the accumulated cost 𝐽𝐶 = E𝜋 [ 𝛾 𝑡 𝑐𝑡 ] to satisfy the constraints
+language instructions from an expert to aid RL agents in accom-                                          𝑡 =0
+plishing the tasks. Agents receive additional rewards if they follow    at the same time. The learning objective is given by
+the expert’s natural language instructions. Goyal et al. [12] pro-                        "
+                                                                                            ∑︁
+                                                                                                   #                     "
+                                                                                                                           ∑︁
+                                                                                                                                  #
+posed the use of natural language instructions to perform reward                                𝑡                              𝑡
+                                                                          max 𝐽 (𝜋) = E𝜋       𝛾 𝑅𝑡 𝑠.𝑡 . 𝐽𝐶 (𝜋) = E𝜋         𝛾 𝑐𝑡 ≤ 𝐻,
+                                                                            𝜋
+shaping to improve sample efficiency of RL algorithms. Previous                             𝑡 =0                            𝑡 =0
+works also used natural language to constrain agents to behave                                                                             (1)
+safely. Prakash et al. [27] trained a constraint checker in a super-    where 𝐻 is the constraint violation budget.
+vised fashion to predict whether the natural language constraints           However, we consider the problem where the cost function 𝐶 is
+are violated and guide RL agents to learn safe policies. However,       not known but instead implied by some free-form natural language.
+they required ground-truth cost to train the constraint checker,        Thus, instead of CMDP, we model the problem by another tuple
+which may be unavailable in many tasks. Yang et al .[39] trained a      < 𝑆, 𝐴,𝑇 , 𝑅, 𝛾, 𝑀, 𝑋 >, which is an MDP augmented by a constraint
+constraint interpreter to predict which entities in the environment     transformation function 𝑀 and natural language constraint space
+may be relevant to the constraint and used the interpreter to predict   𝑋 . 𝑀 : 𝑋 → 𝐶 𝑥 maps some natural language constraint 𝑥 ∈ 𝑋 to a
+costs. Although their method did not require ground-truth cost, the     cost function 𝐶 𝑥 , where 𝐶 𝑥 : 𝑆 × 𝐴 → {0, 1} decides whether the
+interpreter had to model and predict all entities in the environment,   agent has violated the natural language constraints. The agent only
+which required additional computation and may lead to inaccurate        knows the constraint 𝑥 and has no knowledge of ground-truth cost
+results in complex tasks. For comparison, our method does not need      𝐶 𝑥 (𝑠𝑡 , 𝑎𝑡 ) under any circumstances. The constraint 𝑥 is sampled at
+ground-truth costs and adopts pre-trained LMs to predict constraint     the beginning of each episode and remains consistent within the
+violations, which avoids training extra modules and can harness         episode. As each natural language constraint 𝑥 corresponds to a
+the knowledge in large pre-trained LMs.                                 cost function 𝐶 𝑥 , we will refer natural language constraints with
+                                                                        variable 𝑐 in what follows.
+2.3    Pre-Trained Language Models
+                                                                        4     METHODOLOGY
+By utilizing the power of Transformer [34], pre-trained LMs have
+drawn enormous attention in recent years. Based on the encoder          In this section, we introduce our proposed method. We first intro-
+part of Transformer, encoder-based LMs such as Bidirectional En-        duce our LM-based cost prediction module and then show how the
+coder Representations from Transformers (BERT) [8] extract se-          policy is trained with the predicted costs.
+mantic meaning and learn representations for text inputs by joint
+conditioning on their context and can be easily fine-tuned for down-    4.1     Cost Prediction Module
+stream tasks. Based on the decoder part of Transformer, decoder-        We give the structure of the cost prediction module in Fig. 1. In
+based LMs such as Generative Pre-trained Transformer (GPT) [25]         general, to predict whether the constraint is violated, we adopt a
+and Llama [33] are trained to generate texts given previous contexts,   decoder LM (GPT) to eliminate ambiguity and condense semantic
+and thus good at text generation tasks. Both encoder-based and          meaning in free-form natural language constraint 𝑐 and an encoder
+decoder-based LMs are pre-trained on a very large corpus of text        LM (BERT) to extract semantic information from the condensed
+and thus possess strong natural language processing ability. Previ-     natural language constraint 𝑐 and transform the constraints into
+ous studies have tried to introduce pre-trained LMs to RL agents. Du    embedding ℎ𝑐 . Condensed constraint 𝑐 aligns with the original con-
+et al. [10] utilized decoder LMs to generate novel goals for agents     straint 𝑐 on which entity or behaviour the agents are prohibited
+from. This is necessary as free-form constraint 𝑐 from humans may           Algorithm 1 PPO with LM-based Cost Prediction (PPO-CP)
+be verbose or semantically vague, which will severely affect the              1: Initialize value function network 𝜙, cost value function network
+cost prediction result. Since decoder LM GPT aligns with human                   𝜙𝑐 , policy network 𝜃 , decoder LM 𝑀𝑑 and encoder LM 𝑀𝑒 ,
+values [44], it can eliminate ambiguity within the human natural                 Lagrange Multiplier update stepsize 𝜂
+language constraints and better summarize the constraints. We                 2: for each episode do
+empirically show in the experiment section that without the de-               3:      Sample a natural language constraint 𝑥
+coder LM, the performance of the cost prediction module will drop             4:      Condense and extract the semantic meaning of x with 𝑀𝑑
+significantly. The prompt we use for the decoder LM is provided in            5:      Encode the condensed constraint with 𝑀𝑒 to get constraint
+the supplementary material.                                                      embedding ℎ𝑐
+   To ensure that constraints with the same semantic meaning                  6:      Rollout the policy with constraint ℎ𝑐 and get trajectory
+have similar embeddings, we use a contrastive loss to fine-tune the              {𝑜𝑡 , 𝑎𝑡 , 𝑜𝑡′ , 𝑟𝑡 }𝑡 =1,..,𝑛
+encoder LM. For a batch of natural language constraint pairs, the             7:      for t in {1,..,n} do
+contrastive loss is given by                                                  8:            Transform 𝑜𝑡 into text-based observation and encode it
+                                                                                 with 𝑀𝑒 to get observation embedding ℎ𝑜
+                         𝑛 
+                      1 ∑︁ 1  𝑖                             2              9:            Predict cost 𝑐ˆ𝑡 according to Eq. 3
+               L𝑐 =           𝑌 − 𝑐𝑜𝑠𝑖𝑛𝑒_𝑠𝑖𝑚(ℎ𝑐𝑖 1 , ℎ𝑐𝑖 2 )     ,   (2)     10:      end for
+                      𝑛 𝑖=1 2
+                                                                             11:      Calculate loss 𝐿𝑉 𝐹 and 𝐿𝐶𝑉 𝐹 for value function 𝜙 and cost
+                                                                                 value function 𝜙𝑐
+where ℎ𝑐𝑖 1 , ℎ𝑐𝑖 2 are embeddings of 𝑖th natural language constraint        12:      Calculate policy loss 𝐿𝐶𝐿𝐼 𝑃 and 𝐿𝐶  𝐶𝐿𝐼 𝑃 with value function
+
+pair (𝑐 𝑖1, 𝑐 𝑖2 ). The constraints are first processed by the decoder           𝜙 and cost value function 𝜙𝑐
+LM and then encoded by the encoder LM. Target 𝑌 𝑖 = 1 when                   13:      Update value function 𝜙, cost value function 𝜙𝑐 and policy
+constraints 𝑐 𝑖1, 𝑐 𝑖2 prohibit the agent from the same entities or be-          network 𝜃 according to Eq. 8
+haviours, otherwise 𝑌 𝑖 = 0. Cosine similarity 𝑐𝑜𝑠𝑖𝑛𝑒_𝑠𝑖𝑚(ℎ𝑐 1 , ℎ𝑐 2 ) =    14:      Update 𝛼 by stepsize 𝜂 to maximize 𝐿𝛼 in Eq. 9.
+  ℎ𝑐 1 ·ℎ𝑐 2                                                                 15: end for
+∥ℎ𝑐 1 ∥ ∥ℎ𝑐 2 ∥ .
+    The contrastive loss enables the encoder LM to recognise con-
+straints’ semantic similarity [29]. As a result, constraints concerning     4.2     Policy Training
+the same entities and behaviours will have embeddings with high
+cosine similarity and vice versa.                                           With the predicted cost ˆ𝑐, we are ready to train our safe RL agents.
+    The constraint embedding ℎ𝑐 is later used together with the             It is worth noting that our method does not require the ground-
+observation to determine whether the constraint is violated. As ℎ𝑐          truth cost under any circumstances during training or evaluation,
+is semantic embedding, we have to pre-process observation 𝑜 into            which is distinct compared to other existing safe RL algorithms. We
+text-based observation, so that it can be used for cost prediction with     integrate the cost prediction module to proximal policy optimiza-
+the semantic embedding of constraints. Text-based observations are          tion (PPO) [32] with Lagrange multiplier [28], so that the agents
+widely used as they provide easily accessible information for LMs to        can maximize rewards while adhering to specific constraints at the
+process [10, 36, 41, 42]. The transformation can be done via template       same time.
+matching [5] or caption models with supervised learning [16]. In our            We define the cost return, cost value function and cost advantage
+experiments, a descriptor will automatically analyze observation-           function as 𝐽𝐶 , 𝑉𝐶𝜋 and 𝐴𝐶𝜋 in analogy to return 𝐽 , value function
+
+action pairs and give natural language descriptions based on pre-           𝑉 𝜋 and advantage function 𝐴𝜋 .
+defined templates. After obtaining the text-based observation, the              The policy 𝜋 is obtained by
+encoder LM will encode it into observation embedding ℎ𝑜 , whose                                     𝜋 = arg max 𝐽 (𝜋) − 𝛼 𝐽𝐶 (𝜋),
+semantic meaning contains information about the current situation                                             𝜋
+of the agent. Finally, the predicted cost 𝑐ˆ is given by                                             
+                                                                                                         𝑇
+                                                                                                         Í
+                                                                                                            
+                                                                            where 𝐽 (𝜋) = E𝜋         𝛾 𝑡 𝑟𝑡 is the expected reward sum under
+                                                                                                 𝑡 =0 
+                               1 if 𝑐𝑜𝑠𝑖𝑛𝑒_𝑠𝑖𝑚(ℎ𝑐 , ℎ𝑜 ) > 𝑇
+                                                                                                                  
+                                                                                                          𝑇
+                    𝑐ˆ =                                             (3)
+                                                                                                          Í 𝑡
+                                                               ,            policy 𝜋 and 𝐽𝐶 (𝜋) = E𝜋          𝛾 𝑐ˆ𝑡 is the expected cost sum, where
+                               0 otherwise                                                                   𝑡 =0
+                                                                            𝑐ˆ𝑡 are predicted cost at timestep 𝑡, and 𝛼 is the Lagrange multiplier.
+                                                                                The training of value function 𝑉 𝜋 and cost value function 𝑉𝐶𝜋 is
+where 𝑇 is a hyperparameter defining the threshold and sensitivity
+                                                                            updated by minimizing the corresponding mean squared TD-error
+of the cost prediction module, ℎ𝑐 is the constraint embedding, ℎ𝑜
+is the observation embedding, and 𝑐𝑜𝑠𝑖𝑛𝑒_𝑠𝑖𝑚 is cosine similarity.
+                                                                                                                                    2
+                                                                                      𝑉𝐹           𝑡             𝑡 +1             𝑡
+𝑐ˆ = 1 means that the cost prediction module predicts the constraint                 𝐿 = E𝜋 𝑟 (𝑖 ) + 𝛾𝑉 (𝑠 (𝑖 ) ) − 𝑉 (𝑠 (𝑖 ) )           ,                    (4)
+has been violated. The insight in devising such a cost function is that                                                                               2 
+                                                                                                 1 𝑡
+If the constraint and observation are semantically similar to each                  𝐿𝐶𝑉 𝐹 = E𝜋       𝑐ˆ (𝑖 ) + 𝛾𝑉𝐶 (𝑠 𝑡(𝑖+1
+                                                                                                                          ) , ℎ𝑐 ) − 𝑉𝐶 (𝑠 𝑡(𝑖 ) , ℎ𝑐 )      , (5)
+                                                                                                 2
+other, it is very likely that the agent has taken undesired actions
+or encountered undesired situations, resulting in an observation            where ℎ𝑐 is the constraint embedding from the encoder LM, 𝑛 is
+similar to the constraints.                                                 batch size and 𝑐ˆ𝑡 is the predicted cost.
+                                                      You have a pair of magic shoes to walk on
+                                                      lava and meadow. But you cannot swim
+                                                      This part of meadow is not open for visitors
+                                                      because of the previous drought which results
+                                                      in severe lack of water for plants
+                                                                              …
+
+                                              Exercise extreme caution and do not come into
+                                              contact with the blazing surface.
+                                              Maintain a safe distance from the dangerous
+                                              chemical; direct contact could result in severe
+                                              poisoning and immediate medical attention
+                                              would be required.
+                                                                        …
+
+                     (a)                                                (b)                                                (c)
+Figure 2: (a) One layout in Hazard-World-Grid, where orange tiles are lava, blue tiles are water and green tiles are grass. (c) Robot
+navigation task SafetyGoal built-in Safety-Gymnasium [18], where there are multiple types of objects in the environment.
+In both environments (a) and (c), agents have to reach goals while avoiding some type of terrain or objects specified in the
+natural language constraints. (b) Constraint examples for two environments in our experiments. Compared to constraints by
+structured language in previous works, constraints in our experiments are much more free-form and less intuitive.
+
+
+  To maximize return 𝐽 and minimize cost return 𝐽𝐶 , two clipped              decrease (but will always be non-negative). This will enable agents
+policy losses are adopted:                                                    to learn policies that satisfy the constraint quickly and achieve
+                  "                                                           rewards as high as possible.
+       𝐶𝐿𝐼 𝑃              𝜋 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 ) 𝑡                                    By doing the update in Eq. 8 iteratively, the agent will learn to
+     𝐿       = E𝑡 min                         𝐴,
+                         𝜋𝑜𝑙𝑑 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 )                                 maximize the reward and minimize constraint violations simultane-
+                                                                       (6)
+                                                                              ously. The agent will learn a safe policy and accomplish the given
+                                                                    !#
+                             𝜋 (𝑎𝑡 |𝑠 𝑡 , ℎ )                  
+                                              𝑐                   𝑡
+                       𝑐𝑙𝑖𝑝                       , 1 − 𝜖, 1 + 𝜖 𝐴 ,          task while trying to follow the natural language constraints. The
+                             𝜋𝑜𝑙𝑑 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 )
+                                                                              pseudo-code of the proposed method is given in Algorithm 1.
+                  "
+       𝐶𝐿𝐼 𝑃              𝜋 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 ) 𝑡
+     𝐿𝐶      = E𝑡 min                         𝐴 ,
+                        𝜋𝑜𝑙𝑑 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 ) 𝐶                                5 EXPERIMENT
+                                                                    !# (7)
+                             𝜋 (𝑎𝑡 |𝑠 𝑡 , ℎ )
+                                              𝑐
+                                                                
+                                                                  𝑡           5.1 Experiment Settings
+                      𝑐𝑙𝑖𝑝                        , 1 − 𝜖, 1 + 𝜖 𝐴𝐶 ,
+                             𝜋𝑜𝑙𝑑 (𝑎𝑡 |𝑠 𝑡 , ℎ𝑐 )                             We evaluate the proposed method on two tasks: Hazard-World-Grid
+where advantage 𝐴𝑡 is obtained by generalized advantage estimator             [39] and SafetyGoal [18] shown in Fig. 2. Each task is accompanied
+            ∞                                                                 by 20 different constraints to regularize the agents. A full list of
+[31] 𝐴𝑡 = (𝛾𝜆)𝑙 𝛿𝑉𝑡 +𝑙 , 𝛿𝑡𝑉 = 𝑟 + 𝛾𝑉 (𝑠 𝑡 +1 ) − 𝑉 (𝑠 𝑡 ) is the TD-error.
+            Í
+                                                                              detailed constraints for each environment is given in the supple-
+           𝑙=0
+  𝑡 is obtained by replacing 𝑉 with cost value function 𝑉 .                   mentary material. The pre-trained decoder LM and encoder LM
+𝐴𝐶                                                                𝐶
+                                                                              we use are gpt-3.5-turbo [4] and all-MiniLM-L12-v2 from sentence
+  Together, the value networks and policy network is trained by
+                                                                              BERT [30]. So, in this section, we also refer to the encoder LM
+maximizing the total loss
+                                                                              as BERT and the decoder LM as GPT. The detailed constraints,
+              𝐿 = 𝐿𝐶𝐿𝐼 𝑃 − 𝛼𝐿𝐶
+                             𝐶𝐿𝐼 𝑃
+                                   − 𝑐 1 𝐿𝑉 𝐹 − 𝑐 2 𝐿𝐶𝑉 𝐹 ,            (8)    prompts for the decoder LMs to condense constraints and how we
+where 𝑐 1 and 𝑐 2 are coefficients for value network updates.                 transform observation into text-based observations are provided
+  Lagrange multiplier 𝛼 is updated after each training iteration.             in the supplementary material. On each task, all methods are run
+Loss for updating 𝛼 is given by                                               for 4 times with different random seeds. The baseline methods we
+                                    ∑︁                                        compare here are PPO [32], PPO-Lagrangian (PPO-Lag) [28] and
+                      𝐿𝛼 = 𝛼 (E𝜋 [ 𝑐ˆ𝑡 ] − 𝐻 ),               (9)             CPO [1]. PPO only optimizes policies to maximize reward and does
+                                      𝑡                                       not consider the constraints. PPO-Lag enforces constraints with a
+where 𝐻 is the hyperparameter of cost budget from Eq. 1. By updat-            Lagrangian multiplier to the reward objective and optimizes the pol-
+ing 𝛼 with a small stepsize to maximize 𝐿𝛼 , penalty coefficient 𝛼 will       icy by solving the equivalent min-max problem. CPO derives policy
+increase if the expected cost sum is larger than 𝐻 , and otherwise            improvement steps that guarantee both an increase in reward and
+                                         Reward                                                 Cost                                                     Reward                                                 Cost
+                                 5                                                    50
+                                                                                                                                       25
+                                                                                                                                                                                                    40
+
+
+
+
+  Reward for Hazard-World-Grid
+                                                         Cost for Hazard-World-Grid
+                                                                                                               Reward for SafetyGoal
+                                 4                                                    40
+                                                                                                                                       20
+                                                                                                                                                                                                    30
+
+
+
+
+                                                                                                                                                                              Cost for SafetyGoal
+                                 3                                                    30                                               15
+                                                                                                                                                                                                    20
+                                 2                                                    20                                               10
+
+
+                                 1                                                                                                                                                                  10
+                                                                                      10                                               5
+
+
+                                 0                                                    0                                                0                                                            0
+                                     Random   Longpath                                     Random   Longpath                                Easy         Medium      Hard                                Easy   Medium   Hard
+                                              (a) Hazard-World-Grid                                                                                                 (b) SafetyGoal
+
+Figure 3: Experiment results on Hazard-World-Grid and SafetyGoal. random and longpath are two layouts in Hazard-World-Grid.
+Easy, Medium and Hard are three levels in SafetyGoal. There are two objects of each hazard type in Easy, four in Medium and
+six in Hard. Thus, in total, there are 8 hazard objects in Easy, 16 in Medium and 24 in Hard. PPO-Lag refers to the baseline
+method PPO-Lagrangian, and PPO-CP refers to the proposed method, where the suffix CP means cost prediction. From the
+results, the proposed method successfully learns a safer policy with the predicted cost. CPO is proposed for robot locomotion
+tasks. Thus, we do not include it in the first two tasks from Hazard-World-Grid. It is worth noting that in some tasks, the
+proposed method learns safer policies than the baselines using ground-truth costs. This is because the cost prediction module
+may mistakenly think of some safe but risky actions as violating the constraints, resulting in a more conservative policy.
+
+
+satisfaction of constraints on costs and is a strong baseline for robot                                                                            of object. The objects are categorized into {poisonous-hazard,burning-
+locomotion tasks with constraints. For these two methods, we input                                                                                 hazard,radioactive-hazard,bio-hazard}. The goal will be randomly
+the natural language constraints encoded by our encoder LM to the                                                                                  relocated when the robot reaches its location. Similar to Hazard-
+policy network and provide them ground-truth costs to do policy                                                                                    World-Grid, at the beginning of each episode, a natural language
+learning, while our proposed method it does not have access to the                                                                                 constraint will be given to tell the agent which type of object
+ground-truth costs at all. Implementation and hyperparameters of                                                                                   to avoid. The cost will be the total number of constraint viola-
+the baseline methods can be found here 1 . Our method keeps the                                                                                    tions within the episode. An episode terminates when maximum
+default hyperparameter and network details of PPO-Lag but use                                                                                      timesteps are reached (1000 in our experiments). According to the
+the predicted costs to replace the ground-truth costs.                                                                                             number of hazard objects of each type in the environment, we name
+Hazard-World-Grid In Hazard-World-Grid, agents navigate in a                                                                                       the tasks Easy, Medium and Hard, where in Easy, there are 8 hazard
+grid-world to find goal objects {𝑏𝑎𝑙𝑙, 𝑏𝑜𝑥, 𝑘𝑒𝑦}. Reward for reaching                                                                              objects in total, 16 in Medium and 24 in Hard. Threshold 𝑇 for cost
+𝑏𝑎𝑙𝑙 is 1, 2 for 𝑏𝑜𝑥 and 3 for 𝑘𝑒𝑦. The reward will linearly decay                                                                                 prediction is 0.55.
+to 0.1 times its original value w.r.t. timesteps within an episode,
+which means the sooner an object is found, the higher the reward.
+                                                                                                                                                   5.2     General Results
+{𝑙𝑎𝑣𝑎, 𝑤𝑎𝑡𝑒𝑟, 𝑔𝑟𝑎𝑠𝑠} are hazards in the grid-world. In each episode,
+the agent will be told to avoid a specific kind of hazard by a natural                                                                             General results on all five tasks are given in Fig. 3. We report episode
+language constraint. At the end of an episode, the ground-truth                                                                                    reward sum and episode cost sum, respectively to show how the
+cost will be the total number of times that the constraint is violated.                                                                            methods perform. As we use cost prediction (CP) to replace ground-
+An episode terminates when all three goal objects are found, or                                                                                    truth costs, we refer to our method as PPO-CP.
+maximum timesteps (300 in our experiments) are reached. Two                                                                                           From the results, we can see that compared with PPO that does
+layouts in this environment are used in our experiment: (1) random,                                                                                not consider constraints, PPO-CP can learn safe policies like the
+where lava, water and grass tiles are randomly scattered in the                                                                                    baseline methods that require ground-truth costs. This indicates
+grid-world as in Fig. 2 (a); (2) longpath, where the grid-world is                                                                                 that our cost prediction module is very effective and helpful for
+filled with lava, except for a single safe path with many turns and                                                                                learning safe policies. In some tasks, PPO-CP even learns safer
+no hazards on it. The difficulty of longpath is that the agent can                                                                                 policies than the baseline methods, which may be because the cost
+only walk on the path if the constraint is to avoid lava. while in                                                                                 prediction module mistakenly thinks of some risky but potentially
+any other case, it can behave freely. Threshold 𝑇 for cost prediction                                                                              safe actions as violating the constraints (like walking on the edge
+is 0.4 in this environment.                                                                                                                        of the cliff). Thus, the policy is trained to avoid these risky actions,
+SafetyGoal In SafetyGoal, agents control a robot to navigate a 2D                                                                                  resulting in fewer constraint violations and lower costs. PPO-CP
+plane to reach the Goal’s location while circumventing a given type                                                                                and PPO-Lag achieve even higher rewards than PPO on Random in
+                                                                                                                                                   Hazard-World-Grid. This is because they always tend to find the
+1 https://github.com/PKU-Alignment/Safe-Policy-Optimization                                                                                        fastest way to obtain all the goal objects to finish the episode, as
+                   GPT + BERT + Predicted Cost (Ours, PPO-CP)             GPT + LSTM + Predicted Cost                      PPO
+                   GPT + BERT + Ground-truth Cost (PPO-Lag)               GPT + LSTM + Ground-truth Cost
+
+
+
+
+                                                                                                              Precision Recall    F1-score
+       Reward                                             Cost                                        LSTM     12.3%     99.3%     21.9%
+                                                                                                      BERT     89.8%     98.0%     93.7%
+
+
+
+
+                           Training Iterations                       Training Iterations
+
+                                  (a)                                      (b)                                           (c)
+
+
+Figure 4: (a) gives the result of episode reward and (b) gives the result of episode cost as training goes on. The labels are in
+the format of ’decoder model + encoder model + cost type’. For example, ’GPT + BERT + Predicted Cost’ stands for using GPT
+as decoder LM, BERT as encoder LM and predicted cost from our cost prediction module for policy learning. ’GPT + BERT +
+Predicted Cost’ is our proposed method PPO-CP, and ’GPT + BERT + Ground-truth Cost’ is PPO-Lag in Fig. 3. (c) gives the cost
+prediction results when using BERT and LSTM as the encoder model. The cost prediction with LSTM as encoder has very poor
+performance, which leads to the collapsed training of ’GPT + LSTM + Predicted Cost’ in (a) and (b).
+
+
+they will violate the constraints less if the episode ends fast. And             because we need to compare the similarity between the natural
+the reward will decay within an episode. Therefore, PPO-CP and                   language constraint and text-based observation. In this section, we
+PPO-Lag can achieve even higher rewards than PPO.                                ablate the encoder LM BERT from the proposed method and replace
+                                                                                 it with a long-short-term-memory (LSTM) network. We remain the
+5.3    Ablation Study                                                            other modules of the proposed method, such as GPT as decoder LM,
+5.3.1 Ablation on Contrastive Loss. To see the effectiveness of fine-            and run an ablation study on layout random in Hazard-World-Grid.
+tuning BERT (encoder LM) for cost prediction, we run the proposed                As the randomly initialized LSTM cannot tell the difference among
+method and compare the cost prediction results on layout random                  constraints, we also pre-train it with the contrastive loss for 10
+in Hazard-World-Grid with and without fine-tuning. The encoder                   iterations to make a fair comparison. The ablation results are given
+LM is fine-tuned for 10 iterations. In each iteration, the encoder LM            in Fig. 4. Labels are in the format of ’decoder model + encoder model
+is trained with 128 randomly sampled condensed constraint pairs                  + cost type’. For example, ’GPT + BERT + Predicted Cost’ stands for
+to minimize the contrastive loss in Eq. 2.                                       using GPT as decoder LM, BERT as encoder LM and predicted cost
+    The cost prediction results are given in Table 1. From the results,          from our cost prediction module for policy learning. The decoder
+we can see that our cost prediction module can predict costs accu-               LM extracts semantic meaning from the constraints and is adopted
+rately. Especially when the encoder LM is fine-tuned, the F1-score of            in all methods except PPO, because it ignores the constraints. It
+cost prediction is improved by 6.7%. And it is worth noting that the             is worth noting although PPO-Lag has access to the ground-truth
+Recall (true positive rate) is improved by a large margin. As a result,          cost, it still needs an Encoder LM to encode the natural language
+the cost prediction module is much more sensitive to constraint                  constraints, so that the constraints can be put into and constrain
+violations, and the learned policy will follow the constraints better.           the policy network.
+Table 1: Ablation study on contrastive loss in Eq. 2 to fine-                       From Fig. 4(c), we can see the cost prediction module performs
+tune encoder LM. Results show that contrastive loss can ef-                      poorly with LSTM as an encoder. Consequently, training of ’GPT +
+fectively improve cost prediction results, especially recall                     LSTM + Predicted Cost’ collapses in Fig. 4(a) and (b). But when the
+(true positive rate).                                                            ground-truth cost is available, ’GPT + LSTM + Ground-truth Cost’ has
+                                                                                 very strong performance, which means the LSTM network is able
+                                                                                 to encode natural language constraint to constrain the policy, but
+                                   Precision     Recall   F1-score               unable to extract semantic meaning of constraints and observations
+                 w contrastive       89.8%       98.0%     93.7%                 to do cost prediction.
+                w/o contrastive      87.4%       86.6%     87.0%
+                                                                                 5.3.3 Ablation on Decoder LM. Our proposed method adopts GPT
+                                                                                 as a decoder LM to condense semantic meaning and eliminate ambi-
+5.3.2 Ablation on Encoder LM. BERT is pre-trained on large text                  guity within the natural language constraints. To see the efficacy of
+corpora so that it can encode natural language input according to                the decoder LM, we ablate the decoder LM and use the encoder LM
+their semantic meaning. This is essential for our cost prediction                to directly encode original natural language constraints (such as
+                       w decoder LM                        Direct Prompting (GPT-3)
+                       w/o decoder LM                      Direct Prompting (GPT-4)
+
+
+                                                                                                              Precision Recall F1-score
+                                                                                                     with
+                                                                                                               78.8%      98.9%     87.7%
+                                                                                                   decoder
+    Reward
+                                               Cost                                                  w/o
+                                                                                                               72.9%      46.3%     56.6%
+                                                                                                   decoder
+                                                                                                   GPT-3       34.9%      53.7%     42.3%
+                                                                                                   GPT-4       50.7%      86.0%     63.8%
+
+
+                        Iteration                                      Iteration
+
+                     (a) Reward                                   (b) Cost                                   (c) Cost prediction
+
+Figure 5: Experiment results for ablating decoder LM and directly prompting GPT for cost prediction. w decoder LM is our
+proposed method, w/o decoder LM removes the decoder LM and keeps the other modules such as cost prediction, Direct
+Prompting GPT-3 removes our cost prediction module and query GPT-3 with the constraint and text-based observation for
+cost prediction, and Direct Prompting GPT-4 replace GPT-3 with GPT-4 in Direct Prompting GPT-3. (a) gives the results of the
+episode reward. (b) is the results of episode cost and (c) gives the cost prediction results. The proposed method achieves the best
+performance on all three metrics while Directly prompting GPT-3 to perform the worst.
+
+
+the ones given in Fig. 2(b)). Experiments are run on layout longpath          of GPT-3, GPT-4 has a much stronger ability in causality. In our
+in Hazard-World-Grid. We compare episode reward, episode cost                 experiments, Directly prompting GPT-4 also results in better per-
+and cost prediction results between the original method and the               formance than GPT-3. With GPT-4 predicted costs, the policy can
+ablation.                                                                     gradually learn to get high rewards, but it is still worse than using
+   From the results in Fig. 5, we can see after ablating decoder LM           predicted cost by our cost prediction module. It is worth noting
+from the cost prediction modules, our method (w decoder LM) and               that directly prompting GPT-4 leads to a large improvement in the
+w/o decoder LM achieve similar episodes reward, but our method                Recall rate, which means the number of False Negative predictions
+violates the constraints much less than the ablation. The average             is dramatically reduced. As a result, directly prompting GPT-4 can
+constraint violation for w decoder LM is 3.2 per episode, while w/o           also learn a safe policy compared to directly prompting GPT-3.
+decoder LM violates the constraints 6.8 times per episode on aver-
+age. And we can see from Fig. 5(c) that the cost prediction results           6    CONCLUSION AND FUTURE WORK
+deteriorate dramatically, which demonstrates that it is necessary
+                                                                              In this paper, we study the problem of safe RL with free-form nat-
+to adopt decoder LM to condense semantic meaning and eliminate
+                                                                              ural language constraints and propose to use pre-trained LMs for
+ambiguity in the natural language constraints.
+                                                                              cost prediction. A decoder LM and an encoder LM are adopted to
+5.3.4 Direct Prompting. Through the acquisition of vast amounts               process, comprehend and encode the constraints, which is later
+of data, pre-trained large LMs, such as GPT [25], Llama 2 [33], and           used to predict costs. Compared to previous methods dealing with
+PaLM 2 [3], have demonstrated remarkable potential in achieving               safe RL with natural language constraints, our proposed method
+human-level intelligence. These models have strong capabilities in            does not require ground-truth costs, can handle much more free-
+text generation tasks such as question answering. So, we directly             form constraints and does not need to learn an extra module to
+prompt the large LMs with the text-based observation and natural              model entities within the environments. Empirically, we evaluate
+language constraints and ask them to determine whether the con-               the proposed method on grid-world navigation tasks and robot
+straints are violated. Then, we use the predicted costs by large LMs          control tasks against baseline methods that require ground-truth
+to train policies on layout longpath and compare experiment results           costs. Experiment results demonstrate that our method can accu-
+with the proposed method. The prompts we use are given in the                 rately predict costs and learn safe policies that enable agents to
+supplementary material. The pre-trained models we consider in this            accomplish given tasks while obeying the constraints. Extensive
+study are GPT-3.5 [4] and GPT-4 [25], which are state-of-the-art              ablation studies are also conducted to show the efficacy of each
+pre-trained large LMs.                                                        module in our method.
+   The results for direct prompting are given in Fig. 5. Compared                In the future, besides learning safe policies with pre-trained
+to other methods, the results show that Directly prompting GPT-3              LMs, we will also explore how to make agents’ decisions more
+performs poorly on all metrics, achieving the lowest reward and               interpretable through pre-trained LMs, which is crucial for safety-
+highest cost and struggling with cost prediction. As a successor              critical tasks such as autonomous driving.
+REFERENCES                                                                                  [23] Yasar Sinan Nasir and Dongning Guo. 2019. Multi-agent deep reinforcement
+ [1] Joshua Achiam, David Held, Aviv Tamar, and Pieter Abbeel. 2017. Constrained                 learning for dynamic power allocation in wireless networks. IEEE Journal on
+     policy optimization. In International conference on machine learning. PMLR, 22–             Selected Areas in Communications 37, 10 (2019), 2239–2250.
+     31.                                                                                    [24] Kolby Nottingham, Prithviraj Ammanabrolu, Alane Suhr, Yejin Choi, Hannaneh
+ [2] Eitan Altman. 1999. Constrained Markov decision processes. Vol. 7. CRC press.               Hajishirzi, Sameer Singh, and Roy Fox. 2023. Do embodied agents dream of pixe-
+ [3] Rohan Anil, Andrew M Dai, Orhan Firat, Melvin Johnson, Dmitry Lepikhin,                     lated sheep?: Embodied decision making using language guided world modelling.
+     Alexandre Passos, Siamak Shakeri, Emanuel Taropa, Paige Bailey, Zhifeng Chen,               arXiv preprint arXiv:2301.12050 (2023).
+     et al. 2023. Palm 2 technical report. arXiv preprint arXiv:2305.10403 (2023).          [25] OpenAI. 2023. GPT-4 Technical Report. arXiv preprint arXiv:2303.08774 (2023).
+                                                                                            [26] Julien Perolat, Bart De Vylder, Daniel Hennes, Eugene Tarassov, Florian Strub,
+ [4] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan,
+                                                                                                 Vincent de Boer, Paul Muller, Jerome T Connor, Neil Burch, Thomas Anthony, et al.
+     Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda
+                                                                                                 2022. Mastering the game of Stratego with model-free multiagent reinforcement
+     Askell, et al. 2020. Language models are few-shot learners. Advances in neural
+                                                                                                 learning. Science 378, 6623 (2022), 990–996.
+     information processing systems 33 (2020), 1877–1901.
+                                                                                            [27] Bharat Prakash, Nicholas Waytowich, Ashwinkumar Ganesan, Tim Oates, and
+ [5] Roberto Brunelli. 2009. Template matching techniques in computer vision: theory
+                                                                                                 Tinoosh Mohsenin. 2020. Guiding safe reinforcement learning policies using
+     and practice. John Wiley & Sons.
+                                                                                                 structured language constraints. UMBC Student Collection (2020).
+ [6] Maxime Chevalier-Boisvert, Lucas Willems, and Suman Pal. 2018. Minimalistic
+                                                                                            [28] Alex Ray, Joshua Achiam, and Dario Amodei. 2019. Benchmarking safe explo-
+     gridworld environment for openai gym. (2018).
+                                                                                                 ration in deep reinforcement learning. arXiv preprint arXiv:1910.01708 7, 1 (2019),
+ [7] Marc-Alexandre Côté, Akos Kádár, Xingdi Yuan, Ben Kybartas, Tavian Barnes,
+                                                                                                 2.
+     Emery Fine, James Moore, Matthew Hausknecht, Layla El Asri, Mahmoud Adada,
+                                                                                            [29] Nils Reimers and Iryna Gurevych. 2019. Sentence-BERT: Sentence Embeddings
+     et al. 2019. Textworld: A learning environment for text-based games. In Computer
+                                                                                                 using Siamese BERT-Networks. In Proceedings of the 2019 Conference on Em-
+     Games: 7th Workshop, CGW 2018, Held in Conjunction with the 27th International
+                                                                                                 pirical Methods in Natural Language Processing. Association for Computational
+     Conference on Artificial Intelligence, IJCAI 2018, Stockholm, Sweden, July 13, 2018,
+                                                                                                 Linguistics. https://arxiv.org/abs/1908.10084
+     Revised Selected Papers 7. Springer, 41–75.
+                                                                                            [30] Nils Reimers and Iryna Gurevych. 2019. Sentence-bert: Sentence embeddings
+ [8] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2018. Bert:
+                                                                                                 using siamese bert-networks. arXiv preprint arXiv:1908.10084 (2019).
+     Pre-training of deep bidirectional transformers for language understanding. arXiv
+                                                                                            [31] John Schulman, Philipp Moritz, Sergey Levine, Michael Jordan, and Pieter Abbeel.
+     preprint arXiv:1810.04805 (2018).
+                                                                                                 2015. High-dimensional continuous control using generalized advantage estima-
+ [9] Yali Du, Lei Han, Meng Fang, Ji Liu, Tianhong Dai, and Dacheng Tao. 2019.
+                                                                                                 tion. arXiv preprint arXiv:1506.02438 (2015).
+     Liir: Learning individual intrinsic reward in multi-agent reinforcement learning.
+                                                                                            [32] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
+     Advances in Neural Information Processing Systems 32 (2019).
+                                                                                                 2017. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347
+[10] Yuqing Du, Olivia Watkins, Zihan Wang, Cédric Colas, Trevor Darrell, Pieter
+                                                                                                 (2017).
+     Abbeel, Abhishek Gupta, and Jacob Andreas. 2023. Guiding pretraining in rein-
+                                                                                            [33] Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yas-
+     forcement learning with large language models. arXiv preprint arXiv:2302.06692
+                                                                                                 mine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhos-
+     (2023).
+                                                                                                 ale, et al. 2023. Llama 2: Open foundation and fine-tuned chat models. arXiv
+[11] Javier Garcıa and Fernando Fernández. 2015. A comprehensive survey on safe
+                                                                                                 preprint arXiv:2307.09288 (2023).
+     reinforcement learning. Journal of Machine Learning Research 16, 1 (2015), 1437–
+                                                                                            [34] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+     1480.
+                                                                                                 Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all
+[12] Prasoon Goyal, Scott Niekum, and Raymond J Mooney. 2019. Using natu-
+                                                                                                 you need. Advances in neural information processing systems 30 (2017).
+     ral language for reward shaping in reinforcement learning. arXiv preprint
+                                                                                            [35] Oriol Vinyals, Igor Babuschkin, Wojciech M Czarnecki, Michaël Mathieu, An-
+     arXiv:1903.02020 (2019).
+                                                                                                 drew Dudzik, Junyoung Chung, David H Choi, Richard Powell, Timo Ewalds,
+[13] Shangding Gu, Jakub Grudzien Kuba, Yuanpei Chen, Yali Du, Long Yang, Alois
+                                                                                                 Petko Georgiev, et al. 2019. Grandmaster level in StarCraft II using multi-agent
+     Knoll, and Yaodong Yang. 2023. Safe multi-agent reinforcement learning for
+                                                                                                 reinforcement learning. Nature 575, 7782 (2019), 350–354.
+     multi-robot control. Artificial Intelligence 319 (2023), 103905.
+                                                                                            [36] Guanzhi Wang, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu,
+[14] Shangding Gu, Long Yang, Yali Du, Guang Chen, Florian Walter, Jun Wang,
+                                                                                                 Linxi Fan, and Anima Anandkumar. 2023. Voyager: An open-ended embodied
+     Yaodong Yang, and Alois Knoll. 2022. A review of safe reinforcement learning:
+                                                                                                 agent with large language models. arXiv preprint arXiv:2305.16291 (2023).
+     Methods, theory and applications. arXiv preprint arXiv:2205.10330 (2022).
+                                                                                            [37] Lijun Wu, Fei Tian, Tao Qin, Jianhuang Lai, and Tie-Yan Liu. 2018. A study
+[15] Ji He, Jianshu Chen, Xiaodong He, Jianfeng Gao, Lihong Li, Li Deng, and Mari
+                                                                                                 of reinforcement learning for neural machine translation. arXiv preprint
+     Ostendorf. 2015. Deep reinforcement learning with a natural language action
+                                                                                                 arXiv:1808.08866 (2018).
+     space. arXiv preprint arXiv:1511.04636 (2015).
+                                                                                            [38] Long Yang, Jiaming Ji, Juntao Dai, Linrui Zhang, Binbin Zhou, Pengfei Li, Yaodong
+[16] MD Zakir Hossain, Ferdous Sohel, Mohd Fairuz Shiratuddin, and Hamid Laga.
+                                                                                                 Yang, and Gang Pan. 2022. Constrained update projection approach to safe policy
+     2019. A comprehensive survey of deep learning for image captioning. ACM
+                                                                                                 optimization. Advances in Neural Information Processing Systems 35 (2022), 9111–
+     Computing Surveys (CsUR) 51, 6 (2019), 1–36.
+                                                                                                 9124.
+[17] Hengyuan Hu and Dorsa Sadigh. 2023. Language instructed reinforcement
+                                                                                            [39] Tsung-Yen Yang, Michael Y Hu, Yinlam Chow, Peter J Ramadge, and Karthik
+     learning for human-ai coordination. arXiv preprint arXiv:2304.07297 (2023).
+                                                                                                 Narasimhan. 2021. Safe reinforcement learning with natural language constraints.
+[18] Jiaming Ji, Borong Zhang, Xuehai Pan, Jiayi Zhou, Juntao Dai, and Yaodong
+                                                                                                 Advances in Neural Information Processing Systems 34 (2021), 13794–13808.
+     Yang. 2023. Safety-Gymnasium. https://github.com/PKU-Alignment/safety-
+                                                                                            [40] Tsung-Yen Yang, Justinian Rosca, Karthik Narasimhan, and Peter J Ramadge. 2020.
+     gymnasium. GitHub repository (2023).
+                                                                                                 Projection-based constrained policy optimization. arXiv preprint arXiv:2010.03152
+[19] Russell Kaplan, Christopher Sauer, and Alexander Sosa. 2017. Beating atari with
+                                                                                                 (2020).
+     natural language guided reinforcement learning. arXiv preprint arXiv:1704.05539
+                                                                                            [41] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+     (2017).
+                                                                                                 and Yuan Cao. 2022. React: Synergizing reasoning and acting in language models.
+[20] Elia Kaufmann, Leonard Bauersfeld, Antonio Loquercio, Matthias Müller, Vladlen
+                                                                                                 arXiv preprint arXiv:2210.03629 (2022).
+     Koltun, and Davide Scaramuzza. 2023. Champion-level drone racing using deep
+                                                                                            [42] Hongxin Zhang, Weihua Du, Jiaming Shan, Qinhong Zhou, Yilun Du, Joshua B
+     reinforcement learning. Nature 620, 7976 (2023), 982–987.
+                                                                                                 Tenenbaum, Tianmin Shu, and Chuang Gan. 2023. Building cooperative embodied
+[21] Ilias Kazantzidis, Timothy J Norman, Yali Du, and Christopher T Freeman. 2022.
+                                                                                                 agents modularly with large language models. arXiv preprint arXiv:2307.02485
+     How to Train Your Agent: Active Learning from Human Preferences and Justifi-
+                                                                                                 (2023).
+     cations in Safety-critical Environments. In Proceedings of the 21st International
+                                                                                            [43] Stephan Zheng, Alexander Trott, Sunil Srinivasa, David C Parkes, and Richard
+     Conference on Autonomous Agents and Multiagent Systems. 1654–1656.
+                                                                                                 Socher. 2022. The AI Economist: Taxation policy design via two-level deep
+[22] B Ravi Kiran, Ibrahim Sobh, Victor Talpaert, Patrick Mannion, Ahmad A Al Sallab,
+                                                                                                 multiagent reinforcement learning. Science advances 8, 18 (2022), eabk2607.
+     Senthil Yogamani, and Patrick Pérez. 2021. Deep reinforcement learning for
+                                                                                            [44] Daniel M Ziegler, Nisan Stiennon, Jeffrey Wu, Tom B Brown, Alec Radford, Dario
+     autonomous driving: A survey. IEEE Transactions on Intelligent Transportation
+                                                                                                 Amodei, Paul Christiano, and c Geoffrey Irving. 2019. Fine-tuning language
+     Systems 23, 6 (2021), 4909–4926.
+                                                                                                 models from human preferences. arXiv preprint arXiv:1909.08593 (2019).
+

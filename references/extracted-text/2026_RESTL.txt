@@ -1,0 +1,524 @@
+                                        The Fortieth AAAI Conference on Artificial Intelligence (AAAI-26)
+
+
+
+
+   RESTL: Reinforcement Learning Guided by Multi-Aspect Rewards for Signal
+                      Temporal Logic Transformation
+         Yue Fang1,2 , Zhi Jin1,2 * , Jie An3,4 * , Hongshen Chen5 , Xiaohong Chen6 , Naijun Zhan1,2
+                                   1
+                                     School of Computer Science, Peking University, Beijing, China
+                         2
+                             Key Laboratory of High Confidence Software Technologies (PKU), MOE, China
+                                  3
+                                    National Key Laboratory of Space Integrated Information System,
+                                  Institute of Software Chinese Academy of Sciences, Beijing, China
+                                      4
+                                        University of Chinese Academy of Sciences, Beijing, China
+                                                         5
+                                                           JD.com, Beijing, China
+                                            6
+                                              East China Normal University, Shanghai, China
+                                       y.fang@stu.pku.edu.cn, zhijin@pku.edu.cn, anjie@iscas.ac.cn
+
+
+                              Abstract                                       the requirements regarding the timing constraints of CPS
+                                                                             are typically specified informally in domain documentation
+  Signal Temporal Logic (STL) is a powerful formal language                  written in natural language by domain experts. The lack of
+  for specifying real-time specifications of Cyber-Physical Sys-
+  tems (CPS). Transforming specifications written in natural
+                                                                             an effective method for transforming informal requirements
+  language into STL formulas automatically has attracted in-                 into corresponding formal STL specifications has become a
+  creasing attention. Existing rule-based methods depend heav-               critical challenge, limiting its broader adoption in real-world
+  ily on rigid pattern matching and domain-specific knowl-                   CPS design and analysis.
+  edge, limiting their generalizability and scalability. Recently,              Manually writing accurate STL formulas is a burdensome
+  Supervised Fine-Tuning (SFT) of large language models                      task for domain experts because it is time-consuming and
+  (LLMs) has been successfully applied to transform natural
+  language into STL. However, the lack of fine-grained supervi-
+                                                                             error-prone. Consequently, many studies have explored au-
+  sion on semantic fidelity, atomic proposition correctness, and             tomatic methods for transforming natural language descrip-
+  formula readability often leads SFT-based methods to pro-                  tions into STL specifications to alleviate this burden and
+  duce formulas misaligned with the intended meaning. To ad-                 improve accuracy. Among existing methods, rule-based and
+  dress these issues, we propose RESTL, a reinforcement learn-               pattern-based approaches are widely adopted. For example,
+  ing (RL)-based framework for the transformation from nat-                  fixed patterns have been used to transform natural language
+  ural language to STL. RESTL introduces multiple indepen-                   into intermediate forms in previous work (Lignos et al. 2015;
+  dently trained reward models that provide fine-grained, multi-             Ghosh et al. 2016). Then, with a set of manually designed
+  faceted feedback from four perspectives, i.e., atomic propo-               rules, the intermediate forms are further transformed into
+  sition consistency, semantic alignment, formula succinctness,              temporal logic formulas. These methods rely on meticu-
+  and symbol matching. These reward models are trained with
+  a curriculum learning strategy to improve their feedback ac-
+                                                                             lously crafted templates, which require substantial expert ef-
+  curacy, and their outputs are aggregated into a unified signal             fort and steep learning curves (Kulkarni, Fisher, and Myers
+  that guides the optimization of the STL generator via Proxi-               2013). Moreover, they are typically limited to highly restric-
+  mal Policy Optimization (PPO). Experimental results demon-                 tive and structured natural language expressions that strictly
+  strate that RESTL significantly outperforms state-of-the-art               match predefined patterns.
+  methods in both automatic metrics and human evaluations.                      Advancements in natural language processing (NLP), par-
+                                                                             ticularly the impressive capabilities demonstrated by large
+                        Introduction                                         language models (LLMs), have sparked a strong interest in
+                                                                             employing these techniques for transforming natural lan-
+Signal Temporal Logic (STL) (Maler and Ničković 2004),                     guage into STL. Recent techniques have explored differ-
+an extension of classical Temporal Logic (TL) (Pnueli                        ent strategies for tackling the Natural Language to STL
+1977), is currently a well-known specification language for                  (NL-to-STL) transformation problem. For example, Deep-
+formally specifying requirements of cyber-physical systems                   STL (He et al. 2022) uses grammar-guided data synthesis
+(CPS) with dense-time real-valued signals. STL has been ap-                  to train transformer-based models that learn to map natural
+plied to critical tasks such as model checking and runtime                   language inputs to STL formulas. NL2TL (Chen et al. 2023)
+monitoring of CPS in both academia and industry (Maier-                      is a method based on Supervised Fine-Tuning (SFT) that
+hofer et al. 2020; Tellex et al. 2020). However, most of                     constructs synthetic NL–STL pairs and performs instruction
+    * Corresponding author                                                   tuning on LLMs, relying solely on paired data as supervi-
+Copyright © 2026, Association for the Advancement of Artificial              sion to allow the generation of STL formulas from natural
+Intelligence (www.aaai.org). All rights reserved.                            language instructions. KGST (Fang et al. 2025a) is a two-
+
+
+                                                                     30682
+   Case 1 – Temporal Semantic Error                                               plementary reward metrics to provide fine-grained super-
+   Natural Language Description:                                                  vision from multiple perspectives: (1) Atomic Proposition
+                                                                                  Alignment, which checks whether all key variables are ac-
+   During 10–150 time units, if signal z1 is less than 0.2, then signal
+   z2 remains less than 0.3 from 1 to 3 time units later.                         curately captured; (2) Templated Natural Language Simi-
+                                                                                  larity, which evaluates semantic alignment by focusing on
+   LLaMA 3-8B (fine-tuned):
+                                                                                  semantic content and logical consistency; (3) Formula Suc-
+   G[10,150] ((z1 < 0.2) → F[1,3] (z2 < 0.3))
+                                                                                  cinctness, which measures the difference between the length
+   Ground Truth:                                                                  of the output formula and its ground truth to improve suc-
+   G[10,150] ((z1 < 0.2) → G[1,3] (z2 < 0.3))                                     cinct yet faithful expressions. Normally, a smaller differ-
+   Case 2 – Atomic Proposition Error
+                                                                                  ence is better. and (4) STL-level Similarity, which measures
+                                                                                  the similarity between the generated and reference formu-
+   Natural Language Description:
+                                                                                  las, providing global supervision for the formula generation.
+   If the rear radar detects an obstacle and the reverse gear is en-              Each metric corresponds to a lightweight reward model,
+   gaged, then the rear brake signal brake rear should be acti-
+   vated within 2 seconds.
+                                                                                  which is trained via preference learning on multiple gener-
+                                                                                  ated STL outputs to provide evaluative feedback for guid-
+   LLaMA 3-8B (fine-tuned):
+                                                                                  ing the generator. To improve learning accuracy, we em-
+   G[0,T ] (radar rear.detect obstacle →
+                                                                                  ploy a curriculum learning strategy that gradually increases
+   F[0,2] (brake rear = 1))
+                                                                                  task difficulty for each reward model. Finally, the outputs
+   Ground Truth:                                                                  of these reward models are aggregated into a unified scalar
+   G[0,T ] ((radar rear.detect obstacle∧gear rev = 1)                             signal to optimize the STL generator using Proximal Pol-
+   → F[0,2] (brake rear = 1))                                                     icy Optimization (PPO) (Schulman et al. 2017). During this
+   Case 3 – Formula Redundancy                                                    optimization, we incorporate a Kullback-Leibler (KL) regu-
+                                                                                  larization strategy to constrain drastic policy updates while
+   Natural Language Description:
+                                                                                  maximizing the reward and enhancing training stability.
+   The temperature T is consistently above 22°C during the first 2
+   hours and then rises above 30°C sometime between 2 and 4 hours.
+                                                                                     Experimental results show that our RESTL framework
+                                                                                  significantly outperforms baseline methods in both auto-
+   LLaMA 3-8B (fine-tuned):
+                                                                                  matic and human evaluations. It achieves higher accuracy
+   (G[0,120] (T > 22) ∧ F[0,240] (T > 30) ∧ G[120,240] (T > 30))                  in transforming natural language descriptions into STL for-
+   Ground Truth:                                                                  mulas, with better semantic alignment and readability.
+   G[0,2] (T > 22) ∧ F[2,4] (T > 30)                                                 In summary, our main contributions include:
+                                                                                   • We propose RESTL, the first reinforcement learning
+Table 1: Examples of common errors in NL-to-STL transfor-                            framework for transforming natural language into STL.
+mation by the fine-tuned LLM. Underlined parts of formu-                             RESTL learns from multiple dimensions of feedback, in-
+las indicate incorrect outputs in LLaMA3 and correct ones                            cluding atomic proposition consistency, semantic align-
+in the ground truth.                                                                 ment, formula succinctness, and symbol matching.
+                                                                                   • We introduce a curriculum learning strategy to train each
+stage method that first fine-tunes an LLM on NL–STL pairs                            reward model from easier to harder examples, improving
+and then refines its outputs using external knowledge.                               the accuracy of the reward and training stability.
+   While current methods have made notable progress in au-                         • Experimental results on two datasets show that RESTL
+tomating the transformation from natural language to STL,                            outperforms baselines in both automatic and human eval-
+their accuracy in generating correct STL formulas remains                            uations.
+insufficient. Table 1 illustrates representative examples of
+common errors made by a fine-tuned LLaMA 3-8B model
+compared to the ground-truth. Specifically, Case 1 shows a                                             Related Work
+temporal semantic error where the model fails to capture the                      In this section, we present the most relevant related work,
+meaning of “remains”, leading to the incorrect temporal op-                       more details can be found in (Fang et al. 2025b).
+erator “F”. Case 2 reflects atomic proposition misalignment,                         As an extension of TL that incorporates real-valued
+as the model omits the condition “reverse gear is engaged”.                       dense-time signals, STL has gained widespread use in
+Case 3 illustrates formula redundancy, as the model gener-                        both academia and industry to meet the requirements of
+ates unnecessary temporal constraints. These issues reflect                       CPS (Madsen et al. 2018). Consequently, numerous efforts
+the limitations of existing SFT-based approaches, which of-                       have been made to transform natural language into STL. For
+ten rely on coarse-grained supervision and static training ob-                    example, DeepSTL (He et al. 2022) trains a Transformer
+jectives, providing limited guidance for learning the precise                     model using grammar-based synthetic data. Although this
+semantic information required for accurate STL generation.                        approach ensures formal consistency, it heavily relies on
+   To address the limitations arising from coarse-grained                         handcrafted rules and artificial data, which fail to capture
+supervision, we propose RESTL, a multi-aspect reward-                             the diversity in real-world natural language. In addition,
+guided reinforcement learning framework for transforming                          NL2TL (Chen et al. 2023) mitigates the reliance on rule de-
+natural language into STL. RESTL introduces four com-                             sign by fine-tuning a T5 model on NL–TL pairs generated
+
+
+                                                                          30683
+by LLMs. KGST (Fang et al. 2025a) uses a generate-then-
+refine approach by first fine-tuning LLMs to generate initial
+STL formulas, then refining them with external knowledge.
+However, as supervised fine-tuning methods, both NL2TL
+and KGST optimize fixed training objectives, lacking fine-
+grained feedback and struggling to accurately represent the
+semantics of the input natural language. To address these
+limitations, we propose RESTL, a reinforcement learning-
+based framework for NL-to-STL transformation that incor-
+porates multi-aspect supervision and curriculum-guided re-
+ward modeling to enhance both the accuracy and readability
+of generated STL formulas.
+
+                         Preliminary
+STL is a widely used formalism for specifying the real-time
+properties of CPS, such as autonomous vehicles, robotic sys-
+                                                                           Figure 1: The RESTL framework. First, initialize the STL
+tems, etc (Maierhofer et al. 2020; Tellex et al. 2020).
+                                                                           generator with NL–STL pairs. Then, natural language inputs
+   Let R denote the set of real numbers, and let R≥0 and R+                with both reference and generated STL formulas are used to
+denote the sets of non-negative and positive real numbers,                 train multi-aspect reward models based on curriculum learn-
+respectively. We denote N≥0 and N+ the set of non-negative                 ing. Finally, the STL generator is optimized using PPO.
+integers and the set of positive integers, respectively.
+   Given a time horizon T ∈ R+ and a signal dimension d ∈
+N+ , a d-dimensional signal is a function v : [0, T ] → Rd .
+For any time t ∈ [0, T ], v(t) ∈ Rd represents the values of d                                      Method
+signal variables at time t. Each component may correspond                  In this section, we present RESTL, a reinforcement learn-
+to physical quantities such as velocity, RPM, or accelera-                 ing framework for transforming natural language into STL.
+tion. In this paper, we fix a set X of such variables and refer            RESTL integrates four distinct reward models trained
+to one-dimensional signals as signal variables.                            through curriculum learning to provide multi-aspect feed-
+                                                                           back, which is then aggregated to guide the optimization of
+Definition 1 (STL Syntax) STL formulas φ are con-
+                                                                           the STL generator using the PPO algorithm, as illustrated
+structed from atomic propositions α as follows:
+                                                                           in Figure 1. First, we fine-tune a LLaMA 3-8B model on a
+   α ::= f (x1 , . . . , xK ) > 0                                          dataset of NL-STL pairs to obtain an initial STL generator.
+                                                                           Second, for each metric, we train a separate reward model
+   φ ::= α | ⊥ | ¬φ | φ1 ∧ φ2 | GI φ | FI φ | φ1 UI φ2
+                                                                           using preference-based paired examples and apply a curricu-
+Here, α represents atomic proposition, where f is a real-                  lum learning strategy to improve the accuracy of the reward
+valued function over variables x1 , . . . , xK ∈ X. I =                    model feedback. Finally, the reward outputs from all mod-
+[l, u] ⊆ R≥0 is a closed interval with l < u, and l, u ∈ N≥0 .             els are aggregated into a unified scalar signal that provides
+The temporal operators G, F, and U denote “always”,                        feedback for PPO to optimize the STL generator.
+“eventually”, and “until” respectively.
+                                                                           STL Generator Initialization
+  The Boolean semantics of an STL formula are evaluated
+over a signal v at time t as follows:                                      We fine-tune the LLaMA 3-8B model on a dataset of NL-
+                                                                           STL pairs to obtain an initial STL generator capable of
+(v, t) |= α              ⇔ f (v(t)) ≥ 0                                    transforming natural language into STL. Each pair includes
+(v, t) |= ¬φ             ⇔ (v, t) ̸|= φ                                    an Instruction guiding the transformation, an Input
+(v, t) |= φ1 ∧ φ2        ⇔ (v, t) |= φ1 ∧ (v, t) |= φ2                     NL description, and the target Output STL formula. The
+                                                                           model learns to generate the STL formula from the input
+(v, t) |= G[l,u] φ       ⇔   ∀t′ ∈ [t + l, t + u]. (v, t′ ) |= φ           and instruction.
+(v, t) |= F[l,u] φ       ⇔   ∃t′ ∈ [t + l, t + u]. (v, t′ ) |= φ              After training, the model serves as the initial STL genera-
+                                                                           tor with basic NL-to-STL transformation capabilities, ready
+(v, t) |= φ1 U[l,u] φ2   ⇔   ∃t′ ∈ [t + l, t + u]. (v, t′ ) |= φ2
+                                                                           for further fine-tuning on downstream tasks.
+                              ∧ ∀t′′ ∈ [t, t′ ]. (v, t′′ ) |= φ1
+                                                                           Multi-aspect Metric
+   For example, considering one of safety requirements of a
+vehicle’s transmission controller (Ernst et al. 2022): “During             To address common issues in transforming natural language
+the next 21 time units, whenever the velocity exceeds 40, the              into STL formulas using LLMs, we design four reward func-
+RPM must drop below 2500 within four time units.”, it can                  tions as reinforcement learning feedback as shown in Fig-
+be expressed as an STL formula over real-valued signals as                 ure 2. These reward functions guide the model toward gen-
+follows: G[0,21] (velocity > 40 → F[1,4] (RPM < 2500)).                    erating more accurate STL formulas.
+
+
+                                                                   30684
+Figure 2: Design of the four reward metrics ma , mt , ml , and ms . We present the evaluation process of the same natural language
+input and its corresponding generated STL formula under different reward metrics.
+
+
+Atomic Proposition Alignment A common issue in NL-                           STL-level Similarity To measure the overall similarity
+to-STL transformation is the incorrect identification or omis-               between the generated STL formula and the ground truth,
+sion of atomic propositions, which are the fundamental vari-                 we adopt the ROUGE-L (Lin 2004) score as the metric mr .
+ables in the formula. To evaluate the alignment between                      ROUGE-L evaluates the longest common subsequence be-
+the generated formula ŷ and the ground truth y ∗ , we ex-                   tween two sequences, capturing both content overlap and
+tract their atomic propositions A(ŷ) and A(y ∗ ) respectively               order information. This makes it suitable for assessing the
+using LLMs, then compute the precision metric: ma =                          structural and semantic consistency of STL formulas. Given
+|A(ŷ) ∩ A(y ∗ )|/|A(y ∗ )|.                                                 the generated formula ŷ and ground truth y ∗ , the metric is
+                                                                             defined as: ms = ROUGE-L(y ∗ , ŷ).
+Templated NL Similarity LLMs often produce seman-
+tic errors in NL-to-STL transformation, such as incorrect                    Reward Model Training
+temporal logic operators, thresholds, or time ranges, which                  We introduce reward models based on LLaMA 3-8B to eval-
+cause mismatches with the original intention of natural lan-                 uate generated STL formulas. For a given input x, the ini-
+guage. To enforce consistency at the semantic level, we                      tial STL generator produces multiple candidate formulas
+reverse-map the generated STL formula ŷ into a templated                    ŷ1 , . . . , ŷk selected by minimizing pairwise ROUGE simi-
+                                                                             larity, where k is a hyperparameter. All candidate formulas
+natural language T(ŷ). These templated natural language                     are evaluated with the four reward functions based on the
+sentences are generated by LLMs based on templates de-                       metrics ma , mt , ml , and ms . For each reward metric, we
+fined by STL syntax rules. We then use a pre-trained lan-                    compute scores for the candidates and compare them to con-
+guage model encoder (e.g., BERT) to convert both T(ŷ) and                   struct (‘chosen’, ‘rejected’) pairs, where the higher-scoring
+the original input x into dense vector representations vT(ŷ)                candidate is labeled as ‘chosen’. For example, for the metric
+and vx . Their semantic similarity is computed by cosine sim-                ms , if ms (ŷ (i) ) > ms (ŷ (j) ), we collect the following pair:
+ilarity as the metric mt = CoS(vx , vT(ŷ) ).                                n                                                                               o
+                                                                                 (chosen : [x, ŷ (i) ], rejected : [x, ŷ (j) ]) ms (ŷ (i) ) > ms (ŷ (j) ) .
+Formula Succinctness To encourage the generation of
+concise and human-readable STL formulas, we design a re-                        This process creates preference data that enables reward
+ward function based on length difference. Let |ŷ| and |y ∗ |                models to learn fine-grained preferences for STL generation
+denote the number of characters in the generated STL for-                    quality.
+mula and the ground truth formula, respectively. We de-                         When training the reward models, we use the Bradley-
+fine the normalized length difference metric ml as: ml =                     Terry model (Bradley and Terry 1952) to formulate the pref-
+1 − | |y ∗ | − |ŷ| |/|y ∗ | This metric rewards formulas close in           erence distribution with the reward model rψ as follows:
+length to the reference. Formulas that are too long may in-                              Pψ (yc ≻ yr |x) = σ(rψ (x, yc ) − rψ (x, yr )),
+clude redundant or unnecessary components, while formulas
+that are too short may omit important logical content. For-                  where σ is the logistic function, yc denotes the chosen STL,
+mulas with length near the reference get higher scores.                      and yr represents the rejected STL. This is treated as a bi-
+
+
+                                                                     30685
+nary classification task, yielding the following negative log-                      Reinforcement Learning for STL Generator
+likelihood loss function:
+                                                                                    Given a natural language instruction x and the generated
+        Lrm = −EDrm [log σ(rψ (x, yc ) − rψ (x, yr ))] ,                            STL formula ŷ, the overall reward is computed as:
+
+where Drm is the preference dataset.                                                       rRL (ŷ) = λ1 ra (ŷ) + λ2 rt (ŷ) + λ3 rl (ŷ) + λ4 rs (ŷ),
+    In this work, we initialize the reward models using the ini-                    where the hyperparameters λ1 , λ2 , λ3 , λ4 control the rela-
+tial STL generator. Additionally, a linear layer is added on                        tive importance of each reward. The reward objective rtotal is
+top of the final transformer layer to produce a scalar predic-                      to maximize expected reward while constraining deviation
+tion representing the reward value.                                                 from the initial policy Gθ0 .
+    Let ra , rt , rl , and rs denote the reward models for the
+metrics ma , mt , ml , and ms , respectively. Given the input                                      rtotal = rRL (ŷ) − η · KL(Gθ ∥ Gθ0 ),
+natural language x and the generated STL formula ŷ, the
+corresponding rewards can be computed as ra (x, ŷ), rt (x, ŷ),                    where η is a KL penalty coefficient. This term stabilizes
+rl (x, ŷ), and rs (x, ŷ), abbreviated as ra (ŷ), rt (ŷ), rl (ŷ), and           training by penalizing large shifts from the pre-trained gen-
+rs (ŷ). To facilitate aggregation of the rewards, the scores                       erator.
+from each reward model are scaled to the range [0, 1].                                 Finally, we apply the PPO algorithm (Schulman et al.
+                                                                                    2017) to optimize the STL generator Gθ using the KL-
+Curriculum Learning for Reward Models                                               regularized reward signal.
+
+To improve the effectiveness of reward models, we incor-
+porate curriculum learning by organizing training examples
+                                                                                                               Experiments
+from easy to more challenging cases. We define separate cur-                        In this section, we conduct comprehensive experiments to
+ricula based on the four reward metrics, each capturing dis-                        evaluate our proposed method RESTL.
+tinct reward model evaluation criteria.
+                                                                                    Experimental Settings
+Atomic Proposition Curriculum for ra This curriculum
+is used for training the atomic proposition alignment reward                        We first introduce the empirical settings, including datasets,
+model. We count the number of atomic propositions in the                            baselines, evaluation measures, and implementation details.
+ground truth STL formula and sort the training samples in
+ascending order of this count. Samples with fewer atomic                            Datasets We conduct experiments on two datasets for NL-
+propositions are considered easier and are prioritized, en-                         to-STL transformation, including the DeepSTL dataset (He
+abling the model can gradually learn to assess atomic propo-                        et al. 2022) and STL-DivEn dataset (Fang et al. 2025a).
+sition alignment.                                                                   The DeepSTL dataset is synthetically generated using a
+                                                                                    grammar-based generator that samples STL formulas from
+NL Similarity Curriculum for rt When training the re-                               predefined templates and operator distributions. STL-DivEn
+ward model of templated natural language similarity, for                            is created through a hybrid approach that integrates GPT-4-
+each natural language description in the preference dataset,                        based generation and human verification. For a fair compar-
+we first convert the corresponding three generated STL                              ison, we randomly select 14,000 samples from each dataset
+formulas into three templated natural language sentences.                           for training and 2,000 samples for testing.
+Then, we compute the cosine similarity between the origi-
+nal natural language sentence and each templated sentence,                          Baselines We compare RESTL with five baseline meth-
+and use the average similarity of the three pairs to determine                      ods: DeepSTL (He et al. 2022), GPT-3.51 , GPT-42 ,
+the sample order. These training data are sorted in ascending                       DeepSeek (Guo et al. 2025), and KGST (Fang et al. 2025a).
+order of difficulty scores.                                                         In our implementation, we adopt the “gpt-4-0125-preview”
+                                                                                    version of GPT-4, the “gpt-3.5-turbo-1106” version of
+STL Formula Length Curriculum for rl For training the                               GPT-3.5, and the “DeepSeek-V1” version of DeepSeek.
+formula succinctness reward model, samples are sorted by                            DeepSTL adopts the Transformer architecture for train-
+the length of the ground truth STL formula. Shorter STL for-                        ing and optimizes model parameters using the Adam al-
+mulas are regarded as easier and introduced earlier, with pro-                      gorithm (Kingma 2014). KGST is the SOTA model, which
+gressively longer formulas introduced as training proceeds.                         adopts a two-stage architecture: it first fine-tunes a LLaMA
+                                                                                    3-8B model on an NL-STL dataset to produce preliminary
+STL Similarity Curriculum for rs This curriculum is de-                             STL formulas. In the second stage, it retrieves the top-5 most
+signed to train the STL-level similarity reward model. For                          similar NL-STL pairs from the training set as reference ex-
+each group of three generated STL formulas in the prefer-                           amples, and leverages GPT-4 to refine the initial outputs,
+ence dataset, we first calculate the ROUGE-L score between                          generating the final STL formulas.
+each generated formula and the ground truth STL formula.
+The average of these three ROUGE-L scores is then used to                              1
+                                                                                        https://platform.openai.com/docs/models/gpt-3-5-turbo
+compute the difficulty score. Training samples are sorted in                           2
+                                                                                        https://platform.openai.com/docs/models/gpt-4-turbo-and-
+ascending order of difficulty scores.                                               gpt-4
+
+
+                                                                            30686
+                     (a) STL-DivEn dataset                                                      vs. STL-DivEn        vs. DeepSTL
+                                                                                  Model
+                                                                                              Win    Loss   Tie    Win    Loss   Tie
+  Model             Formula Acc.     Template Acc.     BLEU
+                                                                                  DeepSeek    64.2   12.3   23.5   56.3   17.2   26.5
+  DeepSTL              0.1986            0.1883        0.0293                     GPT-4       61.0   13.5   25.5   54.7   18.6   26.7
+  GPT-3.5              0.3018            0.3034        0.0424                     KGST        58.7   15.9   25.4   52.8   19.7   27.5
+  GPT-4                0.4733            0.4741        0.0831
+  DeepSeek             0.4790            0.4825        0.0791
+                                                                             Table 3: Human evaluation (%) of RESTL vs. baselines.
+  KGST                 0.5587            0.5627        0.2142
+  RESTL (Ours)         0.6838            0.6974        0.3347
+
+                      (b) DeepSTL dataset                                   68.38%, exceeding the strongest baseline KGST (55.87%).
+  Model             Formula Acc.     Template Acc.     BLEU                 It also achieves a template accuracy of 69.74% (vs. KGST’s
+                                                                            56.27%) and a BLEU score of 0.3347, higher than KGST’s
+  DeepSTL              0.2002            0.2916        0.3332               0.2142. These results demonstrate RESTL’s superior abil-
+  GPT-3.5              0.2145            0.3002        0.2249               ity in generating more accurate STL formulas. Similarly,
+  GPT-4                0.2262            0.3048        0.2881               as shown in Table 2b, RESTL achieves the best perfor-
+  DeepSeek             0.2537            0.3254        0.3982
+  KGST                 0.4538            0.4939        0.5686
+                                                                            mance on the DeepSTL dataset, with a formula accuracy
+  RESTL (Ours)         0.5985            0.6327        0.6783               of 59.85%, a template accuracy of 63.27%, and a BLEU
+                                                                            score of 0.6783. Compared to KGST (45.38%, 49.39%, and
+                                                                            0.5686, respectively), RESTL demonstrates clear improve-
+Table 2: Performance comparison of RESTL and baselines
+                                                                            ments across all metrics. We conduct a significance test, con-
+on STL-DivEn and DeepSTL datasets.
+                                                                            firming that RESTL significantly outperforms existing mod-
+                                                                            els across datasets and metrics, i.e., p-value < 0.01. Experi-
+                                                                            mental results including measures of variability are provided
+Evaluation Measures To evaluate STL generation qual-
+                                                                            in (Fang et al. 2025b).
+ity, we use both automatic metrics and human evaluation.
+Following prior work (He et al. 2022), we adopt formula ac-                 Human Evaluation The results shown in Table 3 indi-
+curacy, template accuracy, and BLEU (Papineni et al. 2002).                 cate that annotators consistently prefer formulas generated
+Formula accuracy measures exact token-level matches, tem-                   by RESTL, as they exhibit more concise and readable ex-
+plate accuracy assesses structural alignment, and BLEU cap-                 pressions while maintaining semantic consistency. For ex-
+tures n-gram overlap for lexical similarity. Definitions of                 ample, RESTL achieved win rates of 64.2%, 61.0%, and
+formula and template accuracy are provided in (Fang et al.                  58.7% against DeepSeek, GPT-4, and KGST, respectively.
+2025b).                                                                     We attribute this readability advantage to the introduction of
+   For human evaluation, we randomly sample 100 NL-STL                      the formula succinctness reward (ml ) during reinforcement
+pairs from testing sets of STL-DivEn and DeepSTL. Five                      learning, which explicitly encourages the model to generate
+trained annotators, familiar with STL semantics and syntax,                 STL formulas with lengths close to the reference, thereby
+assess the output without knowing the model source. The                     improving clarity and readability.
+evaluation is based on three criteria: readability (i.e. ease of
+understanding), syntactic correctness, and consistency with                 Ablation Study
+the original semantics. Readability is judged only if the first             We conduct ablation studies on both datasets by removing
+two criteria are met. This evaluation is designed to comple-                one reward metric at a time and training the model with the
+ment metric-based methods, which may miss cases where                       remaining three. The results are shown in Table 4, and more
+STL formulas differ in form but share the same meaning.                     details are provided in (Fang et al. 2025b).
+Each comparison between RESTL and a baseline is labeled                        (1) Impact of ma for atomic proposition alignment: for
+as win, loss, or tie, reflecting overall clarity and correctness.           STL-DivEn dataset, removing ma yields 65.73% formula
+Implementation Details Our experiments run on 8                             accuracy, 65.94% template accuracy, and a BLEU score of
+NVIDIA GeForce RTX 4090 GPUs (24GB each). Each re-                          0.3117, all outperforming the fine-tuned LLaMA 3-8B base-
+ward model is fine-tuned on LLaMA 3-8B with a linear                        line. For DeepSTL dataset, removing ma still better than
+value head for 5 epochs using Adam (lr=5e-5, batch=16).                     baseline. However, these improvements remain limited com-
+The STL generator is fine-tuned via PPO for 80,000 steps                    pared to the full multi-reward combination in RESTL. These
+(batch=32, lr=1.41e-5, KL penalty η = 0.05). The combined                   results indicate that ma as a reward feedback is effective.
+reward uses weighted scores with λ1 = 0.2, λ2 = 0.25,                          (2) Impact of mt for templated NL similarity: without
+λ3 = 0.35, and λ4 = 0.2. More details, including hyperpa-                   mt , formula accuracy drops to 64.24% on STL-DivEn and
+rameter discussions, are in (Fang et al. 2025b).                            56.83% on DeepSTL, with template accuracies of 65.03%
+                                                                            and 57.82% and BLEU scores of 0.3095 and 0.6293, respec-
+Main Results                                                                tively, showing that mt is effective.
+We demonstrate results on two datasets to evaluate RESTL.                      (3) Impact of ml for formula succinctness: removing ml
+                                                                            yields the highest automatic scores among all ablation set-
+Metric-Based Evaluation As shown in Table 2a, on the                        tings, with 66.42% formula accuracy and a BLEU score of
+STL-DivEn dataset, RESTL reaches a formula accuracy of                      0.3294 on STL-DivEn, and 58.32% formula accuracy and
+
+
+                                                                    30687
+                    (a) STL-DivEn dataset
+ Model                    Formula Acc.     Template Acc.   BLEU
+ RESTL                       0.6838           0.6974       0.3347
+ - w/o ma                    0.6573           0.6594       0.3117
+ - w/o mt                    0.6424           0.6503       0.3095
+ - w/o ml                    0.6642           0.6709       0.3294
+ - w/o ms                    0.6314           0.6393       0.2913
+ LLaMA3 (Fine-tuned)         0.4956           0.5007       0.1784
+
+                       (b) DeepSTL dataset
+ Model                    Formula Acc.     Template Acc.   BLEU
+ RESTL                       0.5985           0.6327       0.6783
+ - w/o ma                    0.5571           0.5642       0.6129
+ - w/o mt                    0.5683           0.5782       0.6293
+ - w/o ml                    0.5832           0.5927       0.6473
+ - w/o ms                    0.5409           0.5503       0.6091            Figure 3: Scheduling strategy impact of different curricula.
+ LLaMA3 (Fine-tuned)         0.2850           0.3285       0.5579
+
+Table 4: Ablation study of different reward feedback on
+STL-DivEn and DeepSTL datasets.
+
+            Model          #AP   #Operator   #Value    #Redundancy
+ LLaMA3-8B (Fine-tuned)     19        39       27          22
+ KGST                       15        27       25          26
+ RESTL                       6        15       18          14
+
+Table 5: Error analysis of RESTL, KGST, and fine-tuned                       Figure 4: Comparison of RL feedback strategies: reward
+LLaMA3-8B. #AP, #Operator, #Value, and #Redundancy                           model vs. metric supervision on STL-DivEn.
+denote counts of atomic proposition, operator, value, and re-
+dundancy errors, respectively.
+                                                                             trained with curriculum learning more effectively improve
+                                                                             formula accuracy, template accuracy, and BLEU scores, sig-
+0.6473 BLEU on DeepSTL, indicating that ml has limited                       nificantly enhancing the overall performance of RESTL. De-
+metric impact but improves readability.                                      tailed impacts on individual reward models are provided
+   (4) Impact of ms for STL-level similarity: removing ms                    in (Fang et al. 2025b).
+leads to the largest performance drop among all ablations,
+with 63.14% formula accuracy and a BLEU score of 0.2913                      Reward Model vs. Direct Metric in RL
+on STL-DivEn, and 54.09% accuracy and 0.6091 BLEU on
+DeepSTL, showing that ms is the most significant reward for                  To compare reward model feedback with direct metric su-
+improving accuracy.                                                          pervision in reinforcement learning, we evaluate their per-
+                                                                             formance on the STL-DivEn dataset. As shown in Figure 4,
+Error Analysis                                                               models trained with reward models achieve higher gains in
+As shown in Table 5, we analyze 100 STL formulas gener-                      formula and template accuracy. Specifically, template accu-
+ated by RESTL, KGST, and fine-tuned LLaMA 3-8B, cat-                         racy reaches 61.2% with reward models versus 60.3% with
+egorizing errors into four types: atomic proposition (AP),                   metric-based supervision, and BLEU improves from 0.267
+operator, numerical value, and redundancy. Compared to                       to 0.276. This advantage is due to the reward model’s ability
+the baselines, RESTL shows fewer AP errors due to the                        to capture deeper NL-STL correspondence through prefer-
+AP Alignment reward, and fewer operator and value errors                     ence learning, while metric supervision may introduce noise.
+thanks to the Templated NL Similarity metric. The Formula                    These results suggest reward models provide more effective
+Conciseness reward also helps reduce redundancy, whereas                     guidance for RL in this task.
+KGST tends to include more irrelevant content, likely due
+to its retrieval-augmented design. The STL-level Similarity                                         Conclusion
+metric is excluded from this analysis as it serves as a global               In this work, we propose RESTL, an RL framework for
+training signal.                                                             transforming natural language into STL. It employs multi-
+                                                                             aspect reward models to ensure semantic correctness and
+Impacts of Curriculum Learning                                               uses curriculum learning to improve training efficiency. Ex-
+As shown in Figure 3, we compare how different training                      periments on two benchmarks show that RESTL outper-
+data orders for reward models affect the performance of the                  forms existing methods. RESTL provides an effective so-
+RESTL framework. The results show that reward models                         lution for formal specification generation of CPS.
+
+
+                                                                     30688
+                 Acknowledgements                                       Kulkarni, D.; Fisher, A. N.; and Myers, C. J. 2013. A new as-
+                                                                        sertion property language for analog/mixed-signal circuits.
+This work is supported by the National Natural Sci-
+                                                                        In Proceedings of the 2013 Forum on specification and De-
+ence Foundation of China under Grant Nos. 62192731,
+                                                                        sign Languages (FDL), 1–8. IEEE.
+62192732, 62192730, and 62272166, and by the ISCAS Ba-
+sic Research under Grant Nos. ISCAS-JCZD-202406.                        Lignos, C.; Raman, V.; Finucane, C.; Marcus, M. P.; and
+                                                                        Kress-Gazit, H. 2015. Provably correct reactive control from
+                                                                        natural language. Auton. Robots, 38(1): 89–105.
+                       References
+                                                                        Lin, C.-Y. 2004. Rouge: A package for automatic evaluation
+Bradley, R. A.; and Terry, M. E. 1952. Rank analysis of                 of summaries. In Text summarization branches out, 74–81.
+incomplete block designs: I. The method of paired compar-               Madsen, C.; Vaidyanathan, P.; Sadraddini, S.; Vasile, C. I.;
+isons. Biometrika, 39(3/4): 324–345.                                    DeLateur, N. A.; Weiss, R.; Densmore, D.; and Belta, C.
+Chen, Y.; Gandhi, R.; Zhang, Y.; and Fan, C. 2023. NL2TL:               2018. Metrics for Signal Temporal Logic Formulae. In 57th
+Transforming Natural Languages to Temporal Logics using                 IEEE Conference on Decision and Control, CDC 2018, Mi-
+Large Language Models. In Bouamor, H.; Pino, J.; and Bali,              ami, FL, USA, December 17-19, 2018, 1542–1547. IEEE.
+K., eds., Proceedings of the 2023 Conference on Empirical               Maierhofer, S.; Rettinger, A.-K.; Mayer, E. C.; and Althoff,
+Methods in Natural Language Processing, EMNLP 2023,                     M. 2020. Formalization of interstate traffic rules in temporal
+Singapore, December 6-10, 2023, 15880–15903. Associa-                   logic. In 2020 IEEE Intelligent Vehicles Symposium (IV),
+tion for Computational Linguistics.                                     752–759. IEEE.
+Ernst, G.; Arcaini, P.; Fainekos, G.; Formica, F.; Inoue, J.;           Maler, O.; and Ničković, D. 2004. Monitoring temporal
+Khandait, T.; Mahboob, M. M.; Menghi, C.; Pedrielli, G.;                properties of continuous signals. In FORMATS/FTRTFT
+Waga, M.; Yamagata, Y.; and Zhang, Z. 2022. ARCH-                       2004, volume 3253 of LNCS, 152–166. Springer.
+COMP 2022 Category Report: Falsification with Ubounded                  Papineni, K.; Roukos, S.; Ward, T.; and Zhu, W.-J. 2002.
+Resources. In Frehse, G.; Althoff, M.; Schoitsch, E.; and               Bleu: a method for automatic evaluation of machine trans-
+Guiochet, J., eds., Proceedings of 9th International Work-              lation. In Proceedings of the 40th annual meeting of the
+shop on Applied Verification of Continuous and Hybrid Sys-              Association for Computational Linguistics, 311–318.
+tems (ARCH22), volume 90 of EPiC Series in Computing,
+204–221. EasyChair.                                                     Pnueli, A. 1977. The Temporal Logic of Programs. In FOCS
+                                                                        1977, 46–57. IEEE.
+Fang, Y.; Jin, Z.; An, J.; Chen, H.; Chen, X.; and Zhan, N.
+                                                                        Schulman, J.; Wolski, F.; Dhariwal, P.; Radford, A.; and
+2025a. Enhancing Transformation from Natural Language
+                                                                        Klimov, O. 2017. Proximal policy optimization algorithms.
+to Signal Temporal Logic Using LLMs with Diverse Exter-
+                                                                        arXiv preprint arXiv:1707.06347.
+nal Knowledge. In Che, W.; Nabende, J.; Shutova, E.; and
+Pilehvar, M. T., eds., Findings of the Association for Com-             Tellex, S.; Gopalan, N.; Kress-Gazit, H.; and Matuszek, C.
+putational Linguistics, ACL 2025, Vienna, Austria, July 27              2020. Robots that use language. Annual Review of Control,
+- August 1, 2025, 10446–10458. Association for Computa-                 Robotics, and Autonomous Systems, 3(1): 25–55.
+tional Linguistics.
+Fang, Y.; Zhi, J.; An, J.; Chen, H.; Chen, X.; and Zhan, N.
+2025b. RESTL: Reinforcement Learning Guided by Multi-
+Aspect Rewards for Signal Temporal Logic Transformation.
+arXiv:2511.08555.
+Ghosh, S.; Elenius, D.; Li, W.; Lincoln, P.; Shankar, N.; and
+Steiner, W. 2016. ARSENAL: automatic requirements spec-
+ification extraction from natural language. In NASA Formal
+Methods: 8th International Symposium, NFM 2016, Min-
+neapolis, MN, USA, June 7-9, 2016, Proceedings 8, 41–46.
+Springer.
+Guo, D.; Yang, D.; Zhang, H.; Song, J.; Zhang, R.; Xu, R.;
+Zhu, Q.; Ma, S.; Wang, P.; Bi, X.; et al. 2025. Deepseek-r1:
+Incentivizing reasoning capability in llms via reinforcement
+learning. arXiv preprint arXiv:2501.12948.
+He, J.; Bartocci, E.; Nickovic, D.; Isakovic, H.; and Grosu,
+R. 2022. DeepSTL - From English Requirements to Sig-
+nal Temporal Logic. In 44th IEEE/ACM 44th International
+Conference on Software Engineering, ICSE 2022, Pitts-
+burgh, PA, USA, May 25-27, 2022, 610–622. ACM.
+Kingma, D. P. 2014. Adam: A method for stochastic opti-
+mization. arXiv preprint arXiv:1412.6980.
+
+
+                                                                30689
+

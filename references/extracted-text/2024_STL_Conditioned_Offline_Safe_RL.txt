@@ -1,0 +1,988 @@
+                                                       Temporal Logic Specification-Conditioned Decision Transformer
+                                                                 for Offline Safe Reinforcement Learning
+
+
+                                                                                  Zijian Guo 1 Weichao Zhou 2 Wenchao Li 2
+
+
+                                                                    Abstract                                   often require agents to follow complex temporal and logical
+                                                                                                               constraints. For example, autonomous-driving vehicles must
+                                                 Offline safe reinforcement learning (RL) aims to
+
+
+
+
+arXiv:2402.17217v2 [cs.LG] 24 Jan 2025
+                                                                                                               come to a complete halt at an intersection with a stop sign,
+                                                 train a constraint satisfaction policy from a fixed
+                                                                                                               pause briefly, and proceed through it only if no other cars
+                                                 dataset. Current state-of-the-art approaches are
+                                                                                                               are present. It is challenging to define cost functions that
+                                                 based on supervised learning with a conditioned
+                                                                                                               appropriately capture such constraints.
+                                                 policy. However, these approaches fall short in
+                                                 real-world applications that involve complex tasks            Temporal logic (TL), on the other hand, provides a formal-
+                                                 with rich temporal and logical structures. In this            ism for expressing the behaviors of systems over time, such
+                                                 paper, we propose temporal logic Specification-               as safety (e.g. never visit a bad state), liveness (e.g. even-
+                                                 conditioned Decision Transformer (SDT), a novel               tually visit a good state), sequentiality (e.g. visit state A
+                                                 framework that harnesses the expressive power                 before visiting state B), and their arbitrarily elaborate com-
+                                                 of signal temporal logic (STL) to specify com-                binations (Donzé, 2013; Tabuada & Neider, 2015; Coogan
+                                                 plex temporal rules that an agent should follow               et al., 2017; Vasile et al., 2017; Madsen et al., 2018). Signal
+                                                 and the sequential modeling capability of Deci-               temporal logic (STL) is a variant of TL that can be used to
+                                                 sion Transformer (DT). Empirical evaluations on               specify properties over dense-time real-valued signals such
+                                                 the DSRL benchmarks demonstrate the better ca-                as trajectories (Maler & Nickovic, 2004). A unique charac-
+                                                 pacity of SDT in learning safe and high-reward                teristic of STL is that it admits a quantitative semantics – a
+                                                 policies compared with existing approaches. In                robustness value that quantifies the degree to which a given
+                                                 addition, SDT shows good alignment with respect               trajectory satisfies an STL formula (Fainekos & Pappas,
+                                                 to different desired degrees of satisfaction of the           2009; Donzé & Maler, 2010). Due to this quantitative se-
+                                                 STL specification that it is conditioned on.                  mantics and its expressiveness, STL has found a wide range
+                                                                                                               of applications ranging from controller verification and syn-
+                                                                                                               thesis (Eddeland et al., 2017; Sahin et al., 2020; Kurtz & Lin,
+                                         1. Introduction                                                       2021; Dawson & Fan, 2022; Zhang & Haesaert, 2023) to
+                                                                                                               reinforcement learning (Balakrishnan & Deshmukh, 2019;
+                                         Offline safe reinforcement learning (RL) is the problem of            Bozkurt et al., 2020; Zhang et al., 2021).
+                                         learning a policy to achieve high rewards while keeping
+                                         the cost of constraint violation below a specified threshold          In this paper, we propose to leverage STL to solve offline
+                                         from a fixed dataset without further interactions with the            safe RL problems that involve complex temporal constraints.
+                                         RL environment. It is preferable to online safe RL when               To tackle the challenges of learning from a fixed dataset,
+                                         data collection is expensive and inefficient (Gu et al., 2022b;       we build on the Decision Transformer (DT) model (Chen
+                                         Guo et al., 2023). Various methods have been proposed and             et al., 2021) which leverages the self-attention mechanism in
+                                         shown promising performance in attaining high rewards and             Transformers (Vaswani et al., 2017) to handle long-range de-
+                                         satisfying relatively simple constraints in applications such         pendencies and has demonstrated competitive performance
+                                         as autonomous driving (Gu et al., 2022a; Lin et al., 2023),           in offline RL settings. A crucial insight of our work is that,
+                                         robotics (Brunke et al., 2022), and healthcare (Kondrup               while the notions of goals, returns, and costs are tied to
+                                         et al., 2023; Zhang et al., 2024). However, real-world tasks          RL, the sequence modeling and generation framework of
+                                                                                                               DT is more general. Our novel framework, called tempo-
+                                             1
+                                               Division of Systems Engineering, Boston University              ral logic Specification-conditioned Decision Transformer
+                                         2
+                                          Department of Electrical and Computer Engineering, Boston Uni-       (SDT), judiciously combines the sequential modeling ca-
+                                         versity. Correspondence to: Zijian Guo <zjguo@bu.edu>.
+                                                                                                               pability of DT with the expressive power of STL to learn
+                                         Proceedings of the 41 st International Conference on Machine          high-performance and safe policies. Our main contributions
+                                         Learning, Vienna, Austria. PMLR 235, 2024. Copyright 2024 by          are summarized as follows.
+                                         the author(s).
+
+                                                                                                           1
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+   • We study the offline safe RL problem from the super-           ditioning on cost-to-go, i.e., cumulative future cost, and
+     vised learning perspective and propose SDT which en-           achieve not only safety and performance but also general-
+     ables conditioning on STL specifications in DT. SDT is         ization to different cost thresholds (Liu et al., 2023b; Zhang
+     the first work that incorporates STL to satisfy temporal       et al., 2023). Our work adopts formal specifications in the
+     constraints in offline safe RL settings.                       conditions to characterize temporal properties that are diffi-
+                                                                    cult to be captured by standard reward or cost functions.
+   • We examine the capacity of autoregressive learning
+     with the quantitative semantics of STL. Our method             STL as reward (or cost) functions in RL. A well-defined
+     introduces two key input tokens: the prefix and suffix         reward (or cost) function is essential for RL agents to ac-
+     robustness values that leverage different portions of a        complish the underlying tasks (Amodei et al., 2016; Zhou
+     trajectory to provide complementary information.               & Li, 2022). Due to its rich syntax, STL can be used to
+                                                                    specify high-level goals and safety requirements in RL tasks
+   • Our comprehensive experiments show that i) SDT out-
+                                                                    and also evaluate the behaviors of agents in conforming to
+     performs multiple baselines both in safety and task
+                                                                    the specifications combined with model-free methods (Li
+     performance by a large margin; ii) SDT can generalize
+                                                                    et al., 2017; Toro Icarte et al., 2018; Camacho et al., 2019;
+     to different robustness value thresholds and configura-
+                                                                    Balakrishnan & Deshmukh, 2019). Several model-based
+     tions without re-training the policy.
+                                                                    methods have been proposed (Kapoor et al., 2020; Cohen
+                                                                    & Belta, 2021) to improve sample efficiency and promote
+2. Related Work                                                     safe training, but the inherent trial-and-error process of RL
+Constrained optimization for offline safe RL. Offline safe          still poses a significant risk of performing unsafe actions.
+RL is the intersection of safe RL (Achiam et al., 2017; Xu          This work focuses on the offline setting to avoid unsafe
+et al., 2021) and offline RL (Levine et al., 2020; Prudencio        explorations during training.
+et al., 2023), where agents aim to balance safety and effi-
+ciency with reward, cost, and cost threshold information by
+                                                                    3. Preliminaries
+learning from fixed trajectories. Most of the recent works          3.1. Offline Safe RL
+formulate the safe RL problem as a constrained optimization
+problem. The Distribution Correction Estimation (DICE)              We consider learning in a finite horizon Markov deci-
+family of RL algorithms (Kostrikov et al., 2021; Lee et al.,        sion process (MDP) which can be described by the tuple
+2021; 2022) optimizes the policy based on explicitly es-            (S, A, P, r), where S is the state space, A is the action
+timating the distributional shift between the target policy         space, P is the transition function and r is the reward func-
+and the offline data distribution. The primal-dual method           tion. A trajectory comprises a sequence of states and actions
+with function approximation optimizes iteratively between           τ = {st , at }Tt=1 with length |τ | = T . The goal of RL is
+the policy and the lagrangian multiplier used to penalize                           PπT that maximizes the expected cumulative
+                                                                    to learn a policy
+constraint violations (Le et al., 2019; Chen et al., 2022; Xu       reward Eτ ∼π       t=1 r(st , at )].
+et al., 2022; Polosky et al., 2022; Hong et al., 2023). How-        A Constrained MDP (CMDP) (Altman, 2021) augments
+ever, the aspect of addressing temporal constraints remains         MDP with a cost function c, and is commonly used to model
+underexplored.                                                      safe RL whose goal is to maximize the cumulative reward
+Conditioned RL. Reward-Conditioned Supervised Learn-                while limiting the cumulative cost to a threshold d:
+ing (RCSL) represents a burgeoning category of algorithms                          T                               T
+that learn action distribution based on future return statis-         max Eτ ∼π
+                                                                                  X
+                                                                                        r(st , at ), s.t. Eτ ∼π
+                                                                                                                  X
+                                                                                                                        c(st , at )] ≤ d.   (1)
+                                                                        π
+tics via supervised learning. This idea is first proposed for                     t=1                             t=1
+the online RL setting (Schmidhuber, 2019; Kumar et al.,
+2019b; Peng et al., 2019). Decision Transformer (DT) and            In the offline setting, the agent cannot interact with the envi-
+its variants (Chen et al., 2021; Furuta et al., 2022; Zheng         ronment and can only access a fixed dataset D = {τi }ni=1
+et al., 2022; Yamagata et al., 2023; Wang et al., 2023; Hu          consisting of trajectories collected by unknown policies.
+et al., 2023) extend this idea to the offline RL setting by         3.2. Decision Transformers
+using return-to-go, i.e., cumulative future reward, as the
+conditional inputs and modeling trajectories with casual            The Decision Transformer (DT) model (Chen et al., 2021)
+transformers (Vaswani et al., 2017). Instead of complex             tackles offline RL as a sequential modeling problem. Un-
+models, recent findings show that with careful policy tuning,       like the majority of prior RL approaches that estimate
+simple multi-layered neural networks can match transform-           value functions and parameterize a single state-conditioned
+ers’ performance (Emmons et al., 2021; Brandfonbrener               policy π(a|s), DT outputs predicted actions from a se-
+et al., 2022). Several works extend reward-conditioned RL           quence of return-to-go Rt−K:t = {Rt−K , ..., Rt }, where
+                                                                          PT
+methods in the offline safe RL setting by additionally con-         Rt = t′ =t rt (st′ , at′ ) is the cumulative reward from time-
+
+                                                                2
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+step t and K is the context length; states st−K:t = {st−K ,                   explain the rationale behind our specific approach of incor-
+..., st }; and actions at−K:t = {at−K , ..., at }. A DT’s pol-                porating STL specification in DT.
+icy is parametrized by the GPT architecture (Radford et al.,
+2018) with a causal self-attention mask. It generates a deter-                4.1. Offline RL via Supervised Learning
+ministic action πDT (Rt−K:t , st−K:t , at−K:t ) at each time-
+step t. The policy is trained by minimizing the loss between                  Motivated by RCSL (Emmons et al., 2021; Brandfonbrener
+the predicted and ground-truth actions.                                       et al., 2022), we extend the supervised learning formulation
+                                                                              to the offline safe RL setting. Instead of solving the con-
+3.3. STL Specification                                                        strained optimization problem in Eq. (1), the objective is to
+                                                                              find an autoregressive model to simulate sampled trajecto-
+Signal Temporal Logic (STL) is a formal logic used to
+                                                                              ries conditioned on both reward and cost:
+specify and monitor temporal properties of continuous sig-
+nals (Donzé & Maler, 2010). In this paper, we consider
+                                                                                                     h                      i
+                                                                                      max Es∼τ,τ ∼D log πθ a|s, r(τ ), c(τ ) +Lreg (4)
+states at discrete time-steps as signals under discrete-time                             θ
+sampling. The syntax of STL is as follows.
+                                                                              where Lreg is the regularization term; s = {st−K , ..., st } is
+         ϕ := ⊤ | µc | ¬ϕ | ϕ ∧ ψ | ϕ ∨ ψ | ϕ ⇒ ψ |                           a sequence of states with a context length K; r(τ ) and c(τ )
+                                                                    (2)
+                  G[t1 ,t2 ] ϕ | F[t1 ,t2 ] ϕ | ϕU[t1 ,t2 ] ψ                 represent the rewards and costs of the trajectory. This for-
+                                                                              mulation captures a range of methods, as detailed in Table 1.
+where µc is a predicate of the form µ(s) < c where µ(·) :                     RvS (Emmons et al., 2021) uses MLP policy with K = 1
+S−  → R and c ∈ R is a constant; ϕ and ψ are STL formulas;                    and uses the r(τ ) function to compute either the average
+t1 , t2 ∈ Z+ denote two sequential time steps. ⊤ represents                   future reward or future goal states. DT (Chen et al., 2021)
+True. The temporal operators G, F, and U refer to Globally                    adopts a transformers-based policy with K > 1 and uses
+(i.e., always), Finally (i.e., eventually), and Until.                        r(τ ) to specify return-to-go. ODT (Zheng et al., 2022) and
+The quantitative semantics (Donzé & Maler, 2010) of STL                      QDT (Yamagata et al., 2023) follow similar principles as
+as shown in Eq. (3) quantifies the degree to which a trajec-                  DT, but ODT incorporates stochastic policies and entropy
+tory τ satisfies or violates an STL formula ϕ at each time                    regularization, and QDT learns Q-functions to relabel return-
+step t through the robustness value, denoted as ρ(τ, t, ϕ).                   to-go. CDT (Liu et al., 2023b) extends to offline safe RL,
+                                                                              utilizing cost-to-go in the c(τ ) function. SaFormer (Zhang
+               ρ(τ, t, ⊤) = ρmax where ρmax > 0                               et al., 2023) estimates the cost-to-go to filter unsafe ac-
+              ρ(τ, t, µc ) = c − µ(st )                                       tions. Despite the variety, these existing methods center
+              ρ(τ, t, ¬ϕ) = −ρ(τ, t, ϕ)                                       on Markovian rewards and costs. Our approach combines
+                                                                
+        ρ(τ, t, ϕ1 ∧ ϕ2 ) = min ρ(τ, t, ϕ1 ), ρ(τ, t, ϕ2 )                    non-Markovian policies (transformers) with non-Markovian
+        ρ(τ, t, ϕ1 ∨ ϕ2 ) = max ρ(τ, t, ϕ1 ), ρ(τ, t, ϕ2 )
+                                                                             costs (robustness values of STL specifications).
+                                                              
+         ρ(τ, t, ϕ ⇒ ψ) = max −ρ(τ, t, ϕ), ρ(τ, t, ψ)               (3)                  Method              Architecture         r                 c           Lreg
+                                               ρ(τ, t′ , ϕ)
+                                                            
+       ρ(τ, t, G[t1 ,t2 ] ϕ) = ′ min                                           RvS-R (Emmons et al., 2021)      MLP         average reward          −            −
+                              t ∈[t+t1 ,t+t2 ]
+
+                                               ρ(τ, t′ , ϕ)                    RvS-G (Emmons et al., 2021)      MLP           goal state            −            −
+                                                            
+       ρ(τ, t, F[t1 ,t2 ] ϕ) = ′ max
+                              t ∈[t+t1 ,t+t2 ]                                    DT (Chen et al., 2021)     Transformers    return-to-go           −            −
+     ρ(τ, t, ϕU[t1 ,t2 ] ψ) = ′    max         min ρ(τ, t′ , ψ),                 ODT (Zheng et al., 2022)    Transformers    return-to-go           −         Entropy
+                              t ∈[t+t1 ,t+t2 ]
+                                     min ′ ρ(τ, t′′ , ϕ)
+                                                                                                                              relabeled
+                                                                               QDT (Yamagata et al., 2023) Transformers                             −            −
+                                    ′′
+                                    t ∈[t,t ]                                                                                return-to-go
+                                                                                  CDT (Liu et al., 2023b)    Transformers    return-to-go       cost-to-go    Entropy
+The sign of the robustness value indicates whether the spec-                                                                                    estimated
+                                                                               SaFormer (Zhang et al., 2023) Transformers    return-to-go                        −
+ification is satisfied or not, while a higher value indicates                                                                                   cost-to-go
+
+stronger satisfaction and vice versa. A specification can                               SDT(ours)            Transformers    return-go-to    robustness values Entropy
+contain multiple predicates whose values can be arbitrarily
+scaled, yet the value of the overall specification maintains                  Table 1: A brief comparison of methods with different ar-
+strict semantics.                                                             chitectures conditioned on different types of inputs. r (or c):
+                                                                              reward (or cost) function.
+4. Method
+                                                                              4.2. Specification-Conditioned Decision Transformers
+In this section, we first outline the formulation to solve
+the offline safe RL problem through supervised learning.                      Our framework, named temporal logic Specification-
+Then, we present our novel framework, temporal logic                          conditioned Decision Transformer (SDT), as illustrated
+Specification-conditioned Decision Transformer (SDT), and                     in Figure 1, extends the Decision Transformer (DT)
+
+                                                                          3
+            Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+model (Chen et al., 2021) by incorporating two extra ro-                    Algorithm 1 Evaluation procedure for SDT
+bustness value tokens, prefix and suffix, as defined in Defi-               Input: trained Transformer policy πθ , STL specification ϕ,
+nition 4.1. The intuition is to generate actions conditioned                episode length T , context length K, target reward R and
+on both the reward and the trajectory’s robustness in sat-                  target suffix Psuf , environment env
+isfying the specification. In this work, we focus on safety                  1: Get the initial state: s1 ← env.reset() and initial
+specifications1 and preserve the reward token to measure                        action: at ← 0 and initial input sequence: o ← ∅.
+performance. We employ a stochastic policy with entropy                      2: for t = 1, ..., T do
+regularization, which has been shown to be effective in the                  3:    Compute prefix ρpre = ρ(s1:t , ϕ)
+literature (Zheng et al., 2022; Liu et al., 2023b).                          4:    Set target suffix ρsuf = Psuf [t]
+                                                                             5:    Construct input sequence
+                                                                                   o ← o ∩ {ρsuf , ρpre , Rt , st , at }
+                                                                             6:    Get predicted action ât ∼ π(·|ot−K+1:t )
+                                                                             7:    Execute the action: st+1 , rt ← env.step(ât )
+                                                                             8:    Compute target returns for the next step
+                                                                                   Rt+1 = Rt − rt and set at ← ât
+                                                                             9: end for
+
+
+
+
+                                                                            rewards and state information from the environment. The
+                                                                            target suffix at each time-step is specified instead of autore-
+Figure 1: The SDT framework. It takes the prefix and suffix
+                                                                            gressively computed, as detailed in the following section
+robustness values, return-to-go, states, and actions as inputs
+                                                                            where we justify the usage of the suffix and prefix.
+and predicts the next actions using a Gaussian policy.
+
+Definition 4.1. (Prefix and suffix robustness value) Given a                4.3. Suffix and Prefix Robustness Values
+trajectory τ = {s1 , s2 , ..., sT } with length |τ | = T and                Suffix robustness value as desired future. Recall that
+a STL specification ϕ, the prefix and suffix robustness                     given a trajectory τ of length T , the return-to-go
+value at time-step t are ρpre (τ, t, ϕ) := ρ(τ1:t , 1, ϕ) and                                                             PT (or cost-to-
+                                                                            go), at time-step t is computed by Rt = t′ =t r(st′ , at′ )
+ρsuf (τ, t, ϕ) := ρ(τt:T , 1, ϕ) respectively. For convenience,                        PT
+                                                                            (or Ct = t′ =t c(st′ , at′ )). During training, they are con-
+we will abbreviate “prefix and suffix robustness values” as                 catenated with a sequence of states and actions and then
+“prefix” and “suffix” respectively.                                         fed to DT to optimize Eq. (4). (Furuta et al., 2022) point
+Specifically, the input sequence ot for SDT at time-                        out that the conditional supervised learning approaches are
+step t includes prefix Ppre = {ρpre (τ, t − K, ϕ), ...,                     performing hindsight information matching: match the out-
+ρpre (τ, t, ϕ)}, suffix Psuf = {ρsuf (τ, t − K, ϕ), ...,                    put trajectories with future information statistics I(τ ) to
+ρsuf (τ, t, ϕ)}, rewards Rt−K:t , states st−K:t , and ac-                   search for optimal actions. We introduce the suffix robust-
+tions at−K:t ; the Gaussian policy parameterized by θ is                    ness value in Definition 4.1, which can be viewed as a
+πθ (·|ot ) = N (µθ (ot ), Σθ (ot )); and the Shannon entropy                particular form of I(τ ), as an alternative to cost-to-go. For
+regularizer is Lreg = H[πθ (·|o)] with weight λ ∈ [0, ∞).                   example, given a trajectory τ and a simple specification
+After plugging them into Eq. (4), the objective of SDT is:                  ϕ1 = F[1,10] (s > 0) describing that the states in a trajectory
+                                                                            τ should eventually be greater than 0 within the next 10
+                                                                            steps. The corresponding suffix at time-step t can be com-
+                                                     
+       max Eo∼τ,τ ∼D log πθ (a|o) + λH[πθ (·|o)]          (5)
+        θ                                                                   puted as ρsuf (τ, t, ϕ1 ) = maxt′ ∈[t+1,t+10] st′ . The suffix
+Training and evaluation. SDT generally follows the train-                   can capture the statistics of future states. Moreover, STL
+ing and evaluation schemes of RCSL (Emmons et al., 2021;                    suffix is strictly more expressive than cost-to-go (or return-
+Brandfonbrener et al., 2022). The training procedure is as                  to-go), as one can define a predicate as the sum of cost
+follows: sample a batch of sequences {o, a} from the offline                (or negative sum of reward) and the resulting suffix will
+dataset D, and then compute the loss in Eq. (5) to optimize                 be equivalent to negative cost-to-go (or return-to-go), e.g.,
+the policy πθ via gradient descent. In terms of evaluation,                 µ0 (st ) := Ct < 0 ⇒ ρ(τ, t, µ0 ) = −Ct . However, chal-
+the procedure for SDT is presented in Algorithm 1. Updates                  lenges arise in training and evaluation due to the following
+to the return-to-go and the prefix occur in response to new                 sparsity issue and the updates of STL robustness values.
+   1
+     In formal logic parlance, all specifications over finite trajec-       Sparsity. The compliance or violation of STL specifications
+tories are safety specifications. We use the term “safety” here to          of a trajectory might be determined by a relatively small
+differentiate safety constraints from performance goals.                    number of critical states or intervals within the trajectory. As
+
+                                                                        4
+           Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+highlighted by the quantitative semantics of STL in Eq. (3),            which uses only return-to-go.
+the suffix, or even a sequence of suffix can offer sparse
+information on its corresponding states. For example, given             5. Experiment
+the STL formula ϕ1 , there may exist a trajectory τ whose
+                                                                        We use the following environments and STL specifications
+states do not satisfy s > 0 until the end of or near the end
+                                                                        to evaluate SDT and baseline approaches and aim to answer
+of τ . Consequently, a large portion of the suffix robustness
+                                                                        the following questions:
+values {ρsuf (τ, 1, ϕ), ..., ρsuf (τ, T, ϕ)} equal to a constant.
+In this case, the agent cannot gain meaningful information                 • Can SDT learn policies that satisfy a given STL speci-
+due to limited feedback on robustness values.                                fication from offline datasets?
+Updates of STL robustness values. The cost-to-go (or return-               • Can SDT align with different target suffixes?
+to-go) can be updated autoregressively when a new cost
+                                                                           • How important are the prefix and suffix inputs in SDT?
+(or reward) is obtained, i.e., Ct+1 = Ct − c(st , at ) (or
+Rt+1 = Rt − r(st , at )). However, the robustness value                    • What is the influence of different target suffix configu-
+does not possess this additive property, i.e., ρsuf (τ, t, ϕ) ̸=             rations on the performance of SDT?
+ρsuf (τ, t + 1, ϕ) − ρ(τt , 1, ϕ), Although the relation of two            • Is SDT robust to rescaling individual predicates?
+suffixes τt:T and τt+1:T of a given trajectory τ can be ex-
+pressed as ρsuf (τ, t, ϕ) = f (ρsuf (τ, t + 1, ϕ), ρ(τt , 1, ϕ)),       Environments. The Bullet-Safety-gym (Gronauer,
+f is a complex recursive mapping that depends on the speci-             2022) is a public benchmark that includes a variety
+fication, i.e., nested min()/ max() operations (Donzé et al.,          of robot locomotion tasks commonly used in previous
+2013; Dokhanchi et al., 2014; Deshmukh et al., 2017). Thus,             works (Achiam et al., 2017; Chow et al., 2019). We consider
+the target suffix for each time-step has to be set in advance           three specific environments, Run, Circle, and Reach,
+instead of computing the target reward and cost in an autore-           where different types of robots, Ball, Car, Drone,
+gressive manner. Empirically, we test and validate several              and Ant, are trained. In the Run environment, agents earn
+different target suffix configurations in Section 5.3.                  rewards for achieving high speeds between two boundaries
+Prefix robustness value as achieved past. To deal with the              but incur penalties if they cross the boundaries or exceed an
+sparsity issue of the suffix robustness value, we introduce             agent-specific velocity threshold. In the Circle environ-
+the prefix robustness value, derived from the states of a               ment, agents are rewarded for moving in a circular pattern
+trajectory up to time-step t, supplementary to the suffix.              but are constrained within a safe region smaller than the ra-
+The intuition is that different segments of the trajectory, i.e.,       dius of the target circle. In the Reach environment, besides
+τ1:t and τt:T , can provide complementary information on                performing the same task as in the Circle environment,
+this trajectory. While the prefix itself is subject to sparsity,        agents have an additional task of reaching goals in sequence.
+we argue that the comparison between the prefix and the                 This setup of rewards and costs creates a dual influence
+suffix offers additional information about how robust the               on the agents’ behaviors, where rewards motivate specific
+action is in terms of specification satisfaction. Suppose that          actions and costs act as deterrents for those actions. More
+the prefix and suffix of a trajectory in the offline dataset at         details of the environments can be found in Appendix A.
+time-step t are ρpre and ρsuf . When both ρpre and ρsuf                 Temporal behaviors. To evaluate the capability of SDT to
+are positive, it indicates safety in both previous and future           satisfy temporal requirements, we consider the following
+actions. Conversely, negative values for both suggest unsafe            STL specifications.
+actions throughout the trajectory. A positive ρpre and a
+negative ρsuf implies that while past actions have been
+                                                                                                                       
+                                                                                 ϕrun = G ψbndry ∧ ¬ψvel ⇒ F[1,5] ψvel        (6)
+safe, a future action at a certain time-step t′ will be unsafe.                                                     
+In contrast, a negative ρpre and a positive ρsuf indicate                        ϕcircle = G ¬ψbndry ⇒ F[1,5] ψbndry          (7)
+unsafe past actions but safe future actions. These insights                                                          
+can extend beyond the context length, aiding the policy in                       ϕreach = ϕcircle ∧ F ¬ψgoalB UψgoalA         (8)
+inferring the safety of both past and future states and actions
+even if they fall outside the current context, which cannot             where ψbndry : st < dlim is the predicate for staying within
+be achieved by cost-to-go (or return-to-go). Therefore, the             the safety boundary denoted as dlim , ψvel : st < vlim is the
+combination of the prefix and suffix addresses the sparsity             predicate for maintaining a safe velocity denoted as vlim ,
+issue by providing comprehensive information about the                  and ψgoal 2 is the specification for reaching a small square
+trajectory. The ablation study in Section 5.3 shows that                region (since the predicates are linear) near a goal position
+including both the prefix and suffix token is not only crucial             2
+for our SDT to learn a safe and high-reward policy but also                ψgoal is defined as −st < d − x ∧ st < x + d ∧ −st <
+                                                                        d − y ∧ st < y + d with goal = [x, y] and ρ(τ, t, ψgoal ) =
+can improve the performance of the standard DT framework,               min(−st + x − d, st − x − d, −st + y − d, st − y − d).
+
+                                                                    5
+            Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+sgoal . Note that the state of the agent st contains the position                        lights the benefits of STL and the versatility of our method,
+and velocity information. In the Run environment, the agent                              which is applicable in broader scenarios, including both
+is required to always stay between the boundaries, and if it                             Markovian and non-Markovian constraints.
+exceeds the velocity threshold, it should slow down within
+                                                                                         Metrics. Our evaluation metrics include (i) normalized
+the next 5 steps. In the Circle environment, the agent
+                                                                                         cumulative reward, (ii) cumulative relabeled cost, which are
+must leave the unsafe region within the next 5 steps once
+                                                                                         consistent with the offline RL literature (Fu et al., 2020; Liu
+it enters the unsafe region. In the Reach environment, the
+                                                                                         et al., 2023a), and (iii) the satisfaction rate that indicates the
+agent must leave unsafe regions within a certain number of
+                                                                                         ratio of episodes in which the STL specification is satisfied
+steps but also reach two goals in sequence, both located in
+                                                                                         within a maximum number of time-steps. We use the actual
+the safe region, at least once. Although the specifications
+                                                                                         cumulative relabeled cost instead of the normalized one
+relax the original cost as it allows agents to enter the unsafe
+                                                                                         since d = 0. The normalized cumulative reward is:
+region as long as they can re-enter the safe region, they com-
+pletely change the Markovian property of the original cost,                                                               Rπ − rmin (D)
+                                                                                                       Rnormalized =
+making it challenging to learn safe policies. The correspond-                                                          rmax (D) − rmin (D)
+ing robustness values of the prefix and suffix at time-step t                            where Rπ is the evaluated cumulative reward of policy π and
+can be calculated as:                                                                    rmax (D) and rmin (D) are the maximum cumulative reward
+                                                                                       and the minimum cumulative reward of the trajectories that
+ ρ(τ, t,ϕrun ) = ′ min            min dlim − st′ ,                                       satisfy the cost threshold in dataset D. For convenience, we
+                  t ∈[t1 ,t2 ]
+                                                                 
+                                                                              (9)       will abbreviate “normalized cumulative reward” as “reward”
+         max (vlim − st′ ), ′′ max               (v lim − st′′ )
+                                 t ∈[t′ +1,t′ +5]                                        and “cumulative relabeled cost” as “cost”.
+                                 
+ ρ(τ, t, ϕcircle ) = ′ min max (dlim − st′ ),                                            Baselines. We present our results by comparing SDT with
+                    t ∈[t1 ,t2 ]
+                                                                            (10)       two categories of baselines: (i) constrained optimization
+                          max         (d lim − st′′ )
+                    t′′ ∈[t′ +1,t′ +5]                                                   methods and (ii) conditioned RL methods.
+                                                        
+ ρ(τ,t, ϕreach ) = min ρ(τ, t, ϕcircle ), ′ max            ′′
+                                                             max ′
+                                                                                         For the constrained optimization RL baselines, we consider
+                                                   t ∈[t1 ,t2 ] t ∈[t ,t2 ]
+                                                                           (11)         two Lagrangian-based methods that use adaptive PID-based
+                                                                        
+      min ρ(τ, t′′ , ψgoalA ), ′′′min
+                                    ′ ′′
+                                         ρ(τ, t′′′ , ¬ψgoalB )                           Lagrangian multipliers (Stooke et al., 2020) to penalize con-
+                                    t   ∈[t ,t ]
+                                                                                         straint violations: BCQ-Lagrangian (BCQ-Lag) and BEAR-
+where I = [t1 , t2 ] is the interval. By setting I to be [1, t] or                       Lagrangian (BEAR-Lag), which is built upon BCQ (Fuji-
+[t, T ], we can obtain the prefix and suffix, respectively.                              moto et al., 2018) and BEAR (Kumar et al., 2019a), respec-
+                                                                                         tively. We also include CPQ (Xu et al., 2022), designed
+Offline dataset. We use the dataset from DSRL (Liu et al.,                               to learn safe policy by conservative cost estimations, and
+2023a), a comprehensive benchmark specialized for offline                                CoptiDICE (Lee et al., 2022), which learns safe policies via
+safe RL. Note that although this dataset contains the behav-                             stationary distribution correction.
+iors defined in the STL specifications, it is not designed
+for tasks with temporal constraints. For Run and Circle                                  For the conditioned RL baselines, we consider CDT (Liu
+environments, to be consistent with the STL specifications,                              et al., 2023b) and construct two variants of the reward-
+we define a new cost function to relabel the original cost c                             conditioned RvS-R (Emmons et al., 2021): RvS-RC with an
+in the dataset:                                                                          additional cost token and RvS-Rρ with two additional pre-
+                                                                                        fix and suffix tokens. We also include a Behavior Cloning
+      1 if cpt = 1 or [cvt−5 , . . . , cvt−1 ] = 1 for Run envs
+                                                                                        baseline (BC-Safe) that only uses trajectories that satisfy
+c′t = 1 if [cpt−5 , . . . , cpt−1 ] = 1 for Circle envs                                  the specifications to train the policy. Following the safe RL
+      
+      
+        0 otherwise                                                                      setting criteria (Ray et al., 2019), we prioritize safety: a pol-
+                                                                                         icy that maintains a high satisfaction rate is preferred over
+where c′t is the relabeled cost at time-step t and cpt and                               ones that do not. The methods with a higher satisfaction rate
+cvt denote the costs related to the position and velocity of                             than BC-safe are considered safe since strict zero-constraint
+agents, respectively, in the original dataset. The cumulative                            violation is difficult if not impossible in a model-free setting.
+relabeled cost captures
+                      PTthe violations against an STL spec-                              We use a small, fixed target suffix above zero at each time-
+ification, i.e., Ct′ = 1 c′t = 0 ⇔ ρ(τ1:T , T, ϕ) > 0 for a                              step for methods trained on robustness values, except for
+trajectory τ = {st , at , rt , c′t }Tt=1 . The relabeled cost-reward                     the ablation study on SDT about target suffix configuration.
+plots and suffix-reward plots are presented in Appendix A.
+For Reach environment, it is challenging to devise a cost
+                                                                                         5.1. Can SDT learn specification-satisfying policies?
+function to capture the constraint precisely, i.e. relabel the
+cost in the offline dataset. Thus, we only train and evaluate                            The evaluation results for different trained policies are pre-
+the baselines that do not require costs. Moreover, it high-                              sented in Table 2.These results reflect the average perfor-
+
+                                                                                     6
+           Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+                             Run-Average                                  Circle-Average                      Reach-Average
+   Methods
+                Reward ↑         Cost ↓        Rate ↑      Reward ↑           Cost ↓         Rate ↑      Reward ↑         Rate ↑
+  SDT(ours)     0.96±0.01      0.33±2.04     0.97±0.04     0.89±0.08        0.94±3.73      0.86±0.1     0.75 ± 0.13    0.76 ± 0.19
+   RvS-Rρ       0.79±0.28     8.89±20.28     0.79±0.32     0.81±0.11        1.09±3.19      0.8±0.14     0.55 ± 0.25    0.65 ± 0.22
+     CDT        0.96±0.03      0.32±1.62     0.92±0.12     0.92±0.03         2.23±4.2      0.49±0.09          -             -
+   RvS-RC       1.27±0.63    20.34±26.69     0.53±0.41     0.75±0.26        9.65±29.64     0.62±0.1           -             -
+   BC-safe      0.78±0.29      3.18±8.5      0.78±0.25     0.62±0.28        5.75±10.51     0.49±0.13     0.58 ± 0.3    0.34 ± 0.15
+  BCQ-Lag        0.9±0.3     30.08±39.49      0.3±0.36     0.99±0.34       33.32±21.25     0.08±0.13          -             -
+ BEAR-Lag       0.85±1.16     60.3±46.47     0.33±0.47     1.07±0.18        33.2±18.3       0.0±0.0           -             -
+     CPQ        1.16±1.33    50.29±48.38     0.33±0.47     0.59±0.35        5.73±18.94     0.72±0.36          -             -
+ COptiDICE      0.9±0.13     21.83±27.68     0.41±0.46     0.66±0.13       12.41±17.57     0.17±0.13          -             -
+
+Table 2: Evaluation results of reward, cost, and satisfaction rate. ↑: the higher the reward, the better. ↓: the lower the cost
+(closer to 0), the better. Agents with a higher satisfaction rate than BC-safe are considered safe. Gray: unsafe agents. Bold:
+the best (highest reward, highest specification satisfaction rate, and lowest cost) in the respective metric. The satisfaction
+rates of the trajectories in the offline dataset are 20.0%, 8.52%, and 3.47% for Run, Circle, and Reach environments.
+For Reach environment, it is challenging to devise a cost function to capture the constraint precisely, i.e. relabel the cost in
+the offline dataset. Thus, we only train and evaluate the baselines that use robustness values for this environment.
+
+
+mance, with each plot aggregating data from 3 random seeds            are designed to estimate value functions based on Marko-
+and 20 trajectories per seed. Complete results for each en-           vian costs. As the reward is unchanged in the dataset, the
+vironment are included in AppendixB due to page limit.                baselines manage to secure high rewards. We can also notice
+Our method demonstrates the best performance compared                 that the reward of CPQ in the Run environments and the
+to the baselines in terms of reaching the highest rate of             reward of BEAR-Lag in the Circle environments exceed
+specification satisfaction and lowest costs. Also, it pro-            the maximum reward of the safe trajectories in the dataset,
+duces comparable or higher rewards compared to the safe               which shows the stitching property of the Q-learning-based
+baselines, indicating that SDT performs effective learning.           methods (Yamagata et al., 2023; Wang et al., 2023). The
+                                                                      poor safety performance of the baselines highlights the chal-
+The results of CDT and RvS-RC show that merely relabel-
+                                                                      lenges posed by the temporal constraints. In comparison,
+ing the cost to reflect STL specifications cannot obtain safe
+                                                                      our proposed SDT method successfully learns both safe and
+policies. Such cost function introduces a level of stochastic-
+                                                                      rewarding policies in these challenging environments.
+ity (Paster et al., 2022), where taking the same action in the
+same states can lead to inconsistent cost due to the temporal
+constraint. Note that in the Run environments, RvS-RC                 5.2. Can SDT adapt to different target suffixes?
+even outperforms the best safe trajectory’s reward in the             One of the critical attributes of transformers is the ability
+dataset; however, the satisfaction rate is low and the cost is        to align with the variables on which they are conditioned.
+high. This pattern, observed in most of the baselines, where          To illustrate this, we vary the target reward and target suffix
+a high reward often correlates with a high cost, underscores          for evaluation rollouts and obtain the results in Figure 2.
+the inherent trade-off between rewards and costs (Liu et al.,         It is evident that the baselines introduced previously, ex-
+2022; Li et al., 2023). RvS-Rρ shows improved results over            cept RvS, lack this capability because they depend on a
+RvS-RC, as it benefits from training with the prefix and              constant and pre-defined threshold to solve a constrained
+suffix. Our method still outperforms it due to the sequential         optimization problem and need re-training for adaptation
+structure of transformers, which is adept at capturing the            to new constraints. Therefore, our comparison is focused
+temporal properties in robustness values, states, and actions.        on SDT and RvS-Rρ. The results show a strong correlation
+The Lagrangian-based baselines, BCQ-Lag and BEAR-Lag,                 between the actual and target suffixes for SDT. We can also
+as well as CPQ and COptiDICE methods that are tailored                observe that the actual suffix of SDT is above the dashed
+for offline safe RL, struggle to ensure safety in most environ-       threshold line when the target suffix is less than zero in most
+ments. This indicates that directly applying widely used safe         of the environments, which means that SDT can achieve
+RL techniques to satisfy temporal specifications does not             safer actions even under conditions that demand otherwise.
+work well. A key factor for the poor performance is the non-          While there is a saturation point in the curves at specific
+Markovian nature of the relabeled cost since these methods            target suffixes, SDT consistently upholds safety even when
+                                                                      extrapolating over target suffixes and rewards that represent
+
+                                                                  7
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+
+
+
+Figure 2: Results of alignment with different target suffixes. The top-row plots show the evaluated reward and the bottom-row
+plots show the evaluated suffix. The solid line and the light shade area represent the mean and mean ± standard deviation.
+
+conflicting objectives. For example, setting both a high             puts in SDT. Recent studies have explored how transformers
+target reward and a high target suffix is unreachable since          process explicit inputs versus implicit inputs, with varying
+the former encourages agents to stay close to the safety             conclusions as it largely depends on the specific nature of
+boundary while the latter advises against it. In contrast,           the data and the task (Zhao et al., 2019; Chu et al., 2021;
+RvS-Rρ struggles to meet the target reward when the target           Gui et al., 2021). In our opinion, given enough capacity
+suffix is either large or small, further showcasing the strong       and data, transformers can learn effectively regardless of the
+alignment capabilities of our method.                                input type, but in practice, transformers tend to learn better
+                                                                     with explicit inputs.
+5.3. Ablation studies
+How important are the prefix and suffix inputs in SDT?
+To assess the influence of the prefix and suffix, we conduct
+experiments by removing each of them from SDT. The left
+plot in Figure 4 shows the averaged performance of SDT,
+with the cost normalized against the highest cost among the
+corresponding experiments. The results indicate that both
+the prefix and suffix are essential for good performance, as
+their removal leads to noticeable drops in safety and perfor-
+mance. In addition, the suffix has a more pronounced effect
+on the safety performance than the prefix, evidenced by a
+significant reduction in the satisfaction rate when the suffix
+is excluded since the prefix lacks hindsight information.
+Following the insights in Section 4.3 that the relation be-
+tween prefix and suffix can provide additional information,
+we re-assess the efficacy
+                       Pt of DT with an additional reward
+prefix token Rpre = i=1 ri while keeping all the other               Figure 3: Evaluation results of normalized rewards in D4RL
+aspects unchanged. More details about the experiments of             Gym environments. Each value is averaged over 3 seeds. m:
+DT can be found in Appendix C. From Figure 3, we can see             medium, mr: medium-replay, me: medium-expert.
+that DT with reward prefix achieves higher rewards than the
+                                                                     How do different target suffix configurations influence
+standard DT. Although the reward prefix is implicitly em-
+                                                                     the performance of SDT? As mentioned in Section 4.2, the
+bedded in the return-to-go, i.e., given the return-to-go of a
+                                                                     suffix offers versatility in evaluations, as we can specify the
+trajectory at each time-step, we can fully recover the reward
+                                                                     target suffix for each time-step of the trajectory instead of
+prefix, explicitly supplying the past information to trans-
+                                                                     the auto-regressive manner of return-to-go (or cost-to-go).
+formers shows advantageous for policy learning. On the
+                                                                     We test SDT using the same target reward but different tar-
+other hand, we cannot extract prefix from suffix in general
+                                                                     get suffix configurations: i) SDT(linear), where the target
+for STL robustness values, thus necessitating explicit in-
+                                                                     suffix linearly increases each step until it matches the fixed
+
+                                                                 8
+           Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+
+
+
+Figure 4: Ablation study. Left: the effect of the prefix and the suffix. Right: influence of different target suffix configurations.
+
+target; ii) SDT(mean), employing the average suffix from                shown in Table 3. Our findings demonstrate that modifying
+safe trajectories in the dataset; iii) SDT(max), using the max-         the scale of the predicates has a negligible impact on both
+imum suffix from these trajectories. SDT(linear) is selected            the task performance and the rate of property satisfaction,
+as the suffix is monotonically increasing for trajectories in           which indicates that our method is robust to changes in
+the dataset due to the G operation in the STL specification             predicate scaling.
+in Eq. (6) and (7). SDT(mean) aims to mimic the average
+performance of the safe trajectories, whereas SDT(max) is               6. Conclusion
+expected to behave conservatively by emulating the trajec-
+                                                                        We study the offline safe RL problem through the lens of
+tory with the highest suffix. Details of the prefix and the
+                                                                        supervised learning and point out the unique challenges as-
+suffix for dataset trajectories are in Appendix A. As shown
+                                                                        sociated with enforcing temporal constraints. We propose a
+in Figure 4, we can observe that SDT(ours) achieves the
+                                                                        novel framework that utilizes the robustness value of STL
+best safety performance with a fixed target suffix. Other
+                                                                        specifications to guide the trajectory modeling process in
+target suffix configurations lead to reduced satisfaction rates
+                                                                        DT. Our empirical results demonstrate that SDT is capable
+and increased costs because: i) a low target suffix makes the
+                                                                        of learning a safe and high-reward policy in challenging
+agent more aggressive, i.e., SDT(linear), and ii) conflicting
+                                                                        offline safe RL tasks that involve temporal and logical re-
+objectives of achieving a high target suffix and high target
+                                                                        quirements, and can adapt to different target suffixes without
+reward at the same time, i.e., SDT(mean) and SDT(max).
+                                                                        re-training and performs effectively across diverse target suf-
+However, it is worth noting that these suffix configurations
+                                                                        fix configurations. Future works will explore the use of STL
+still outperform the baselines in terms of satisfaction rate.
+                                                                        to specify both safety and performance objectives in DT.
+          Methods                  Reward          Rate
+     SDT(αb = 1, αv = 1)         0.96 ± 0.01    0.97 ± 0.04             Acknowledgement
+    SDT(αb = 1, αv = 10)         0.95 ± 0.02    0.97 ± 0.06             The authors thank the anonymous reviewers for their invalu-
+    SDT(αb = 1, αv = 100)        0.95 ± 0.03    0.99 ± 0.02             able feedback and constructive suggestions. This material is
+    SDT(αb = 10, αv = 1)         0.95 ± 0.02    0.96 ± 0.07             based upon work supported by the National Science Foun-
+    SDT(αb = 100, αv = 1)        0.93 ± 0.03    0.98 ± 0.03             dation under Grant No. CCF-2340776.
+
+Table 3: Evaluation results of reward and satisfaction rate             Impact Statement
+with varying scaling factors.
+                                                                        This paper presents a novel framework within the realm of
+Is SDT robust to rescaling individual predicates?                       reinforcement learning, aiming to advance the field through
+Though scaling individual predicates does not change the                innovative approaches and applications. First of all, the
+sign of a specification, in practice, it is possible that certain       methods, experiments, and results outlined in this paper do
+predicates are dominated if they are scaled down, leading               not pose any ethical concerns. Secondly, it’s crucial for
+to a violation of the specification. To evaluate the rescaling          researchers to proceed with care, especially when setting
+effect, we incorporate two scaling factors into Eq. (6):                specifications and conducting tests in real-world settings,
+                                                                       since misspecified specifications may result in serious and
+                                                       
+  ϕrun = G αb ψbndry ∧ ¬αv ψvel ⇒ F[1,5] αv ψvel             (12)       unforeseen consequences. Lastly, we hope our findings
+                                                                        can provide fresh insights for extending the application of
+We explore various pairings of αb and αv , and the results are          reinforcement learning to broader domains.
+
+                                                                    9
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+References                                                           Chu, X., Tian, Z., Zhang, B., Wang, X., Wei, X., Xia, H.,
+                                                                       and Shen, C. Conditional positional encodings for vision
+Achiam, J., Held, D., Tamar, A., and Abbeel, P. Constrained
+                                                                       transformers. arXiv preprint arXiv:2102.10882, 2021.
+  policy optimization. In International conference on ma-
+  chine learning, pp. 22–31. PMLR, 2017.                             Cohen, M. H. and Belta, C. Model-based reinforcement
+                                                                       learning for approximate optimal control with temporal
+Altman, E. Constrained Markov decision processes. Rout-
+                                                                       logic specifications. In Proceedings of the 24th Interna-
+  ledge, 2021.
+                                                                       tional Conference on Hybrid Systems: Computation and
+                                                                       Control, pp. 1–11, 2021.
+Amodei, D., Olah, C., Steinhardt, J., Christiano, P., Schul-
+ man, J., and Mané, D. Concrete problems in ai safety.              Coogan, S., Arcak, M., and Belta, C. Formal methods
+ arXiv preprint arXiv:1606.06565, 2016.                                for control of traffic flow: Automated control synthesis
+                                                                       from finite-state transition models. IEEE Control Systems
+Balakrishnan, A. and Deshmukh, J. V. Structured reward
+                                                                       Magazine, 37(2):109–128, 2017.
+  shaping using signal temporal logic specifications. In
+  2019 IEEE/RSJ International Conference on Intelligent              Dawson, C. and Fan, C. Robust counterexample-guided
+  Robots and Systems (IROS), pp. 3481–3486. IEEE, 2019.                optimization for planning from differentiable temporal
+                                                                       logic. In 2022 IEEE/RSJ International Conference on
+Bozkurt, A. K., Wang, Y., Zavlanos, M. M., and Pajic, M.
+                                                                       Intelligent Robots and Systems (IROS), pp. 7205–7212.
+  Control synthesis from linear temporal logic specifica-
+                                                                       IEEE, 2022.
+  tions using model-free reinforcement learning. In 2020
+  IEEE International Conference on Robotics and Automa-              Deshmukh, J. V., Donzé, A., Ghosh, S., Jin, X., Juniwal,
+  tion (ICRA), pp. 10349–10355. IEEE, 2020.                            G., and Seshia, S. A. Robust online monitoring of signal
+                                                                       temporal logic. Formal Methods in System Design, 51:
+Brandfonbrener, D., Bietti, A., Buckman, J., Laroche, R.,              5–30, 2017.
+  and Bruna, J. When does return-conditioned supervised
+  learning work for offline reinforcement learning? Ad-              Dokhanchi, A., Hoxha, B., and Fainekos, G. On-line moni-
+  vances in Neural Information Processing Systems, 35:                 toring for temporal logic robustness. In International Con-
+  1542–1553, 2022.                                                     ference on Runtime Verification, pp. 231–246. Springer,
+                                                                       2014.
+Brunke, L., Greeff, M., Hall, A. W., Yuan, Z., Zhou,
+  S., Panerati, J., and Schoellig, A. P. Safe learning in            Donzé, A. On signal temporal logic. In Runtime Verifi-
+  robotics: From learning-based control to safe reinforce-             cation: 4th International Conference, RV 2013, Rennes,
+  ment learning. Annual Review of Control, Robotics, and              France, September 24-27, 2013. Proceedings 4, pp. 382–
+  Autonomous Systems, 5:411–444, 2022.                                 383. Springer, 2013.
+
+Camacho, A., Icarte, R. T., Klassen, T. Q., Valenzano, R. A.,        Donzé, A. and Maler, O. Robust satisfaction of temporal
+  and McIlraith, S. A. Ltl and beyond: Formal languages                logic over real-valued signals. In International Confer-
+  for reward function specification in reinforcement learn-            ence on Formal Modeling and Analysis of Timed Systems,
+  ing. In IJCAI, volume 19, pp. 6065–6073, 2019.                       pp. 92–106. Springer, 2010.
+
+Chen, F., Zhang, J., and Wen, Z. A near-optimal primal-              Donzé, A., Ferrere, T., and Maler, O. Efficient robust mon-
+  dual method for off-policy learning in cmdp. Advances                itoring for stl. In Computer Aided Verification: 25th
+  in Neural Information Processing Systems, 35:10521–                  International Conference, CAV 2013, Saint Petersburg,
+ 10532, 2022.                                                         Russia, July 13-19, 2013. Proceedings 25, pp. 264–279.
+                                                                       Springer, 2013.
+Chen, L., Lu, K., Rajeswaran, A., Lee, K., Grover, A.,
+  Laskin, M., Abbeel, P., Srinivas, A., and Mordatch, I. De-         Eddeland, J., Miremadi, S., Fabian, M., and Åkesson, K.
+  cision transformer: Reinforcement learning via sequence              Objective functions for falsification of signal temporal
+  modeling. Advances in neural information processing                  logic properties in cyber-physical systems. In 2017 13th
+  systems, 34:15084–15097, 2021.                                       IEEE Conference on Automation Science and Engineer-
+                                                                       ing (CASE), pp. 1326–1331. IEEE, 2017.
+Chow, Y., Nachum, O., Faust, A., Duenez-Guzman, E.,
+  and Ghavamzadeh, M. Lyapunov-based safe policy                     Emmons, S., Eysenbach, B., Kostrikov, I., and Levine, S.
+  optimization for continuous control. arXiv preprint                 Rvs: What is essential for offline rl via supervised learn-
+  arXiv:1901.10031, 2019.                                             ing? arXiv preprint arXiv:2112.10751, 2021.
+
+                                                                10
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+Fainekos, G. E. and Pappas, G. J. Robustness of temporal              Kondrup, F., Jiralerspong, T., Lau, E., de Lara, N., Shkrob,
+  logic specifications for continuous-time signals. Theoret-            J., Tran, M. D., Precup, D., and Basu, S. Towards safe
+  ical Computer Science, 410(42):4262–4291, 2009.                       mechanical ventilation treatment using deep offline re-
+                                                                        inforcement learning. In Proceedings of the AAAI Con-
+Fu, J., Kumar, A., Nachum, O., Tucker, G., and Levine,                  ference on Artificial Intelligence, volume 37, pp. 15696–
+  S. D4rl: Datasets for deep data-driven reinforcement                 15702, 2023.
+  learning. arXiv preprint arXiv:2004.07219, 2020.
+                                                                      Kostrikov, I., Fergus, R., Tompson, J., and Nachum, O. Of-
+Fujimoto, S., Meger, D., and Precup, D.         Off-                    fline reinforcement learning with fisher divergence critic
+  policy deep reinforcement learning without explo-                     regularization. In International Conference on Machine
+  ration. corr abs/1812.02900 (2018). arXiv preprint                    Learning, pp. 5774–5783. PMLR, 2021.
+  arXiv:1812.02900, 2018.
+                                                                      Kumar, A., Fu, J., Soh, M., Tucker, G., and Levine, S.
+Furuta, H., Matsuo, Y., and Gu, S. S. Generalized decision              Stabilizing off-policy q-learning via bootstrapping error
+  transformer for offline hindsight information matching.               reduction. Advances in Neural Information Processing
+  In International Conference on Learning Representations,             Systems, 32, 2019a.
+  2022.
+                                                                      Kumar, A., Peng, X. B., and Levine, S. Reward-conditioned
+Gronauer, S. Bullet-safety-gym: Aframework for con-                     policies. arXiv preprint arXiv:1912.13465, 2019b.
+  strained reinforcement learning. 2022.
+                                                                      Kurtz, V. and Lin, H. A more scalable mixed-integer en-
+Gu, S., Chen, G., Zhang, L., Hou, J., Hu, Y., and Knoll, A.             coding for metric temporal logic. IEEE Control Systems
+  Constrained reinforcement learning for vehicle motion                Letters, 6:1718–1723, 2021.
+  planning with topological reachability analysis. Robotics,
+                                                                      Le, H., Voloshin, C., and Yue, Y. Batch policy learning un-
+ 11(4):81, 2022a.
+                                                                        der constraints. In International Conference on Machine
+Gu, S., Yang, L., Du, Y., Chen, G., Walter, F., Wang, J.,               Learning, pp. 3703–3712. PMLR, 2019.
+ Yang, Y., and Knoll, A. A review of safe reinforce-                  Lee, J., Jeon, W., Lee, B., Pineau, J., and Kim, K.-E. Op-
+  ment learning: Methods, theory and applications. arXiv                tidice: Offline policy optimization via stationary distribu-
+  preprint arXiv:2205.10330, 2022b.                                     tion correction estimation. In International Conference
+                                                                        on Machine Learning, pp. 6120–6130. PMLR, 2021.
+Gui, L., Wang, B., Huang, Q., Hauptmann, A., Bisk, Y., and
+  Gao, J. Kat: A knowledge augmented transformer for                  Lee, J., Paduraru, C., Mankowitz, D. J., Heess, N., Precup,
+  vision-and-language. arXiv preprint arXiv:2112.08614,                 D., Kim, K.-E., and Guez, A. Coptidice: Offline con-
+  2021.                                                                 strained reinforcement learning via stationary distribution
+                                                                        correction estimation. arXiv preprint arXiv:2204.08957,
+Guo, S., Zou, L., Chen, H., Qu, B., Chi, H., Philip, S. Y.,             2022.
+  and Chang, Y. Sample efficient offline-to-online rein-
+  forcement learning. IEEE Transactions on Knowledge                  Levine, S., Kumar, A., Tucker, G., and Fu, J. Offline rein-
+  and Data Engineering, 2023.                                           forcement learning: Tutorial, review, and perspectives on
+                                                                        open problems. arXiv preprint arXiv:2005.01643, 2020.
+Hong, K., Li, Y., and Tewari, A. A primal-dual-critic al-
+  gorithm for offline constrained reinforcement learning.             Li, J., Liu, X., Zhu, B., Jiao, J., Tomizuka, M., Tang, C.,
+  arXiv preprint arXiv:2306.07818, 2023.                                and Zhan, W. Guided online distillation: Promoting safe
+                                                                        reinforcement learning by offline demonstration. arXiv
+Hu, S., Shen, L., Zhang, Y., and Tao, D. Graph decision                 preprint arXiv:2309.09408, 2023.
+  transformer. arXiv preprint arXiv:2303.03747, 2023.
+                                                                      Li, X., Vasile, C.-I., and Belta, C. Reinforcement learning
+Ji, J., Zhou, J., Zhang, B., Dai, J., Pan, X., Sun, R., Huang,          with temporal logic rewards. In 2017 IEEE/RSJ Inter-
+   W., Geng, Y., Liu, M., and Yang, Y. Omnisafe: An                     national Conference on Intelligent Robots and Systems
+   infrastructure for accelerating safe reinforcement learning          (IROS), pp. 3834–3839. IEEE, 2017.
+   research. arXiv preprint arXiv:2305.09304, 2023.
+                                                                      Lin, H., Ding, W., Liu, Z., Niu, Y., Zhu, J., Niu, Y., and Zhao,
+Kapoor, P., Balakrishnan, A., and Deshmukh, J. V. Model-                D. Safety-aware causal representation for trustworthy
+  based reinforcement learning from signal temporal logic               reinforcement learning in autonomous driving. arXiv
+  specifications. arXiv preprint arXiv:2011.04950, 2020.                preprint arXiv:2311.10747, 2023.
+
+                                                                 11
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+Liu, Z., Guo, Z., Cen, Z., Zhang, H., Tan, J., Li, B., and            Schmidhuber, J. Reinforcement learning upside down:
+  Zhao, D. On the robustness of safe reinforcement learn-               Don’t predict rewards–just map them to actions. arXiv
+  ing under observational perturbations. arXiv preprint                 preprint arXiv:1912.02875, 2019.
+  arXiv:2205.14691, 2022.
+                                                                      Stooke, A., Achiam, J., and Abbeel, P. Responsive safety
+Liu, Z., Guo, Z., Lin, H., Yao, Y., Zhu, J., Cen, Z., Hu, H.,           in reinforcement learning by pid lagrangian methods. In
+  Yu, W., Zhang, T., Tan, J., et al. Datasets and benchmarks            International Conference on Machine Learning, pp. 9133–
+  for offline safe reinforcement learning. arXiv preprint               9143. PMLR, 2020.
+  arXiv:2306.09303, 2023a.
+                                                                      Tabuada, P. and Neider, D. Robust linear temporal logic.
+Liu, Z., Guo, Z., Yao, Y., Cen, Z., Yu, W., Zhang, T., and              arXiv preprint arXiv:1510.08970, 2015.
+  Zhao, D. Constrained decision transformer for offline safe
+  reinforcement learning. arXiv preprint arXiv:2302.07351,            Toro Icarte, R., Klassen, T. Q., Valenzano, R., and McIlraith,
+  2023b.                                                                S. A. Teaching multiple tasks to an rl agent using ltl.
+                                                                        In Proceedings of the 17th International Conference on
+Madsen, C., Vaidyanathan, P., Sadraddini, S., Vasile, C.-I.,            Autonomous Agents and MultiAgent Systems, pp. 452–
+ DeLateur, N. A., Weiss, R., Densmore, D., and Belta,                   461, 2018.
+ C. Metrics for signal temporal logic formulae. In 2018
+ IEEE Conference on Decision and Control (CDC), pp.                   Vasile, C.-I., Tumova, J., Karaman, S., Belta, C., and Rus, D.
+ 1542–1547. IEEE, 2018.                                                 Minimum-violation scltl motion planning for mobility-
+                                                                        on-demand. In 2017 IEEE International Conference on
+Maler, O. and Nickovic, D. Monitoring temporal proper-                  Robotics and Automation (ICRA), pp. 1481–1488. IEEE,
+ ties of continuous signals. In International Symposium                 2017.
+ on Formal Techniques in Real-Time and Fault-Tolerant
+ Systems, pp. 152–166. Springer, 2004.                                Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones,
+                                                                        L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. At-
+Paster, K., McIlraith, S., and Ba, J. You can’t count on luck:
+                                                                        tention is all you need. Advances in neural information
+  Why decision transformers and rvs fail in stochastic en-
+                                                                        processing systems, 30, 2017.
+  vironments. Advances in Neural Information Processing
+  Systems, 35:38966–38979, 2022.                                      Wang, Y., Yang, C., Wen, Y., Liu, Y., and Qiao, Y. Critic-
+                                                                       guided decision transformer for offline reinforcement
+Peng, X. B., Kumar, A., Zhang, G., and Levine, S.
+                                                                       learning. arXiv preprint arXiv:2312.13716, 2023.
+  Advantage-weighted regression: Simple and scalable
+  off-policy reinforcement learning. arXiv preprint                   Xu, H., Zhan, X., and Zhu, X. Constraints penalized q-
+  arXiv:1910.00177, 2019.                                               learning for safe offline reinforcement learning. In Pro-
+Polosky, N., Da Silva, B. C., Fiterau, M., and Jagannath,               ceedings of the AAAI Conference on Artificial Intelli-
+  J. Constrained offline policy optimization. In Inter-                 gence, volume 36, pp. 8753–8760, 2022.
+  national Conference on Machine Learning, pp. 17801–                 Xu, T., Liang, Y., and Lan, G. Crpo: A new approach for
+  17810. PMLR, 2022.                                                    safe reinforcement learning with convergence guarantee.
+Prudencio, R. F., Maximo, M. R., and Colombini, E. L.                   In International Conference on Machine Learning, pp.
+  A survey on offline reinforcement learning: Taxonomy,                11480–11491. PMLR, 2021.
+  review, and open problems. IEEE Transactions on Neural              Yamagata, T., Khalil, A., and Santos-Rodriguez, R. Q-
+  Networks and Learning Systems, 2023.                                  learning decision transformer: Leveraging dynamic pro-
+Radford, A., Narasimhan, K., Salimans, T., Sutskever, I.,               gramming for conditional sequence modelling in offline
+  et al. Improving language understanding by generative                 rl. In International Conference on Machine Learning, pp.
+  pre-training. 2018.                                                   38989–39007. PMLR, 2023.
+
+Ray, A., Achiam, J., and Amodei, D. Benchmarking safe ex-             Zhang, B., Qiu, X., and Tan, X. Balancing therapeutic effect
+  ploration in deep reinforcement learning. arXiv preprint              and safety in ventilator parameter recommendation: An
+  arXiv:1910.01708, 7(1):2, 2019.                                       offline reinforcement learning approach. Engineering
+                                                                        Applications of Artificial Intelligence, 131:107784, 2024.
+Sahin, Y. E., Quirynen, R., and Di Cairano, S. Autonomous
+  vehicle decision-making and monitoring based on signal              Zhang, Q., Zhang, L., Xu, H., Shen, L., Wang, B., Chang, Y.,
+  temporal logic and mixed-integer programming. In 2020                 Wang, X., Yuan, B., and Tao, D. Saformer: A conditional
+  American Control Conference (ACC), pp. 454–459. IEEE,                 sequence modeling approach to offline safe reinforcement
+  2020.                                                                 learning. arXiv preprint arXiv:2301.12203, 2023.
+
+                                                                 12
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+Zhang, X., Peng, Y., Luo, B., Pan, W., Xu, X., and Xie,
+  H. Model-based safe reinforcement learning with time-
+  varying state and control constraints: An application to
+  intelligent vehicles. arXiv preprint arXiv:2112.11217,
+  2021.
+Zhang, Z. and Haesaert, S. Modularized control synthesis
+  for complex signal temporal logic specifications. arXiv
+  preprint arXiv:2303.17086, 2023.
+Zhao, G., Lin, J., Zhang, Z., Ren, X., Su, Q., and Sun, X. Ex-
+  plicit sparse transformer: Concentrated attention through
+  explicit selection. arXiv preprint arXiv:1912.11637,
+  2019.
+
+Zheng, Q., Zhang, A., and Grover, A. Online decision trans-
+  former. In international conference on machine learning,
+  pp. 27042–27059. PMLR, 2022.
+Zhou, W. and Li, W. Programmatic reward design by
+  example. Proceedings of the AAAI Conference on Ar-
+  tificial Intelligence, 36(8):9233–9241, Jun. 2022. doi:
+  10.1609/aaai.v36i8.20910.
+
+
+
+
+                                                                 13
+             Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+A. Environment Setting
+Reward and cost functions defined in the environments. We use the Bullet-safety-gym (Gronauer, 2022)
+environments for this set of experiments. In the Run environments, agents receive rewards for high-speed movement
+between two safety boundaries. However, they incur penalties when they either cross these boundaries or surpass a velocity
+threshold that is specific to different types of robots. The reward and cost function are defined as:
+                                                              −yt vx + xt vy
+                                                  r(st ) =       p
+                                                           1 + || x2t + yt2 − r|
+                                                  c(st ) = 1(|x| > xlim )
+where st = [xt , yt , vx , vy ], r is the radius of the circle, and xlim specifies the range of the safety region. In the Circle
+environments, agents gain rewards for circular motion in a clockwise direction but are required to remain inside a designated
+safe area, which is smaller than the circumference of the intended circle. The reward and cost functions are defined as:
+                                              r(st ) = ||xt−1 − g||2 − ||xt − g||2
+                                              c(st ) = 1(|y| > ylim or ||vt ||2 > vlim )
+where ylim is the safety boundary and vlim is the velocity limit. To establish the criteria that zero cost means no violations of
+the specification, we relabel the cost. For the Circle environment, the relabeled cost of the current state is 1 if the costs
+of its previous 5 steps are all 1. For the Run environment, the relabeled cost of the current state is 1 if the costs related to
+speeding of its previous 5 steps are all 1 or the cost related to safe boundary crossing is 1.
+Offline dataset visualization. The dataset suffix-reward and relabeled cost-reward plots for the training tasks Ant-Run,
+Ball-Run, Drone-Run, Ball-Circle, Car-Circle, and Drone-Circle, are shown in Figure. 5. Analyzing the
+figures provided, we can generally discern an increasing trend for the reward in relation to the cost. In other words, as cost
+increases, so too might the reward return, underscoring the inherent trade-off between reward and cost. This phenomenon
+aligns with findings discussed in previous works (Liu et al., 2023b; 2022), which is also one of the reasons that SDT
+is evaluated in Bullet-Safety-Gym environments. In contrast, the same clear increasing trend is not observable in
+SafetyGymnasium environments (Ray et al., 2019; Liu et al., 2023a; Ji et al., 2023), such as Goal, Button, and Push.
+Moreover, highly stochastic environments pose unique challenges to the RCSL algorithms (Paster et al., 2022) and are
+beyond the scope of this paper.
+
+
+
+
+Figure 5: Illustration of the offline dataset. The first-row plots show the relabeled cost versus reward and the second-row
+plots show the suffix (ρsuf (τ1:T , 1, ϕ)) versus reward. Each column represents an environment. Each point denotes a
+collected trajectory (not necessarily to be unique) with corresponding episodic relabeled cost (or suffix) and reward value.
+
+SDT and baselines implementation. Our implementation of SDT is built on the public codebase provided by the OSRL
+library3 , which offers a collection of elegant and extensible implementations of state-of-the-art offline safe RL algorithms.
+We use the STLCG toolbox4 to compute the robustness value of the specification and add the corresponding prefix and suffix
+   3
+       https://github.com/liuzuxin/OSRL
+   4
+       https://github.com/StanfordASL/stlcg
+
+                                                                 14
+             Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+tokens as input to the transformers. In our experiments, we train SDT and baselines 200000 steps to ensure convergence
+and keep the rest of the hyperparameters used in the library unchanged. The constrained optimization RL baselines
+are trained and evaluated using a cost threshold of d = 0. During evaluation, the target cost is 0 for CDT and RvS-
+RC. The target suffix is {0.02, 0.01, 0.02, 0.09, 0.06, 0.02, 0.06, 0.06, 0.04} for SDT and RvS-Rρ and the target reward
+is {720, 440, 410, 610, 400, 650, 300, 300, 600} for SDT and the conditioned RL baselines in Ant-Run, Ball-Run,
+Drone-Run, Ball-Circle, Car-Circle, Drone-Circle, Ball-Reach, Car-Reach, and Drone-Reach,
+respectively.
+
+B. Complete Results of SDT
+The full evaluation results for different trained policies are presented in Table 4. The columns of average performance are
+the same as Table 2. All values are averaged among 3 random seeds and 20 trajectories for each seed. SDT, CDT, RvS-Rρ,
+and RvS-RC are all evaluated using the same target reward. Both SDT and RvS-Rρ undergo evaluation with the same target
+suffix, while CDT, RvS-RC, and other baseline methods are examined using the same target cost of zero. BC-Safe is fed
+with solely the zero-violation trajectories, but it fails to learn zero-violation policies and exhibits conservative performance
+and low reward. Our method shows high satisfaction rates, suggesting it consistently adheres to the safety specifications
+throughout various environments. RvS-Rρ also performs well but cannot realize consistent performance in all environments,
+e.g. in Ball-Run environment, it only has marginal improvement over BC-safe. One reason is that RvS-Rρ does not use
+sequential modeling as transformers and thus falls short of learning temporal policies. The Q-learning-based algorithms,
+including BCQ-Lag, BEAR-Lag, and CPQ, as well as COptiDICE, vacillate between excessive conservatism and riskiness.
+For example, CPQ obtains perfect satisfaction in Car-Cricle environment but achieves zero satisfaction in Ball-Run
+and Drone-Run environments; BEAR-Lag shows high rewards but also high costs in Circle environemnts, suggesting
+it takes more risks that could lead to unsafe outcomes. However, they have the stitching ability and achieve higher rewards
+than the conditioned RL baselines whose reward is less than the maximum reward of safe trajectories.
+
+                            Ant-Run                                    Ball-Run                                  Drone-Run                                    Average
+  Methods
+              Reward ↑       Cost ↓         Rate ↑       Reward ↑       Cost ↓         Rate ↑       Reward ↑        Cost ↓        Rate ↑       Reward ↑       Cost ↓         Rate ↑
+ SDT(ours)   0.95±0.01       0.0±0.0       1.0±0.0      0.97±0.01       0.0±0.0       1.0±0.0      0.97±0.01      0.98±3.43     0.92±0.02     0.96±0.01      0.33±2.04     0.97±0.04
+  RvS-Rρ      0.88±0.1       0.0±0.0       1.0±0.0      0.56±0.37     22.62±26.14     0.5±0.41     0.95±0.06     4.07±16.12     0.87±0.02     0.79±0.28     8.89±20.28     0.79±0.32
+   CDT       0.95±0.02      0.07±0.4      0.97±0.05     0.98±0.01      0.63±2.44     0.85±0.18     0.96±0.05      0.25±1.27     0.95±0.04     0.96±0.03      0.32±1.62     0.92±0.12
+  RvS-RC     0.87±0.17     0.43±0.99       0.8±0.15     2.02±0.56     49.9±19.22     0.03±0.05      0.91±0.1     10.68±20.09    0.75±0.32     1.27±0.63     20.34±26.69    0.53±0.41
+  BC-safe    0.92±0.06     0.25±0.77      0.88±0.05     0.52±0.36     9.18±12.72     0.48±0.24     0.88±0.12      0.12±0.78     0.97±0.02     0.78±0.29      3.18±8.5      0.78±0.25
+  BCQ-Lag     0.8±0.18     2.78±6.03      0.67±0.31     0.83±0.42     10.68±16.04    0.22±0.27     1.06±0.16     76.77±32.92    0.02±0.02      0.9±0.3      30.08±39.49     0.3±0.36
+ BEAR-Lag    0.01±0.03       0.0±0.0       1.0±0.0      1.91±1.32     87.67±0.47      0.0±0.0      0.63±0.63     93.23±31.76     0.0±0.0      0.85±1.16     60.3±46.47     0.33±0.47
+   CPQ       0.03±0.05       0.0±0.0       1.0±0.0      2.65±1.26     64.33±29.94     0.0±0.0      0.81±0.38     86.53±45.67     0.0±0.0      1.16±1.33     50.29±48.38    0.33±0.47
+ COptiDICE   0.78±0.07      0.88±3.7       0.9±0.04     0.87±0.04      5.0±4.55      0.33±0.47     1.05±0.08     59.62±10.71     0.0±0.0       0.9±0.13     21.83±27.68    0.41±0.46
+
+                           Ball-Circle                                 Car-Circle                                Drone-Circle                                 Average
+  Methods
+              Reward ↑       Cost ↓         Rate ↑       Reward ↑       Cost ↓         Rate ↑       Reward ↑        Cost ↓        Rate ↑       Reward ↑       Cost ↓         Rate ↑
+ SDT(ours)   0.86±0.03     0.48±1.02      0.77±0.06     0.86±0.02      2.27±6.15     0.85±0.07     0.94±0.12      0.07±0.4      0.97±0.02     0.89±0.08      0.94±3.73      0.86±0.1
+  RvS-Rρ     0.75±0.06     0.87±1.59      0.68±0.15     0.76±0.09      1.93±4.85     0.82±0.09     0.93±0.03      0.47±1.8       0.9±0.07     0.81±0.11      1.09±3.19      0.8±0.14
+   CDT       0.89±0.02     1.08±1.42       0.5±0.07     0.91±0.01      4.53±6.37     0.42±0.08     0.95±0.02      1.07±1.52     0.55±0.04     0.92±0.03      2.23±4.2      0.49±0.09
+  RvS-RC     0.72±0.21     6.93±24.05      0.6±0.15     0.71±0.28     13.42±28.14    0.57±0.02     0.83±0.27      8.6±35.25     0.68±0.05     0.75±0.26     9.65±29.64      0.62±0.1
+  BC-safe    0.59±0.23     2.22±3.55       0.5±0.15     0.41±0.28     12.45±15.38    0.48±0.14     0.86±0.13      2.58±3.86      0.5±0.11     0.62±0.28     5.75±10.51     0.49±0.13
+  BCQ-Lag    0.95±0.14     19.78±7.58      0.0±0.0      0.66±0.27     21.8±17.81     0.25±0.11     1.37±0.04     58.38±5.96      0.0±0.0      0.99±0.34     33.32±21.25    0.08±0.13
+ BEAR-Lag    1.01±0.12     15.35±8.45      0.0±0.0      0.94±0.15     38.8±16.71      0.0±0.0      1.27±0.08     45.45±12.4      0.0±0.0      1.07±0.18      33.2±18.3      0.0±0.0
+   CPQ       0.79±0.05     2.28±4.01      0.67±0.47     0.86±0.03       0.0±0.0       1.0±0.0      0.12±0.17     14.92±30.51     0.5±0.22     0.59±0.35     5.73±18.94     0.72±0.36
+ COptiDICE   0.82±0.09     8.28±2.93      0.02±0.02     0.57±0.07     22.95±26.69    0.27±0.12     0.59±0.05      5.98±5.93     0.22±0.06     0.66±0.13     12.41±17.57    0.17±0.13
+                           Ball-Reach                                  Car-Reach                                 Drone-Reach                                  Average
+  Methods
+              Reward ↑       Cost ↓         Rate ↑       Reward ↑       Cost ↓         Rate ↑       Reward ↑        Cost ↓        Rate ↑       Reward ↑       Cost ↓         Rate ↑
+ SDT(ours)   0.61 ± 0.03   0.01 ± 0.04    0.68 ± 0.02   0.72 ± 0.02   -0.01 ± 0.04   0.62 ± 0.18   0.91 ± 0.02   0.01 ± 0.01    0.98 ± 0.03   0.75 ± 0.13    0.0 ± 0.03    0.76 ± 0.19
+  RvS-Rρ     0.55 ± 0.07   0.01 ± 0.03    0.7 ± 0.05    0.3 ± 0.18    -0.01 ± 0.12   0.75 ± 0.2    0.81 ± 0.14   -0.02 ± 0.12   0.5 ± 0.25    0.55 ± 0.25   -0.01 ± 0.1    0.65 ± 0.22
+  BC-safe    0.63 ± 0.26   -0.06 ± 0.09   0.22 ± 0.02   0.41 ± 0.29   -0.05 ± 0.19   0.45 ± 0.2    0.69 ± 0.29   -0.01 ± 0.04   0.35 ± 0.05   0.58 ± 0.3    -0.04 ± 0.12   0.34 ± 0.15
+
+
+Table 4: Complete evaluation results of the normalized reward, cost, and satisfaction rate. ↑: the higher the reward, the
+better. ↓: the lower the cost (closer to 0), the better. Agents with a higher satisfaction rate than BC-safe are considered safe.
+Gray: unsafe agents. Bold: the best in the respective metric among safe agents.
+
+Target suffix configurations. The different target suffix configurations used in section 5.3 are shown in Figure 6. Due to
+
+                                                                                        15
+          Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+the G in the specification defined in Eq. (6) and (7), the suffix is monotonically increasing. Recall that positive robustness
+values indicate that the specification is satisfied and a higher value indicates stronger satisfaction. Therefore, we set positive
+robustness values as our target suffix for evaluation. As shown in Figure 5, the suffix associated with safe trajectories yielding
+high rewards is nearly 0, which aligns with the tempting concept in (Liu et al., 2022). This suggests that aiming for both a
+high reward and a high target suffix may lead to reduced performance, as achieving such a combination is impractical. In the
+environments, a high reward means navigation along the safety boundary, while a high suffix denotes maintaining distance
+from it. This disparity explains why satisfaction rates of SDT(max) and SDT(mean) decrease compared to SDT(ours). In
+the case of SDT(linear), a target suffix smaller than that in SDT(ours) is overwhelmed by a high target reward, thus resulting
+in violations of satisfaction. Empirically, a fixed target suffix works best among these tested configurations.
+
+
+
+
+Figure 6: Illustration of different target suffix configurations. i) SDT(ours): fixed target suffix ii) SDT(linear): linearly
+increasing target suffix; iii) SDT(mean): average suffix from safe trajectories as target suffix; iiii) SDT(max): maximum
+suffix from safe trajectories as target suffix.
+
+
+
+
+Figure 7: Evaluation results of DT and DT with reward prefix during training. The solid line and the light shade area
+represent the mean and mean ± standard deviation. The normalized reward follows the evaluation protocol in D4RL.
+
+
+
+                                                               16
+             Temporal Logic Specification-Conditioned Decision Transformer for Offline Safe Reinforcement Learning
+
+C. Experiments of Decision Transformers
+To demonstrate the role of the prefix, we evaluate the performance of the Decision Transformers (DT) and DT with reward
+prefix on the D4RL benchmark (Fu et al., 2020). We use the official codebase of DT5 and use the default hyperparameters
+to train Halfcheetah, Walker2D, and Hopper on different types of dataset: medium that collected from a partially-
+trained policy; medium-replay that consists of recording all samples in the replay buffer observed during training
+until the policy reaches the medium level of performance; and medium-expert that contains equal amounts of expert
+demonstrations and suboptimal data. DT and DT with reward prefix are evaluated every 10000 steps during training and
+the results are shown in Figure 7. The reward prefix is beneficial not only to the performance after convergence but also to
+facilitate the training process for most of the tasks since DT with reward prefix achieves higher reward. Another observation
+is that the impact of the reward prefix is obvious in medium and medium-replay datasets, while the improvement is
+marginal in medium-expert datasets, indicating that the reward prefix has greater importance in learning good policies
+from suboptimal data. Empirically, the better performance of introducing the reward prefix supports our augments in
+section 4.3 that the prefix is not redundant to the suffix but provides additional information that promotes policy learning.
+
+
+
+
+   5
+       https://github.com/kzl/decision-transformer
+
+                                                              17
+

@@ -1,0 +1,512 @@
+                                            LTLCodeGen: Code Generation of Syntactically Correct Temporal
+                                                          Logic for Robot Task Planning
+                                          Behrad Rabiei∗       Mahesh Kumar A.R.∗            Zhirui Dai      Surya L.S.R. Pilla     Qiyue Dong        Nikolay Atanasov
+
+
+                                           Abstract— This paper focuses on planning robot navigation
+                                        tasks from natural language specifications. We develop a mod-
+                                        ular approach, where a large language model (LLM) translates
+                                        the natural language instructions into a linear temporal logic
+                                        (LTL) formula with propositions defined by object classes in a
+                                        semantic occupancy map. The LTL formula and the semantic
+                                        occupancy map are provided to a motion planning algorithm
+
+
+
+
+arXiv:2503.07902v2 [cs.RO] 6 Aug 2025
+                                        to generate a collision-free robot path that satisfies the natural
+                                        language instructions. Our main contribution is LTLCodeGen,
+                                        a method to translate natural language to syntactically correct
+                                        LTL using code generation. We demonstrate the complete task
+                                        planning method in real-world experiments involving human
+                                        speech to provide navigation instructions to a mobile robot.
+                                        We also thoroughly evaluate our approach in simulated and
+                                        real-world experiments in comparison to end-to-end LLM task
+                                        planning and state-of-the-art LLM-to-LTL translation methods.
+                                                                                                             Fig. 1: Our method is able to interpret natural language
+                                                                                                             instructions for a robot navigation task, translate them into an
+                                                              I. I NTRODUCTION                               LTL formula free of syntax errors, and plan a robot path that
+                                           The ability to understand and execute tasks specified in          satisfies the instructions. The figure shows an example of a
+                                        natural language is an important aspect of enabling au-              Jackal robot fetching an umbrella, bringing it to a backpack,
+                                        tonomous robot assistants in our daily lives. A fundamental          and finally navigating to a microwave oven.
+                                        challenge is to translate high-level natural-language task
+                                        descriptions into low-level, executable robot actions. Large         handle the whole process of converting natural language
+                                        Language Models (LLMs), such as GPT-4 [1], LLaMA-2                   instructions into executable robot actions robustly without
+                                        [2], and DeepSeek-R1 [3], have demonstrated remarkable               careful design of different components including symbol
+                                        natural language proficiency and language-based task rea-            grounding, task decomposition, sub-task arrangement, formal
+                                        soning [4], [5] and planning capabilities [6]. LLMs play             logic translation, path generation, execution monitoring, and
+                                        different roles in the planning of robot task executions for         closed-loop feedback.
+                                        natural language specifications [4], [5], [7]–[13]. An LLM              Many works have explored an end-to-end task planning
+                                        can be a context extractor, which connects natural language          approach where an LLM converts natural language instruc-
+                                        concepts to real-world objects and locations, a process known        tions directly into robot actions [5], [8]–[10], [18], [19]. In
+                                        as symbol grounding [14]. LLMs are also used as translators,         this paper, we consider an alternative modular task planning
+                                        for example, to convert natural language instructions into           approach where an LLM converts natural language instruc-
+                                        linear temporal logic (LTL) formulas [7], signal temporal            tions into a task model first and then composes it with a
+                                        logic (STL) [5], [13], planning domain definition language           robot model and uses task and motion planning to generate
+                                        (PDDL) [13], or executable code [8], [10], [15]. An LLM              robot actions. To ground the concepts in natural language
+                                        can also operate as a task scheduler, which decomposes               instructions, our approach relies on a semantic occupancy
+                                        the task into sub-tasks, infers the order and the dependen-          map [20] constructed from range observations and semantic
+                                        cies among the sub-tasks, and distributes them to different          segmentation observations [21]. The map captures the free
+                                        robots [5], [11]. LLMs also may cooperate with other multi-          and occupied space as well as the categories of objects
+                                        modality models to better fuse environment feedback into             around the robot, allowing a connection to the objects that
+                                        task planning and execution [9], [12]. However, recent works         the natural language instructions may be referring to. We
+                                        [6], [16], [17] have shown that LLMs may not always                  introduce a novel code generation approach, LTLCodeGen,
+                                          ∗ Equal contribution.
+                                                                                                             to convert the natural language instructions into an LTL
+                                          We gratefully acknowledge support from ARL DCIST CRA W911NF17-
+                                                                                                             formula. The LTL formula and the semantic occupancy map
+                                        2-0181 and ONR N00014-23-1-2353.                                     are provided to a motion planning algorithm to generate a
+                                          The authors are with the Contextual Robotics Institute,            collision-free path that satisfies the task requirements. An
+                                        University of California San Diego, La Jolla, CA 92093, USA,
+                                        e-mails:        {brabiei,ar223,zhdai,slpilla,q4dong,                 example of our task planning approach is shown in Fig. 1.
+                                        natanasov}@ucsd.edu.                                                    The contributions of this paper are summarized as follows.
+ 1) We propose LTLCodeGen, a method to translate natural        propose to fine-tune LLMs for translating temporal logic.
+    language to syntactically correct linear temporal logic     However, it is still difficult to scale up as the LTL formula
+    formulas using code generation.                             becomes more complicated. To obtain both the syntax robust-
+ 2) We develop a modular task planning approach that con-       ness of code generation and the post-processing convenience
+    verts natural language instructions to LTL over semantic    of temporal logic, we develop LTLCodeGen, which uses
+    occupancy map and uses motion planning to generate          LLMs to generate code that outputs LTL formulas. LTL-
+    robot paths that satisfy the task requirements.             CodeGen makes the whole system more robust to handle
+ 3) We compare LTLCodeGen with NL2LTL [7] and LLMs              more complicated tasks and enables optimal planning for
+    fine-tuned for LTL translation [22] on both human-          the instruction [7], [29].
+    written and synthetic datasets. We also compare our task
+    planning approach with end-to-end LLM-based task            B. Scene Representation
+    planning on the GameTraversalBenchmark (GTB) [6].              A semantically annotated scene representation is essential
+    Additionally, we conduct real-world robot experiments       for accurate instruction interpretation. It must support symbol
+    with tasks of different difficulty levels, and perform      grounding, collision checking, and task progress feedback
+    ablation studies to analyze the importance of different     to ensure safe and correct execution. Some works aim to
+    components in LTLCodeGen.                                   build such representations, such as a semantic occupancy
+                                                                octree [20], or a scene graph [30]–[34]. However, LLMs
+                    II. R ELATED WORK                           have a limited context window size, so the scene should be
+   The components of natural language task planning include     described to the LLM in a compact way. Existing works
+a) translating natural language instructions into a machine-    provide descriptions of involved objects only [8], [11], [25]
+interpretable format; b) constructing a scene representation    or compress the scene in a concise format and then rely on
+with rich information to support instruction grounding and      the LLM to extract items related to the instruction [7]. Other
+task planning; c) planning the task based on the translated     works also consider obtaining scene information in different
+instruction and the scene representation.                       modalities [9], [35].
+
+A. Natural Language Instruction Translation                     C. Task and Motion Planning
+   Regardless of whether LLMs understand human language,           Prior works focus on different aspects of task and motion
+their ability to transform text input to different text out-    planning for natural language instruction. For improved
+puts based on specific requirements is evident [23]. Since      feasibility, SayCan [4] fuses robot-state-based action affor-
+LLMs are trained on internet-scale text data, the common        dances into the LLM planning procedure. InnerMonologue
+knowledge stored in the model is helpful for inferring the      [18] continually injects new sensor observations as feedback
+human intent embedded in the natural language instructions.     into the LLM planner to correct the execution online. Some
+Converting instructions into machine-interpretable format       works focus on multi-robot collaboration using a single LLM
+involves two challenges. One is to associate concepts, e.g.     to reason about task decomposition and allocation [11] or a
+objects, in the instructions, to physical locations in space,   dialogue between multiple LLMs [5]. In contrast, our work
+which is known as symbol grounding. Whether LLMs solve          focuses on generating an optimal path satisfying the LTL
+symbol grounding well remains unclear [23], [24] due to the     formula that correctly reflects the instruction.
+debate on whether LLMs understand human language. The
+other challenge is to translate the symbol-grounded instruc-                    III. P ROBLEM S TATEMENT
+tion to a machine-interpretable format that must correctly         Enabling mobile robots to navigate following human
+encode both the task objectives and constraints.                instructions in natural language is essential for effective
+   Recent works use different task representation formats,      human-robot interaction. We consider a mobile robot with
+including LTL [7], [22], STL [25], [26], PDDL [13],             state xt ∈ X ⊆ Rn at time t equipped with an RGBD sensor.
+code [8], [10], [11], [15], or others (e.g. waypoints [5],      The robot first needs to construct a map of its environment,
+action scores [4], API calls [12]). Because LLMs are usually    which stores information needed to understand the semantics
+trained with a large corpus of code examples, they excel in     of a human instruction. To ensure safe navigation, the map
+writing high-quality code that calls predefined APIs based on   should also capture the presence of obstacles correctly.
+the instruction, as shown in CaP [8], ProgPrompt [10], and
+                                                                Definition 1. A semantic occupancy map is a function
+Demo2Code [15]. However, it is still a challenge to generate
+                                                                m : X → C, which associates a robot state x ∈ X to a
+code that provides an optimal and semantically correct plan
+                                                                semantic category m(x) ∈ C present at state x. The set C
+for direct task execution. Other works use LTL [7] or STL
+                                                                is a set of semantic categories, including object classes, a
+[25], whose alignment with the user intent can be examined,
+                                                                FREE class that represents unoccupied free space, a NULL
+to provide a task constraint for motion planning algorithms
+                                                                class that represents occupied space with unknown semantic
+[27]–[29]. However, LLMs are not trained with various
+                                                                category, and an UNKNOWN class for unobserved space.
+temporal logic examples and, even with carefully designed
+examples in the prompt, LLMs still generate syntactically         Fig. 2 shows an example of a semantic occupancy map.
+incorrect LTL formulas occasionally. Some works [22], [26]      For example, given a semantic occupancy map of a house, the
+robot may be asked to tidy up the dining table and place the
+dishes in a dishwasher. Using the map, the robot can connect
+the instructions to the physical locations of the table and
+dishwasher and plan its motion to navigate to these locations
+safely and follow the sequence required by the instructions.
+   To construct a connection between the natural language
+instructions and the semantic occupancy map, we define
+boolean propositions that capture the task requirements.
+Definition 2. An atomic proposition is a boolean function
+pc (x) that evaluates true when the robot state x is sufficiently
+close to a class c ∈ C in a semantic occupancy map m:
+             (                                                         Fig. 2: Semantic occupancy map of an office environment.
+               true, ∃y ∈ X , m(y) = c, ∥x − y∥ ≤ rc                   Each voxel encodes both occupancy and semantic classifi-
+   pc (x) =                                                   (1)
+               false, otherwise,                                       cation, represented by distinct colors: cyan indicates walls,
+                                                                       orange and blue denote office tables, sky blue represents a
+where rc is a distance threshold associated with class c.
+                                                                       cart, and lime green corresponds to carpeted floors.
+Denote the set of atomic propositions by AP = {pc |c ∈ C}.
+   To capture which atomic propositions are satisfied at               propositions using code generation. Finally, in Sec. IV-C,
+different robot states, we define a label map.                         we present a task planning approach that takes the seman-
+                                                                       tic occupancy map and the LTL formula and generates a
+Definition 3. Given a semantic occupancy map m and                     collision-free robot path that satisfies the task requirements.
+atomic propositions AP, a label map l : X → 2AP as-                    Fig. 3 shows an overview.
+sociates a robot state x to the set of atomic propositions that
+evaluate true at x, i.e., pc (x) = true for all pc ∈ l(x) ⊆ AP.        A. Semantic Occupancy Mapping
+  The atomic propositions satisfied along a path x1:T :=                  Before the robot can interpret a desired task, it needs a
+x1 , x2 , . . . , xT are obtained from the label map as l(x1:T ) :=    representation of the environment that captures occupancy
+l(x1 ), l(x2 ), . . . l(xT ). The sequence l(x1:T ) is called a word   (for collision avoidance) and semantic classes (for task
+and it encodes the task requirements satisfied along the robot         grounding). We assume that the robot is able to explore the
+path x1:T . Finally, we use the notation l(x1:T ) |= µ to              environment first (either autonomously or through teleoper-
+indicate that all requirements of a task µ are satisfied by            ation) to construct a semantic occupancy map (Definition 1)
+a word l(x1:T ). We define the motion planning problem                 using an RGB and range sensor. Our approach requires three
+associated with a natural language task µ as follows.                  components: an odometry algorithm (e.g., Direct LiDAR
+                                                                       Odometry (DLO) [36]) that estimates the robot’s pose, a
+Problem. Given a semantic occupancy map m, a natural                   semantic segmentation algorithm (e.g., YOLO [21]) that as-
+language navigation task µ defined in terms of semantic                signs semantic labels from C to image pixels in real time, and
+classes C, a cost function d : X × X → R>0 , and an initial            a semantic occupancy mapping algorithm (e.g., SSMI [20])
+robot state x1 ∈ X , plan a path x1:T that satisfies µ with            to fuse semantically labeled point clouds, constructed from
+minimum cost:                                                          the segmentation and range measurements, into a semantic
+                          T
+                          X −1                                         occupancy map. We chose DLO [36] for localization, YOLO
+                 min             d(xt , xt+1 )                         [21] for semantic segmentation, and SSMI [20] for semantic
+              T ∈N,x1:T
+                          t=1
+                                                                (2)
+                                                                       occupancy mapping due to their efficiency, robustness, and
+   s.t.   l(x1:T ) |= µ; m(xt ) = FREE, t = 1, . . . , T.              the availability of open-source code. Other alternatives would
+   A key aspect of solving the problem above is to ground the          also be compatible with our approach.
+task specification µ to states in the map m with associated               While SSMI [20] constructs a 3D semantic occupancy
+semantic classes and atomic propositions and to encode the             map, in our experiments we consider a ground wheeled robot
+dependencies among the atomic propositions according to                navigating on a 2D plane. We project the 3D map m3D onto
+µ. In the next section, we propose an LLM code generation              this plane and discard voxels outside of a vertical region
+technique to generate LTL from µ using the atomic propo-               of interest Z = {z|zground < z < zceiling }. Specifically,
+sitions defined by the semantic occupancy map m.                       we obtain a 2D semantic occupancy map m as follows:
+                                                                       1) m(x, y) = UNKNOWN if the entire vertical column
+     IV. ROBOT TASK P LANNING VIA LTLC ODE G EN                        of voxels at (x, y) is unobserved; 2) m(x, y) = FREE if
+  Our approach to the task planning problem described in               the vertical column of voxels at (x, y) contains observed
+the previous section begins with constructing a semantic               voxels and all of them are free; 3) m(x, y) = NULL if
+occupancy map, which we discuss in Sec. IV-A. Next, in                 all the occupied voxels in the column at (x, y) are labeled
+Sec. IV-B, we introduce our main contribution, LTLCode-                with
+                                                                       S NULL; 4) otherwise, we pick the semantic class from
+Gen, a method to translate natural language to syntactically             z∈Z {m3D (x, y, z)} \ { UNKNOWN , FREE , NULL } with the
+correct LTL formulas over semantic occupancy map atomic                largest z location. The robot uses m(x) to interpret the
+Fig. 3: Overview of robot task planning using LTL code generation. Given a semantic occupancy map (left), we convert
+natural language instructions into a syntactically correct LTL formula using an LLM code generation approach (top). A
+label map of atomic propositions (bottom, middle), obtained from the map semantic information, and an Büchi automaton
+(top, right), obtained from the LTL formula, are used as inputs to a motion planning algorithm to generate a collision-free
+semantically valid robot path that executes the task.
+
+
+        TABLE I: Grammar for LTL formulas ϕ and φ.                   mula ϕµ . Our LTLCodeGen approach inherits the robustness
+  pc     (Atomic Proposition)   ϕ∨φ     (Or)    ϕUφ      (Until)     and expressiveness capabilities of LLM code generation and
+  ¬ϕ         (Negation)         ϕ⇒φ   (Imply)    Fϕ   (Eventually)
+ ϕ∧φ            (And)            Xϕ    (Next)    Gϕ     (Always)     the convenience to verify the LTL syntax as a consequence
+                                                                     of the code syntax correctness.
+natural language instructions by identifying regions that
+contain categories of interest and to ensure collision-free task     IV.1: Object Identification
+
+planning and execution.                                              Your task is to convert the object names to their unique
+                                                                     id based on given object id correspondences. Use the
+                                                                     object IDs provided in the object ID correspondences for
+B. Translating Natural Language to LTL                               conversion. The conversion should take the context of
+                                                                     each sentence into account, so that objects can be
+   This section describes our main contribution, an approach         correctly correlated to the text.
+                                                                     Here are a few examples:
+to translate natural language instructions to LTL using code         Object ID correspondence:
+generation, ensuring syntactic correctness of the resulting              'object_28' : 'refrigerator'
+                                                                         'object_31' : 'bottle'
+formulas. LTL is a widely used and sufficiently expressive               ...
+formalism for expressing a variety of robot tasks [37].              Input text: Take the teddy bear, then pick the bottle.
+                                                                     Always avoid the refrigerator.
+   LTL formulas are obtained from a set of atomic propo-             Output text: Take object_36, then pick object_31. Always
+sitions, logic operators (∧, ∨, ¬), and temporal operators           avoid the object_28.
+                                                                     ...
+(U, F, X, G, ⇒) with syntax summarized in Table I. We                Using the provided examples, convert the objects in the
+assume that the task µ can be translated to a syntactically          following text into their unique IDs.
+                                                                     Object ID correspondence: {object ids}
+co-safe (sc) LTL formula [38]. Any word that satisfies an sc-        Input text: {natural language instruction}
+LTL formula consists of a finite satisfying prefix followed by       Output text:
+any infinite continuation that does not affect the formula’s
+truth value. Thus, sc-LTL formulas allow task satisfaction              Object Category Identification: To ground the semantics
+verification and task planning over finite words.                    of the natural language instruction µ with respect to the cate-
+   Although LLMs can translate natural language to LTL               gories in the semantic occupancy map m(x), LTLCodeGen
+formulas using several examples provided with the prompt,            first rephrases the instruction µ with unique IDs of semantic
+LTL formulas generated this way are prone to syntax errors,          classes in C. As shown in Code IV.1, we first describe the
+such as missing parentheses or operands. Our key idea is             task of replacing the objects in the instruction with unique
+to use an LLM to generate (Python) code that describes a             IDs. Then, we provide examples of inputs and corresponding
+natural language instruction µ using a predefined library of         expected outputs to the LLM. Finally, we provide the unique
+functions, defining the LTL logic and temporal operators.            IDs of semantic classes in C, then ask for the instruction µC
+The generated code is then executed to output an LTL for-            rephrased with IDs, from which we identify categories Cµ
+present in both the map and the instruction.                      IV.5: Provide the Instruction to Translate
+                                                                  # Now, please finish the following Python code for
+   Code Generation: We first briefly describe the code            translating the instruction to LTL formula.
+                                                                  # The returned output should only contain the code that
+writing task in comments. Then, to make sure that the LLM         starts with `def` and ends with `return` statement.
+generates code without undefined variables or functions, we       def question():
+                                                                      """
+show the available variables and library functions via import         {instruction}{previous_answer}{failure_reason}
+statements. As shown in Code IV.2, we first import the                """
+function ap(obj) for creating atomic propositions, and
+then the predefined LTL operators, such as ltl and(a,               Code Syntax Checks: The LLM may generate code that
+b). Code IV.3 shows the implementation of ltl and(a,             contains syntax errors, such as undefined functions, too
+b). Other LTL operator functions are defined similarly. The      many arguments for a function call, etc. To ensure that the
+global variable prefix is used to control the LTL format. It     generated code is syntactically correct, we execute it and
+is not necessary to provide the implementations of the library   provide the error message from any syntax errors back to the
+functions to the LLM, which wastes the limited number of         LLM. If an error is detected, we fill the previous answer
+input tokens. We hide the implementation details of these        and failure reason fields in Code IV.5 with the latest
+LTL operator functions and, instead, show examples of how        generated code and a short description of the error, respec-
+to use them as in Code IV.4.                                     tively. In our practice, GPT-4o [1] rarely generates Python
+                                                                 code with syntax errors, which are easy to fix in a second
+                                                                 query to the LLM. When the code is free of syntax errors,
+IV.2: Actions and Predefined Functions
+                                                                 it produces an LTL formula ϕµ free of LTL syntax errors.
+# Please help write code to translate the instruction
+into an LTL formula.
+# Necessary functions and variables are imported.
+from ltl_operators import ap # ap(obj)                           C. Planning
+from ltl_operators import ltl_and, ltl_or, ltl_not,
+ltl_until, ltl_eventually, ltl_always, ltl_imply
+                                                                    Given the atomic propositions APµ related to the in-
+                                                                 struction µ and the LTL formula ϕµ , synthesized by LTL-
+IV.3: Implementation of ltl and                                  CodeGen, we can convert ϕµ into a Büchi automaton via a
+prefix = True # The generated LTL is in prefix format
+                                                                 translation tool, such as Spot [39]. Büchi automata are more
+def ltl_and(a: str, b: str):                                     expressive than LTL formulas, and a Büchi automaton that
+    if prefix:
+        return f"& {a} {b}"
+                                                                 recognizes the same language as an LTL formula can always
+    return f"({a}) & ({b})"                                      be constructed [40].
+                                                                 Definition 4. A deterministic Büchi automaton is a tuple
+IV.4: Code Example                                               B = (Q, Σ, T, F, q1 ), where Q is a finite set of states, Σ is
+def example_1():                                                 a finite set of inputs, T : Q × Σ → Q is a transition function
+    """                                                          that specifies the next state T (q, σ) from state q ∈ Q and
+    Reach object_2 and object_1
+    """                                                          input σ ∈ Σ, F ⊆ Q is a set of final (accepting) states, and
+    # explanation of the instruction:                            q1 ∈ Q is an initial state.
+    # object_1 and object_2 are both reached at some
+    point in the future, but no specific order is
+    mentioned explicitly or implicitly.                             Then, to plan a collision-free robot path that satisfies
+    # create atomic propositions for objects                     the LTL formula ϕµ obtained from LTLCodeGen, we first
+    reach_obj_2 = ap("object_2") # reach(object_2)
+    reach_obj_1 = ap("object_1") # reach(object_1)               construct a product planning graph G based on the (semantic)
+    # describe the constraints in the instruction                occupancy map m(x), the label map l(x), and the automaton
+    c1 = ltl_eventually(reach_obj_2) # Reach object_2...
+    c2 = ltl_eventually(reach_obj_1) # Reach object_1...         Bϕµ . With eight-direction movements (cardinal and diagonal)
+    c3 = ltl_and(c1, c2) # Reach object_2 and object_1           in the (semantic) occupancy map m(x), we construct the
+    return c3
+                                                                 graph as G = (V, E), where V = X × Q is the set of
+                                                                 nodes, E is the set of transitions from vi = (xi , qi ) to vj =
+   The code examples not only show the basic usage of            (xj , qj ) with a cost d(xi , xj ). Such a transition exists when
+the predefined functions but also demonstrate how to write       1) xj can be reached from xi by a single-step movement
+the code based on the rephrased instruction µC . The LLM         in the map m(x); 2) both xi and xj are collision-free:
+should first explain the instruction in comments, then create    m(λxi +(1−λ)xj ) = FREE, ∀λ ∈ [−ro /α, 1+ro /α], where
+atomic propositions for objects involved in the instruction,     α = ∥xi − xj ∥2 , and ro is a safe margin; 3) the automaton
+next describe the instruction with the LTL operator functions,   transitions are respected: qj = T (qi , l(xi )).
+and finally return the LTL formula.                                 Finally, we apply the A* algorithm [41] to search the graph
+                                                                 G with a consistent LTL heuristic [7], defined as:
+   As shown in Code IV.5, we describe the code writing task
+again with the requirements for the output format, i.e., the              h(x, q) = min [d(x, y) + g(l(y), T (q, l(y)))] ,
+LLM output should only contain the complete implementa-                                 y∈X
+                                                                                                                              (3)
+tion of the question function for the instruction µC .                    h(x, q) = 0,        ∀q ∈ F,
+TABLE II: LTL translation accuracy (%). Results from the BART
+baselines are from the original paper [22]. BART-FT-RAW-human is
+shown as BART-human in the table, and BART-FT-RAW-synthetic
+is shown as BART-syn.
+                        Drone            Cleanup             Pick
+                    human     syn.    human     syn.    human      syn.
+  LTLCodeGen        99.87   99.94     99.05    98.99    99.19     98.92
+  NL2LTL [7]        98.66   98.30     95.36    95.21    97.31     97.18
+  BART-human        90.78     N/A     97.84     N/A     95.97      N/A
+  BART-syn. [22]    69.39     N/A     78.00     N/A     81.45      N/A
+
+where the function g : 2AP × Q 7→ R≥0 is defined as:
+         cl (l1 , l2 ) =        min               c(x1 , x2 ),      (4)
+                     x1 ,x2 :l(x1 )=l1 ,l(x2 )=l2
+
+            g(l, q) = min cl (l, l′ ) + g(l′ , T (q, l′ )),         (5)
+                     l′ ∈2AP
+
+which can be pre-computed via dynamic programming on                      Fig. 4: Example path generated by our method for a GTB
+Bϕµ . The search terminates when the accepting state in F                 map. The robot is asked to obtain the heartstone, rally the
+is reached, meaning the path satisfies the LTL formula ϕµ                 creatures of Verdanthorn, then defeat Drakon’s Lieutenants,
+and, thus, the corresponding natural language instruction µ.              and finally defeat Drakon and restore peace to Verdanthorn.
+If an accepting path x1:T is found, a tracking controller is              Note that bush tiles are considered walkable in this map.
+then used to drive the robot along the path.
+                                                                          TABLE III: Evaluation of our task planning method on the
+                           V. E XPERIMENTS                                GameTraversalBenchmark (GTB) [6]. Higher Accuracy and lower
+                                                                          MPL indicate better performance. Both methods are evaluated using
+   We conduct a series of comprehensive experiments to                    GPT-4o [1]. Results for GTB [6] are gathered by using GPT-4o to
+evaluate LTLCodeGen and our complete task planning                        plan the path directly via prompting as described in their work.
+method and compare the performance against multiple base-                               Method     Accuracy (%) ↑    MPL ↓
+lines. First, we compare LTLCodeGen to the LLM-based                                    GTB [6]         7.84         85.42
+NL2LTL [7] and two fine-tuned LLM models [22] on three                                  Ours           78.91         82.49
+datasets (Drone, Cleanup, and Pick) to gauge translation ac-
+curacy from natural language to LTL. Next, we demonstrate                 the fine-tuned LLMs but worse than LTLCodeGen because
+our task planning approach in both simulation and real-world              LLMs are not as good at writing LTL formulas. In our
+environments, where tasks of varying complexity are tested.               experiments, NL2LTL fails mostly due to the LTL syntax
+We also compare our method to an end-to-end LLM-based                     errors that LLMs cannot fix within three retries or due to
+task planner on the GameTraversalBenchmark (GTB) [6].                     being semantically mismatched with the instructions.
+Finally, we conduct an ablation study to investigate how                  B. Evaluation on GameTraversalBenchmark (GTB)
+different LLMs, as well as the inclusion of explanations and
+                                                                             We evaluate our complete task planning approach on
+comments, affect the performance of LTLCodeGen.
+                                                                          the GameTraversalBenchmark (GTB) [6]. GTB is an LLM-
+A. Evaluation of LTLCodeGen                                               generated dataset that provides 150 different 2D maps with
+   Using GPT-4o [1], we evaluate our LTLCodeGen and                       various objects, game stories, and task objectives. For each
+three baselines, NL2LTL [7], BART-FT-RAW-human and                        experiment, we convert the map into the 2D semantic occu-
+BART-FT-RAW-synthetic [22] on three datasets (Drone,                      pancy map format and generate an instruction that combines
+Cleanup, and Pick) from the fine-tuned LLM [22] paper.                    all the task objectives. For example, if the objectives are
+The three datasets provide both human-written and LLM-                    objective1 , objective2 , and objective3 the instruction provided
+augmented synthesized natural language instructions. For                  to the LLM would be: Complete objective1 , then complete
+each dataset, we adjust the prompt for LTLCodeGen and                     objective2 , and then objective3 . Our system consumes the
+NL2LTL based on a few examples randomly drawn from                        map and the instruction to generate a path that satisfies all
+the datasets. The prompt for each dataset is given only 20                the task objectives. We report two metrics in Table III:
+(Drone), 12 (Cleanup) and 5 (Pick) examples. Our method                      • Accuracy (↑): the percentage of tests where the agent
+
+and NL2LTL are both tested with all human-written and                           successfully reaches the exact objective coordinates;
+synthetic instructions. In contrast, BART-FT-RAW-human is                    • Mean Path Length (MPL) (↓): the average length of
+
+evaluated by 5-split cross-validation on human-written data,                    paths taken by the agent to complete each task.
+and BART-FT-RAW-synthetic is trained with synthetic data                     The results in Fig. 4 and Table III show that our sys-
+and tested with human-written data. As shown in Table II,                 tem outperforms the end-to-end GPT-4o-based planner from
+LTLCodeGen outperforms the baselines significantly on both                GTB [6]. However, there are cases where our planner is
+human-written and synthesized instructions, which indicates               unable to generate a path due to the absence of a valid path
+that LTLCodeGen generalizes well and generates the correct                satisfying the LTL in the environment. For example, achiev-
+LTL formulas robustly. NL2LTL also performs better than                   ing objective1 may require passing through a later objective,
+     TABLE IV: LTL generation comparison: LTLCodeGen vs NL2LTL [7]. Two LLMs, GPT-4o and GPT-4o-mini, are tested.
+ Method                                    Success (%)↑             Semantic Failure (%)↓         Syntactic Failure (%)↓     Runtime (s)↓
+ Tier                                1       2      3      4      1      2       3       4       1     2       3       4        Total
+ LTLCodeGen-4o                      100     100    100    70.0    0      0       0      30.0     0     0       0       0     7.07 ± 4.31
+ NL2LTL-4o [7]                      100    90.0    46.7   60.0    0    10.0    40.0     40.0     0     0     13.3      0     2.01 ± 1.12
+ LTLCodeGen-4o-NoExplanation        100     100    60.0   50.0    0      0     40.0     50.0     0     0       0       0     5.55 ± 3.20
+ LTLCodeGen-4o-NoComment            100     100    93.3    70     0      0      6.7     30.0     0     0       0       0     6.06 ± 3.06
+ LTLCodeGen-4o-mini                 90.0   70.0    26.7     0    10.0 30.0     73.3     100      0     0       0       0     4.90 ± 3.40
+ NL2LTL-4o-mini                     80.0   70.0    13.3     0    20.0 10.0     26.7     80.0     0 20.0      60.0     20.0   2.15 ± 0.93
+ LTLCodeGen-4o-mini-NoExplanation   100    80.0    20.0     0     0    20.0    80.0    100.0     0     0       0       0     4.49 ± 2.22
+ LTLCodeGen-4o-mini-NoComment       90.0   80.0    40.0     0    10.0 20.0     60.0    100.0     0     0       0       0     3.77 ± 1.25
+
+
+such as objective3 , which conflicts with the generated LTL.        single-line LTL formula. Our ablation study (Section V-D)
+C. Real-World Experiments                                           confirms that removing explanations or comments reduces
+                                                                    generation length and accelerates inference. Our method
+   We evaluate our system in a mock indoor environment              sometimes struggles to generate semantically correct results
+containing eight categories: personal items (backpack, lap-         when ambiguity exists in the instruction (Tier 4). Although
+top, umbrella), common household objects (TV, potted plant,         including explanations and comments in the code helps to
+microwave, chairs), and a person for a realistic setting.           resolve most ambiguity in the instructions, how to interpret
+   The task design includes four tiers of natural language          the semantic constraint robustly remains an open question.
+tasks progressively increasing in difficulty:
+   • Tier 1: Single-object tasks. Straightforward instructions      D. Ablation Study
+      referencing one object (e.g., “Visit the chair”).                We examine three variations of our method on the same
+   • Tier 2: Multi-object tasks with avoidance. Missions            45 real-world tasks: (1) the full version, (2) a version without
+      involving one or more objects while avoiding others           task explanations, and (3) a version without line comments
+      (e.g., “Go to the table and avoid chairs”) or applying a      in the code. Each variant uses both GPT-4o and GPT-4o-mini
+      condition (e.g., “Go to the backpack if you are near a        [1] to evaluate the impact of model size.
+      laptop”).                                                        1) No Explanation: As shown in Table IV, removing
+   • Tier 3: Multi-object tasks with temporal constraints.          task explanations significantly reduces Tier 3 performance
+      Complex missions requiring multiple visits or precise         and noticeably harms Tier 4. While Tiers 1 and 2 remain
+      ordering (e.g., “Visit the desk, then the couch, and do       relatively straightforward, the revisiting and sequencing in
+      not go by the chair”).                                        Tier 3 become error-prone without explanations, and Tier 4’s
+   • Tier 4: Ambiguous, context-based tasks. Instructions           contextual ambiguity exacerbates this issue. These findings
+      relying on inference and context rather than explicit         demonstrate that providing explanations yields a clear net
+      object naming (e.g., “It’s valentine’s day and I have no      benefit across both GPT-4o and GPT-4o-mini.
+      date. Let’s watch a romcom.”).                                   2) No Comment: Eliminating line comments has mini-
+The evaluation includes 10 scenarios for Tier 1, 10 for Tier        mal impact on overall performance, likely because LLMs
+2, 15 for Tier 3, and 10 for Tier 4, totaling 45 scenarios.         rely more on task explanations than on code annotations.
+Our planner runs using LTL specifications generated by LTL-         However, GPT-4o shows a slight performance drop in Tier
+CodeGen or NL2LTL [7], both with GPT-4o and GPT-4o-                 3, suggesting that comments can clarify complex temporal
+mini [1]. The robot’s trajectory undergoes visual inspection        logic. In contrast, GPT-4o-mini sometimes improves when
+to determine task success and the following metrics:                comments are removed, indicating that extraneous text may
+   • Success Rate: Fraction of tasks the robot completes.           add noise for smaller models.
+   • Semantic Error Rate: Fraction of tasks where the plan             3) Model Size and Performance: Switching from GPT-4o
+      does not match user intent.                                   to GPT-4o-mini results in a performance decline, especially
+   • Syntactic Error Rate: Fraction of tasks where the LLM          for Tier 4 tasks, reinforcing that smaller models struggle
+      generates invalid LTL after three retries.                    more with ambiguity. Tier 3 performance also declines
+   • LLM Runtime: Time required to produce LTL formula.             for all variations, reflecting the complexity of sequencing
+   Table IV shows that LTLCodeGen consistently outper-              constraints. However, Tiers 1 and 2 experience only modest
+forms NL2LTL. Notably, LTLCodeGen incurs no syntactic               drops, suggesting that larger models are generally more
+errors, thanks to its predefined LTL operator functions. Since      robust across all difficulty levels.
+LLMs are better at writing code than LTL-specific syntax,
+this approach delivers stronger correctness guarantees. More-                                  VI. C ONCLUSION
+over, LTLCodeGen excels in sequential and revisiting tasks,            We introduced an LLM-based planning approach that
+where strict ordering challenges the baseline. Expressing           translates natural language instructions into syntactically
+constraints in code appears more manageable for LLMs.               correct LTL specifications, using a semantic occupancy map
+   However, LTLCodeGen requires longer inference times              and a motion planning algorithm to generate collision-free
+since it generates complete executable code, including com-         paths satisfying the instruction. Utilizing the proficiency
+ments and explanations, while NL2LTL produces only a                of LLMs in code generation is central for our approach
+to generate syntactically correct LTL. Simulation and real-                    [20] A. Asgharivaskasi and N. Atanasov, “Semantic Octree Mapping and
+world experiments show that our LTLCodeGen approach                                 Shannon Mutual Information Computation for Robot Exploration,”
+                                                                                    IEEE Transactions on Robotics, 2023.
+outperforms unstructured LTL synthesis methods and plays                       [21] G. Jocher, J. Qiu, and A. Chaurasia, “Ultralytics YOLO,” Jan. 2023.
+a key role in enabling a mobile robot to robustly execute                           [Online]. Available: https://github.com/ultralytics/ultralytics
+natural language specifications. Our results suggest that                      [22] J. Pan, G. Chou, and D. Berenson, “Data-Efficient Learning of Natural
+                                                                                    Language to Linear Temporal Logic Translators for Robot Task
+LLMs should be utilized according to their strengths deriving                       Specification,” in IEEE International Conference on Robotics and
+from the training data content as opposed to novel concept                          Automation, 2023.
+prompting with limited in-context training.                                    [23] E. M. Bender and A. Koller, “Climbing towards NLU: On Meaning,
+                                                                                    Form, and Understanding in the Age of Data,” in Annual Meeting of
+                             R EFERENCES                                            the Association for Computational Linguistics, 2020.
+                                                                               [24] R. Gubelmann, “Pragmatic Norms Are All You Need – Why The Sym-
+ [1] OpenAI, “GPT-4 Technical Report,” arXiv preprint: arXiv                        bol Grounding Problem Does Not Apply to LLMs,” in Conference on
+     2303.08774, 2024.                                                              Empirical Methods in Natural Language Processing, Y. Al-Onaizan,
+ [2] H. Touvron, L. Martin, et al., “Llama 2: Open Foundation and Fine-             M. Bansal, and Y.-N. Chen, Eds. Association for Computational
+     Tuned Chat Models,” arXiv preprint: arXiv 2307.09288, 2023.                    Linguistics, 2024.
+ [3] DeepSeek-AI, “DeepSeek-R1: Incentivizing Reasoning Capability             [25] Y. Chen, J. Arkin, C. Dawson, Y. Zhang, N. Roy, and C. Fan,
+     in LLMs via Reinforcement Learning,” arXiv preprint: arXiv                     “AutoTAMP: Autoregressive Task and Motion Planning with LLMs
+     2501.12948, 2025.                                                              as Translators and Checkers,” in IEEE International Conference on
+ [4] B. Ichter, A. Brohan, et al., “Do As I Can, Not As I Say: Grounding            Robotics and Automation, 2024.
+     Language in Robotic Affordances,” in Conference on Robot Learning,        [26] Y. Chen, R. Gandhi, Y. Zhang, and C. Fan, “NL2TL: Transforming
+     2023.                                                                          Natural Languages to Temporal Logics using Large Language Mod-
+ [5] Z. Mandi, S. Jain, and S. Song, “RoCo: Dialectic Multi-Robot                   els,” arXiv preprint: arXiv 2305.07766, 2024.
+     Collaboration with Large Language Models,” in IEEE International          [27] T. Wongpiromsarn, U. Topcu, N. Ozay, H. Xu, and R. M. Murray,
+     Conference on Robotics and Automation, 2024.                                   “TuLiP: a Software Toolbox for Receding Horizon Temporal Logic
+ [6] M. U. Nasir, S. James, and J. Togelius, “GameTraversalBenchmark:               Planning,” in International Conference on Hybrid Systems: Computa-
+     Evaluating Planning Abilities Of Large Language Models Through                 tion and Control, 2011.
+     Traversing 2D Game Maps,” Advances in Neural Information Pro-             [28] C. I. Vasile and C. Belta, “Sampling-based Temporal Logic Path
+     cessing Systems, 2024.                                                         Planning,” in IEEE/RSJ International Conference on Intelligent Robots
+ [7] Z. Dai, A. Asgharivaskasi, T. Duong, S. Lin, M.-E. Tzes, G. Pap-               and Systems, 2013.
+     pas, and N. Atanasov, “Optimal Scene Graph Planning with Large            [29] J. Fu, N. Atanasov, U. Topcu, and G. J. Pappas, “Optimal Temporal
+     Language Model Guidance,” in IEEE International Conference on                  Logic Planning in Probabilistic Semantic Maps,” in IEEE International
+     Robotics and Automation, 2024.                                                 Conference on Robotics and Automation, 2016.
+ [8] J. Liang, W. Huang, F. Xia, P. Xu, K. Hausman, B. Ichter, P. Florence,    [30] I. Armeni, Z.-Y. He, J. Gwak, A. R. Zamir, M. Fischer, J. Malik, and
+     and A. Zeng, “Code as Policies: Language Model Programs for                    S. Savarese, “3D Scene Graph: A Structure for Unified Semantics, 3D
+     Embodied Control,” in IEEE International Conference on Robotics                Space, and Camera,” in IEEE International Conference on Computer
+     and Automation, 2023.                                                          Vision, 2019.
+ [9] X. Zhao, M. Li, C. Weber, M. B. Hafez, and S. Wermter, “Chat with         [31] A. Rosinol, A. Gupta, M. Abate, J. Shi, and L. Carlone, “3D Dynamic
+     the Environment: Interactive Multimodal Perception Using Large Lan-            Scene Graphs: Actionable Spatial Perception with Places, Objects, and
+     guage Models,” in IEEE/RSJ International Conference on Intelligent             Humans,” in Robotics: Science and Systems, 2020.
+     Robots and Systems, 2023.                                                 [32] A. Rosinol, A. Violette, M. Abate, N. Hughes, Y. Chang, J. Shi,
+[10] I. Singh, V. Blukis, A. Mousavian, A. Goyal, D. Xu, J. Tremblay,               A. Gupta, and L. Carlone, “Kimera: From SLAM to Spatial Percep-
+     D. Fox, J. Thomason, and A. Garg, “ProgPrompt: Generating Situated             tion with 3D Dynamic Scene Graphs,” The International Journal of
+     Robot Task Plans using Large Language Models,” in IEEE Interna-                Robotics Research, 2021.
+     tional Conference on Robotics and Automation, 2023.                       [33] N. Hughes, Y. Chang, and L. Carlone, “Hydra: A Real-time Spatial
+[11] S. S. Kannan, V. L. N. Venkatesh, and B.-C. Min, “SMART-LLM:                   Perception System for 3D Scene Graph Construction and Optimiza-
+     Smart Multi-Agent Robot Task Planning using Large Language Mod-                tion,” in Robotics: Science and Systems, 2022.
+     els,” arXiv preprint: arXiv 2309.10062, 2024.                             [34] S. Amiri, K. Chandan, and S. Zhang, “Reasoning with Scene Graphs
+[12] Z. Ravichandran, V. Murali, M. Tzes, G. J. Pappas, and V. Kumar,               for Robot Planning under Partial Observability,” IEEE Robotics and
+     “SPINE: Online Semantic Planning for Missions with Incomplete                  Automation Letters (RAL), 2022.
+     Natural Language Specifications in Unstructured Environments,” arXiv      [35] A. Zeng, M. Attarian, et al., “Socratic Models: Composing Zero-
+     preprint: arXiv 2410.03035, 2024.                                              Shot Multimodal Reasoning with Language,” arXiv preprint: arXiv
+[13] T. Silver, S. Dan, K. Srinivas, J. B. Tenenbaum, L. Kaelbling, and             2204.00598, 2022.
+     M. Katz, “Generalized Planning in PDDL Domains with Pretrained            [36] K. Chen, B. T. Lopez, A.-a. Agha-mohammadi, and A. Mehta, “Direct
+     Large Language Models,” in AAAI/IAAI/EAAI, 2024.                               LiDAR Odometry: Fast Localization With Dense Point Clouds,” IEEE
+[14] S. Tellex, T. Kollar, S. Dickerson, M. R. Walter, A. G. Banerjee,              Robotics and Automation Letters, 2022.
+     S. Teller, and N. Roy, “Approaching the Symbol Grounding Problem          [37] A. Pnueli, “The Temporal Semantics of Concurrent Programs,” Theo-
+     with Probabilistic Graphical Models,” AI Magazine, 2011.                       retical Computer Science, 1981.
+[15] H. Wang, G. Gonzalez-Pumariega, Y. Sharma, and S. Choud-                  [38] O. Kupferman and M. Y. Vardi, “Model Checking of Safety Proper-
+     hury, “Demo2Code: From Summarizing Demonstrations to Synthe-                   ties,” Formal Methods in System Design, 2001.
+     sizing Code via Extended Chain-of-Thought,” arXiv preprint: arXiv         [39] A. Duret-Lutz, E. Renault, et al., “From Spot 2.0 to Spot 2.10: What’s
+     2305.16744, 2023.                                                              New?” in International Conference on Computer Aided Verification
+[16] S. Kambhampati, K. Valmeekam, L. Guan, M. Verma, K. Stechly,                   (CAV), 2022.
+     S. Bhambri, L. Saldyt, and A. Murthy, “LLMs Can’t Plan, But Can           [40] P. Wolper, M. Y. Vardi, and A. P. Sistla, “Reasoning about infinite
+     Help Planning in LLM-Modulo Frameworks,” arXiv preprint: arXiv                 computation paths,” in Annual Symposium on Foundations of Com-
+     2402.01817, 2024.                                                              puter Science, 1983.
+[17] K. Valmeekam, M. Marquez, S. Sreedharan, and S. Kambhampati,              [41] J. Doran and D. Michie, “Experiments with the Graph Traverser
+     “On the Planning Abilities of Large Language Models : A Critical               Program,” Proceedings of the Royal Society of London. Series A.
+     Investigation,” arXiv preprint: arXiv 2305.15771, 2023.                        Mathematical and Physical Sciences, 1966.
+[18] W. Huang, F. Xia, et al., “Inner Monologue: Embodied Reasoning
+     through Planning with Language Models,” arXiv preprint: arXiv
+     2207.05608, 2022.
+[19] S. Huang, Z. Jiang, H. Dong, Y. Qiao, P. Gao, and H. Li, “Instruct2Act:
+     Mapping Multi-modality Instructions to Robotic Actions with Large
+     Language Model,” arXiv preprint: arXiv 2305.11176, 2023.
+

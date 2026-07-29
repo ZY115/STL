@@ -1,0 +1,463 @@
+# Project Context and Research Evolution
+
+## 1. Why this document exists
+
+This document reconstructs the reasoning developed across the full project conversation. It is not a verbatim chat transcript. It records the research conclusions, changes of scope, rejected assumptions, and reasons behind the current Stage I plan.
+
+The central purpose is continuity: a new researcher or a new Codex session should understand not only the current experiment, but how and why the project arrived at it.
+
+## 2. Original research idea
+
+The original idea was:
+
+> A user describes a task and its safety requirements in natural language. The system translates the description into STL and uses the STL specification during RL training.
+
+An example is:
+
+> Reach the goal. If you get too close to an obstacle, return to a safe distance within 10 steps.
+
+This command contains two components:
+
+- task objective: reach the goal;
+- temporal safety requirement: after unsafe proximity, recover before a deadline.
+
+The initial intuition was broadly correct, but two technical corrections were necessary.
+
+### Correction 1: not every part of the task must become STL
+
+For the first Safe RL formulation, the task objective can remain the benchmark's native reward. STL is used to represent the safety requirement.
+
+This separation avoids replacing a stable task definition with a more complicated temporal objective before the safety mechanism is understood.
+
+### Correction 2: an STL string is not directly consumed by RL
+
+The actual chain is:
+
+```text
+STL formula
+    ->
+trajectory monitor
+    ->
+satisfaction, violation, or robustness
+    ->
+safety cost
+    ->
+Safe RL optimizer
+```
+
+The monitor is therefore a necessary interface between formal logic and learning.
+
+## 3. Technical foundations established from the literature
+
+### 3.1 Temporal Logic, LTL, and STL
+
+Temporal Logic is the broad family.
+
+Linear Temporal Logic describes properties over ordered sequences of states using propositions and temporal operators such as always, eventually, next, and until.
+
+Signal Temporal Logic extends temporal reasoning to real-valued signals and explicit time intervals. This makes it suitable for statements such as:
+
+> Whenever distance becomes smaller than a warning threshold, distance must become larger than a safe threshold within five seconds.
+
+STL is therefore more directly aligned with continuous control and quantitative robot signals than propositional LTL.
+
+### 3.2 The NL2TL paper
+
+The EMNLP 2023 NL2TL paper studies translation from natural language to temporal logic.
+
+The key idea is to separate:
+
+- logical structure;
+- domain-specific atomic propositions.
+
+The paper trains T5 on lifted examples, where specific entities and propositions are replaced with placeholders. This allows the model to learn recurring logical structures rather than memorizing one application domain.
+
+GPT-3 is used in the broader data-generation and proposition-recognition pipeline, while T5 is the specialized sequence-to-sequence model trained for repeatable NL-to-TL translation.
+
+The project-level lesson was:
+
+> Complex unseen instructions may be translated by composing learned logical patterns, provided that the atomic propositions and their grounding are available.
+
+However, translation accuracy is not sufficient for Safe RL. A syntactically valid formula may still use the wrong signal, threshold, object, or time unit.
+
+### 3.3 DeepLTL
+
+DeepLTL studies how an RL agent can efficiently satisfy complex LTL specifications, including formulas not observed during training.
+
+Its main problem differs from NL2TL:
+
+- NL2TL asks how to produce a formal formula from language;
+- DeepLTL assumes a formal LTL specification is already provided and asks how an agent can execute it.
+
+DeepLTL uses automata structure and formula-conditioned policies. It is evidence that temporal specifications can support compositional and zero-shot task execution.
+
+It does not solve the language-grounding problem and is not directly a solution to the current STL-cost Safe RL experiment.
+
+### 3.4 Safe RL via shielding
+
+Safe RL via Shielding represents an alternative enforcement philosophy.
+
+A shield checks or modifies actions so that unsafe actions are blocked during execution. This can provide stronger runtime intervention than a learned cost.
+
+Our current Stage I plan is closer to traditional constrained Safe RL:
+
+- a safety signal becomes a cost;
+- PPO-Lagrangian trades task reward against a cost constraint;
+- violations may still occur.
+
+A shield may be compared later, but adding it now would change the research question from learning with a temporal cost to runtime action intervention.
+
+## 4. The initially proposed complete system
+
+The broad system discussed earlier contained four major parts:
+
+1. natural-language specification generation;
+2. formal safety checking;
+3. Safe RL execution;
+4. counterexample feedback and specification repair.
+
+The intended loop was:
+
+```text
+Natural-language task
+    ->
+candidate STL
+    ->
+syntax and feasibility checking
+    ->
+STL-guided Safe RL
+    ->
+unsafe or unsuccessful trajectory
+    ->
+counterexample explanation
+    ->
+revised grounding or specification
+```
+
+This is a meaningful long-term architecture, but it combines multiple research problems:
+
+- language translation;
+- numerical grounding;
+- formal verification;
+- control feasibility;
+- monitor implementation;
+- cost shaping;
+- constrained RL;
+- diagnosis and repair.
+
+The workload and attribution problem would be too large for a first experiment.
+
+## 5. The role of grounding
+
+Grounding means connecting linguistic concepts to the concrete variables, objects, thresholds, and units of an environment.
+
+For example:
+
+```text
+"too close"
+    ->
+distance to the nearest hazard
+    ->
+d_t < d_warn
+```
+
+Grounding must determine:
+
+- which object is relevant;
+- which simulator or sensor signal represents the concept;
+- the comparison direction;
+- the numerical threshold;
+- the unit of time;
+- the coordinate or reference frame.
+
+The project therefore cannot assume that natural language automatically supplies a complete and correct executable safety condition.
+
+Stage II will initially avoid this open-ended problem by using controlled language with explicit objects, distances, and deadlines.
+
+## 6. Why a numerical STL condition does not guarantee RL safety
+
+Even if the safety condition contains exact numbers, several difficulties remain.
+
+### 6.1 The signal may be defined incorrectly
+
+Distance may mean center distance, boundary clearance, lidar estimate, or privileged simulator state.
+
+### 6.2 The formula may be correct while the monitor is wrong
+
+Temporal boundaries, repeated triggers, truncation, equality, and floating-point tolerance can change judgments.
+
+### 6.3 The cost may be delayed or sparse
+
+A bounded-future formula may only be known to have failed after its deadline expires. A late cost may be difficult for RL credit assignment.
+
+### 6.4 Safe RL optimizes expected behavior
+
+PPO-Lagrangian does not prove that every trajectory satisfies the formula. Constraint budgets, optimization error, exploration, function approximation, and stochasticity can all produce violations.
+
+### 6.5 Safety and task performance may conflict
+
+An agent could reduce violations by refusing to approach the goal or by stopping. Safety improvement must therefore be interpreted together with goal success and return.
+
+## 7. Comparison with the 2026 UAV NL-to-STL and MILP repair paper
+
+The UAV paper demonstrates a more complete application pipeline:
+
+- natural-language navigation instructions;
+- translation into STL;
+- numerical or structural repair;
+- trajectory generation for a low-altitude UAV setting.
+
+This work is close to our long-term language-to-formal-specification direction.
+
+The current project differs in its central downstream question:
+
+- the UAV work focuses on specification translation, repair, and trajectory planning/control;
+- our Stage I focuses on using a temporal STL safety requirement as a cost inside Safe RL training.
+
+MILP repair can correct certain infeasible or inconsistent numerical specifications, but it does not establish that an STL-derived cost is correctly integrated into a model-free Safe RL learner.
+
+The UAV paper therefore motivates later stages rather than eliminating the need for the current Stage I control experiment.
+
+## 8. Why the problem was narrowed
+
+The original end-to-end chain has at least four independent uncertainty groups.
+
+### 8.1 Language interpretation
+
+Did the system identify the correct task objective and safety requirement?
+
+### 8.2 Grounding
+
+Were phrases mapped to the correct objects, signals, thresholds, and time units?
+
+### 8.3 Monitoring and cost design
+
+Did the monitor evaluate the formula correctly, and did its output produce a useful cost?
+
+### 8.4 Safe RL learning
+
+Could the agent reduce temporal failures while preserving task completion?
+
+Each component can fail even if the others are correct. An end-to-end failure would not reveal the cause.
+
+This motivated the staged decomposition.
+
+## 9. Three-stage research plan
+
+### Stage I: Gold-STL experiment
+
+Manually write one correct STL rule.
+
+Test:
+
+- environment signal extraction;
+- trajectory monitoring;
+- STL-to-cost conversion;
+- Safe RL integration;
+- behavioral effect.
+
+No language model is used.
+
+### Stage II: Controlled language
+
+Add commands whose objects, distances, and deadlines are explicit.
+
+Evaluate separately:
+
+- translation correctness;
+- formula equivalence;
+- downstream behavior.
+
+The Stage I monitor, wrapper, and benchmark remain fixed so that new errors can be attributed to the language layer.
+
+### Stage III: Broader language and environments
+
+Expand to:
+
+- vague or missing parameters;
+- more STL structures;
+- uncertain sensing;
+- dynamic hazards;
+- additional applications;
+- repair and counterexample feedback.
+
+## 10. Teacher feedback and experimental grounding
+
+The project was asked to:
+
+- identify a concrete application and benchmark;
+- make the problem definition grounded;
+- examine limitations;
+- compare alternative methods;
+- clarify scenarios the approach can address;
+- specify a clear next step.
+
+This feedback shifted the project from a broad architecture discussion to one minimal experiment.
+
+## 11. Application and benchmark selection
+
+### Selected application
+
+Simulated mobile robot navigation around static hazards.
+
+### Selected benchmark
+
+`SafetyPointGoal1-v0` from Safety-Gymnasium.
+
+### Reasons for selection
+
+- it is a recognized Safe RL benchmark;
+- it already provides a goal-reaching task;
+- it includes hazards and a native instantaneous hazard cost;
+- it is supported by OmniSafe;
+- it avoids building a simulator;
+- it avoids perception uncertainty in the first test;
+- its native cost creates a useful baseline.
+
+### Deliberate limitation
+
+This benchmark is much simpler than UAV, autonomous driving, multi-agent navigation, or a real robot.
+
+That simplicity is useful for attribution in Stage I but limits external validity.
+
+## 12. Current Stage I specification
+
+### Plain-language rule
+
+> If the agent enters a warning zone, it must return to a safe distance within `K` environment steps.
+
+### STL form
+
+```text
+G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
+```
+
+### Intended meaning
+
+- `d_t`: distance from the agent to the nearest hazard;
+- `d_warn`: warning threshold;
+- `d_safe`: recovery threshold;
+- `K`: recovery deadline;
+- `d_warn < d_safe`: hysteresis between entering warning and completing recovery.
+
+The exact distance definition and numerical values remain open.
+
+## 13. Planned Stage I comparison
+
+### Condition A: task reward only
+
+Purpose: measure unconstrained task learning.
+
+### Condition B: native hazard cost
+
+Purpose: measure the behavior produced by the benchmark's existing instantaneous safety signal.
+
+### Condition C: temporal STL cost
+
+Purpose: determine whether an explicit recovery deadline changes behavior beyond an instantaneous cost.
+
+### Optional follow-up: hand-coded timer
+
+Purpose: test whether any benefit comes from STL as a reusable formal representation or merely from equivalent custom temporal logic.
+
+The hand-coded timer is useful but not required for the first smoke test.
+
+## 14. Stage I work sequence
+
+### Step 1: environment inspection
+
+- run the benchmark;
+- inspect observations and simulator state;
+- define `d_t`;
+- log reward and native cost;
+- save sample trajectories.
+
+### Step 2: freeze rule semantics
+
+- select `d_warn`, `d_safe`, and `K`;
+- define boundary behavior;
+- label success and failure trajectories.
+
+### Step 3: build and validate the monitor
+
+- use RTAMT as the reference;
+- implement minimal online state tracking if needed;
+- require agreement on declared test cases.
+
+### Step 4: construct the STL cost wrapper
+
+- preserve task reward;
+- preserve native cost in logs;
+- expose STL cost separately;
+- record monitor diagnostics.
+
+### Step 5: run controlled training
+
+- task-only baseline;
+- native-cost Safe RL;
+- STL-cost Safe RL;
+- matched seeds and training settings.
+
+### Step 6: evaluate
+
+- recovery-deadline violation rate;
+- warning entries;
+- successful recoveries;
+- recovery time;
+- goal success;
+- episode return;
+- native cost;
+- variation across seeds.
+
+## 15. What Stage I can address
+
+- known static hazards;
+- numeric state signals available from simulation;
+- bounded response and recovery requirements;
+- one controlled navigation benchmark;
+- empirical cost-based Safe RL.
+
+## 16. What Stage I cannot establish
+
+- free-form NL-to-STL accuracy;
+- automatic inference of missing safety requirements;
+- robustness to camera or lidar perception noise;
+- dynamic obstacle safety;
+- multi-agent interaction;
+- real-world deployment;
+- zero violations;
+- formal guarantees;
+- superiority over all shielding or planning methods.
+
+## 17. Meaning of success
+
+Stage I succeeds only if:
+
+1. the rule is physically feasible;
+2. monitor judgments are correct;
+3. the STL cost reaches the learner as intended;
+4. temporal recovery failures decrease;
+5. goal completion does not collapse.
+
+Success justifies adding controlled language in Stage II.
+
+It does not establish that the complete language-grounded safety system is solved.
+
+## 18. Current implementation status
+
+No experiment environment has been installed as part of this project handoff.
+
+No project monitor, wrapper, training configuration, or RL result exists yet.
+
+The next work should begin with environment inspection, not with language translation or training.
+
+## 19. Continuity rule
+
+When future discussions produce a durable conclusion:
+
+- add confirmed decisions to `DECISIONS.md`;
+- update the status in `README.md`;
+- add exact commands and versions after they have been tested;
+- keep the experiment question stable unless a documented reason requires changing it.
+
+The repository documents, rather than any one Codex account's memory, are the authoritative project context.

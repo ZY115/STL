@@ -1,0 +1,870 @@
+                                         LLM-Enabled Low-Altitude UAV Natural Language
+                                         Navigation via Signal Temporal Logic Speciﬁcation
+                                                       Translation and Repair
+                                                           Yuqi Ping, Huahao Ding, Tianhao Liang, Longyu Zhou, Guangyu Lei, Xinglin Chen,
+                                                                              Junwei Wu, Jieyu Zhou, Tingting Zhang
+
+
+                                            Abstract—Natural language (NL) navigation for low-altitude                the same time, low-altitude missions often involve high-level
+                                         unmanned aerial vehicles (UAVs) offers an intelligent and con-               objectives with complex temporal, spatial, and logical require-
+
+
+
+
+arXiv:2603.27583v1 [cs.RO] 29 Mar 2026
+                                         venient solution for low-altitude aerial services by enabling an             ments that must be speciﬁed clearly and executed reliably
+                                         intuitive interface for non-expert operators. However, deploying
+                                         this capability in urban environments necessitates the precise               [6]. Natural-language (NL) instructions provide an intuitive
+                                         grounding of underspeciﬁed instructions into safety-critical,                interface for expressing such high-level task intent, especially
+                                         dynamically feasible motion plans subject to spatiotemporal                  for non-expert operators. However, the inherent ambiguity and
+                                         constraints. To address this challenge, we propose a uniﬁed                  underspeciﬁcation of NL stand in fundamental tension with
+                                         framework that translates NL instructions into Signal Temporal               the strict safety, temporal, and spatial requirements that low-
+                                         Logic (STL) speciﬁcations and subsequently synthesizes trajecto-
+                                         ries via mixed-integer linear programming (MILP). Speciﬁcally,               altitude UAV navigation must satisfy.
+                                         to generate executable STL formulas from free-form NL, we
+                                         develop a reasoning-enhanced large language model (LLM)                         Recent advances in large language models (LLMs) have
+                                         leveraging chain-of-thought (CoT) supervision and group-relative             demonstrated strong capabilities in NL understanding and
+                                         policy optimization (GRPO), which ensures high syntactic validity            high-level reasoning, which has led to growing interest in
+                                         and semantic consistency. Furthermore, to resolve infeasibilities
+                                         induced by stringent logical or spatial requirements, we intro-              language-driven robotic autonomy [7]. Despite this progress,
+                                         duce a speciﬁcation repair mechanism. This module combines                   directly mapping NL instructions to low-level control com-
+                                         MILP-based diagnosis with LLM-guided semantic reasoning to                   mands remains unsuitable for safety-critical UAV operation,
+                                         selectively relax task constraints while strictly enforcing safety           as such mappings lack formal guarantees, interpretability, and
+                                         guarantees. Extensive simulations and real-world ﬂight experi-               veriﬁability [8]. Conversely, classical model-based planning
+                                         ments demonstrate that the proposed closed-loop framework sig-
+                                         niﬁcantly improves NL-to-STL translation robustness, enabling                and control frameworks are capable of generating dynamically
+                                         safe, interpretable, and adaptable UAV navigation in complex                 feasible trajectories under complex constraints, but they typi-
+                                         scenarios.                                                                   cally do not provide a systematic mechanism to interpret and
+                                            Index Terms—Natural language navigation, low-altitude UAV,                enforce high-level task semantics expressed in NL [9]. This
+                                         signal temporal logic, speciﬁcation repair                                   disconnect highlights the need for an intermediate represen-
+                                                                                                                      tation that can faithfully capture language-level intent while
+                                                                  I. I NTRODUCTION
+                                                                                                                      remaining amenable to formal analysis and execution.
+                                         A. Background and Motivation
+                                           Low-altitude unmanned aerial vehicles (UAVs) have been                        Formal methods offer a principled bridge between high-level
+                                         increasingly deployed in mission-critical scenarios such as                  semantic intent and low-level control. In particular, Signal
+                                         safety monitoring [1], forest ﬁreﬁghting [2], logistics [3],                 Temporal Logic (STL) provides precise semantics for spec-
+                                         emergency communications [4], and low-altitude network-                      ifying complex temporal and spatial behaviors [10], enabling
+                                         ing [5]. Compared with high-altitude operations, low-altitude                safety constraints and mission objectives to be expressed
+                                         ﬂight requires UAVs to operate in close proximity to complex                 in a form suitable for veriﬁcation and optimization-based
+                                         urban structures, dynamic obstacles, and human activities,                   planning. However, enabling NL UAV navigation through
+                                         which imposes stringent safety and regulatory constraints. At                STL introduces two coupled challenges. First, NL instructions
+                                                                                                                      must be translated into STL speciﬁcations that accurately
+                                            Yuqi Ping, Huahao Ding, Tianhao Liang, Guangyu Lei, Xinglin Chen,
+                                         Junwei Wu, and T. Zhang are with Guangdong Provincial Key Laboratory of      preserve the intended semantics. Second, even semantically
+                                         Space-Aerial Networking and Intelligent Sensing, Harbin Institute of Tech-   correct STL speciﬁcations may render the underlying planning
+                                         nology, Shenzhen, China, (e-mail: pingyq@stu.hit.edu.cn; hitszdhh@163.com;   problem infeasible when temporal or spatial requirements are
+                                         liangth@hit.edu.cn; GuangyuLei@stu.hit.edu.cn; chenxinglin@stu.hit.edu.cn;
+                                         220210419@stu.hit.edu.cn; zhangtt@hit.edu.cn); T. Zhang is also with Peng    overly restrictive in low-altitude environments. These chal-
+                                         Cheng Laboratory (PCL), Shenzhen, China. Longyu Zhou is with the Infor-      lenges motivate a uniﬁed framework that jointly addresses
+                                         mation Systems Technology and Design, Singapore University of Technology     speciﬁcation translation and feasibility repair, thereby ensuring
+                                         and Design, Singapore 487372, (e-mail: zhoulyfuture@outlook.com). Jieyu
+                                         Zhou is with School of Computer Science and Engineering, Central South       both semantic ﬁdelity and physical executability for safe and
+                                         University, Changsha, China, (e-mail: zhoujieyu@csu.edu.cn).                 adaptable low-altitude UAV navigation.
+B. Related Works                                                   way to improve task generalization beyond what is achievable
+                                                                   with traditional supervised parsers. Despite this progress,
+   In recent years, NL-guided navigation for UAVs has at-          existing studies remain constrained by limited speciﬁcation
+tracted increasing attention. Compared with ground or indoor       expressiveness, unstable language-to-logic mappings sensitive
+navigation, low-altitude UAV scenarios involve 3D motion,          to prompts and context, and the fact that current LLM-based
+varying ﬂight altitudes, and more complex spatial relations,       generation can also generalize poorly on complex instructions
+which substantially increases the difﬁculty of both language       with implicit reasoning [34], [35].
+understanding and navigation execution [11]. Early studies            Moreover, the aforementioned methods often presume that
+mainly adopted hand-crafted grammatical rules or keyword-          human-provided NL instructions are correct and can be faith-
+based mappings to convert NL commands into predeﬁned               fully captured by a corresponding formal speciﬁcation. In
+ﬂight actions or waypoint sequences [12], [13]. Although these     practice, the stated intent may conﬂict with UAV dynamical
+methods offer interpretability and engineering controllability,    feasibility limits or low-altitude airspace constraints, rendering
+their expressive capacity is limited, making them inadequate       the synthesized plan infeasible. Once an STL speciﬁcation is
+for open-vocabulary or compositional instructions and leading      obtained, feasibility restoration has been extensively studied
+to poor generalization under environmental variations [14].        in the formal methods literature, where most approaches keep
+Subsequently, deep learning techniques were widely intro-          the STL structure ﬁxed and focus on minimal parameter-
+duced, leveraging imitation learning or reinforcement learning     level repairs. These methods typically analyze mixed-integer
+to jointly model NL, perception, and action spaces. This           linear programming (MILP) encodings to identify irreducibly
+line of research gave rise to NL-guided navigation and vi-         infeasible subsystems (IIS) or unsatisﬁable cores, and restore
+sual language navigation (VLN) frameworks [11], [15]–[18].         feasibility by relaxing temporal bounds or predicate thresholds
+Nevertheless, their core paradigm remains task-speciﬁc policy      through slack variables, weighted objectives, or least-violating
+learning, with limited capacity for explicit instruction de-       formulations under restricted fragments [36]–[40]. While these
+composition and plan-level reasoning needed for open-ended,        optimization-driven techniques provide clear objectives and
+compositional commands.                                            formal guarantees, they are largely language-agnostic, the
+   More recently, LLM-enabled methods have pushed NL               decision of what to relax is typically determined by predeﬁned
+navigation toward stronger semantic understanding and ﬂex-         costs or priorities, implicitly assuming that the original spec-
+ible task execution. By supporting high-level reasoning, task      iﬁcation precisely reﬂects user intent. In language-grounded
+decomposition, and open-vocabulary goal grounding, LLMs            settings, infeasibility may instead stem from semantic ambi-
+enable UAVs to follow longer, freer-form instructions and          guity, underspeciﬁcation, or NL-to-STL misinterpretation, in
+improve semantic adaptability [19]–[22]. Nevertheless, many        which case formally minimal relaxations can be semantically
+existing studies are evaluated in open simulation settings         misaligned, such as weakening task-critical predicates when
+without explicitly modeling low-altitude airspace regulations,     timing constraints are actually negotiable. This motivates
+making it hard to formally verify whether a generated ﬂight        incorporating language-level reasoning into the repair loop to
+plan violates rule constraints in safety-critical 3D airspaces     guide the selection among alternative repair directions, such
+[23].                                                              as relaxing temporal constraints versus predicate conditions,
+   To address these limitations, several recent studies have be-   while still rigorously enforcing non-negotiable safety con-
+gun incorporating formal methods into NL-guided navigation         straints through formal planning and optimization.
+frameworks [24]–[26]. Temporal logics such as linear temporal
+                                                                   C. Main Contributions
+logic (LTL) and STL have been used to explicitly encode
+task objectives, safety constraints, and temporal requirements,       This paper aims to enable safe, reliable, and interpretable
+which are subsequently enforced through planning algorithms.       low-altitude UAV navigation from natural-language (NL) in-
+A key challenge in these frameworks is translating NL instruc-     structions by jointly addressing semantic grounding, formal
+tions into well-formed temporal-logic speciﬁcations. Early         speciﬁcation, and motion-planning feasibility. The main con-
+research often assumed structured or controlled language           tributions are summarized as follows.
+to simplify NL-to-TL mapping [27], and some navigation-               • We develop an integrated navigation framework that
+oriented approaches relied on manual or semi-automatic trans-           converts NL instructions into STL speciﬁcations, detects
+lation procedures to construct formulas specifying visitation           planning infeasibility, and repairs the speciﬁcations based
+order, obstacle avoidance behaviors, or timing constraints [24].        on solver feedback to restore feasibility. The framework
+Learning-based semantic parsing methods have subsequently               tightly couples LLM-based semantic reasoning, STL
+been explored in several domains and have been shown to                 speciﬁcation translation and repair, and MILP-based mo-
+be effective in mapping NL to formal speciﬁcations [28]–                tion planning within a closed-loop architecture, enabling
+[30], but they typically require substantial annotated data and         safe and executable low-altitude UAV navigation.
+may generalize poorly to complex instructions that involve            • We propose an LLM-based translation method that maps
+implicit reasoning. More recently, LLM-based methods have               NL instructions into STL speciﬁcations. The method inte-
+been explored to directly generate LTL or STL speciﬁcations             grates supervised chain-of-thought (CoT) alignment with
+from free-form NL [25], [26], [31]–[33], offering a potential           group-relative policy optimization (GRPO) reinforcement
+     learning. This pipeline improves the generation of syn-         The environment contains a set of labeled regions {Ri }Mi=1
+     tactically well-formed STL speciﬁcations and increases        that represent task-relevant areas in the workspace. Obstacles
+     exact-match NL-to-STL translation accuracy under strict       and no-ﬂy zones are modeled as forbidden regions that must
+     canonical normalization.                                      be avoided by the UAV for all the k time steps.
+   • We introduce an LLM-assisted, systematic STL repair
+     mechanism to handle infeasible planning instances. Di-
+     agnostic information from the MILP solver is mapped           B. Signal Temporal Logic Speciﬁcations
+     back to speciﬁc STL subformulas, and the LLM is
+     leveraged to reason about semantic intent and prioritize        STL has been extensively used to specify and verify tem-
+     repair directions, enabling selective relaxation of non-      poral properties of dynamical systems. In this work, STL for-
+     safety-critical requirements while rigorously preserving      mulas are interpreted over discrete-time UAV state trajectories
+     hard safety constraints.                                      x0:H = {x0 , x1 , . . . , xH }, where H ∈ N denotes the planning
+   • We validate the proposed approach through extensive           horizon.
+     simulations and real-world UAV experiments. Exper-              An STL formula ϕ is deﬁned recursively as:
+     imental results show that, compared with traditional
+     NL-to-STL translation model, the proposed approach
+     achieves higher translation accuracy while using a smaller                ϕ ::= ⊤ | µ | ¬ϕ | ϕ1 ∧ ϕ2 | ϕ1 ∨ ϕ2
+                                                                                                                                         (4)
+     model. In addition, the results demonstrate that the pro-                       | G[a,b] ϕ | F[a,b] ϕ | ϕ1 U[a,b] ϕ2 ,
+     posed closed-loop framework can generate dynamically
+     feasible trajectories and recover from infeasible speciﬁ-     where a, b ∈ N with a ≤ b denote discrete-time bounds.Here,
+     cations.                                                      the temporal operators F , G, and U correspond to the eventu-
+   The remainder of this paper is organized as follows. Sec-       ally, always, and until operators, respectively. And ϕ1 and ϕ2
+tion II formulates the problem and reviews STL preliminaries.      denote arbitrary STL subformulas. The atomic predicate µ is
+Section III presents the overall framework. Sections IV–V de-      deﬁned as an inequality over the system state:
+scribe the NL-to-STL translation and the MILP-based planning
+and repair modules. Section VI reports experimental results,                             µ(xk ) = g(xk ) ≥ 0,                            (5)
+and Section VII concludes.
+
+     II. P RELIMINARIES AND P ROBLEM F ORMULATION                  where g(·) is an afﬁne function of the system state. Such
+  In this section, we ﬁrst describe the UAV dynamics and the       predicates can encode region membership, obstacle clearance,
+environment representation. We then recall the STL, which          no-ﬂy zones, kinematic limits, and other safety envelopes.
+serves as a formal speciﬁcation layer bridging NL instructions       The STL semantics is recursively deﬁned as follows [10]:
+and trajectory planning. Finally, we state the UAV NL navi-
+gation problem considered.                                                  (x0:H , k) |= µ ⇐⇒ g(xk ) ≥ 0,                               (6)
+A. UAV Dynamics and Environment Model                                     (x0:H , k) |= ¬ϕ ⇐⇒ (x0:H , k) 6|= ϕ,                          (7)
+   We consider a UAV operating in a bounded workspace W ⊂            (x0:H , k) |= ϕ1 ∧ ϕ2 ⇐⇒ (x0:H , k) |= ϕ1
+ 3
+R with obstacles and no-ﬂy zones. The UAV state at discrete
+                                         ⊤                                                 ∧ (x0:H , k) |= ϕ2 ,                         (8)
+time step k is deﬁned as xk = p⊤      vk⊤ , where pk ∈ R3
+                                
+                                   k                                 (x0:H , k) |= ϕ1 ∨ ϕ2 ⇐⇒ (x0:H , k) |= ϕ1
+and vk ∈ R3 denote the position and velocity of the UAV,
+                                                                                            ∨ (x0:H , k) |= ϕ2 ,                         (9)
+respectively. The control input uk ∈ R3 corresponds to an                                               ′
+acceleration command.                                                 (x0:H , k) |= F[a,b] ϕ ⇐⇒ ∃k ∈ [k + a, k + b] :
+   We adopt a discrete-time linear dynamics model with sam-                                    (x0:H , k ′ ) |= ϕ,                     (10)
+pling time ∆t:                                                         (x0:H , k) |= G[a,b] ϕ ⇐⇒ ∀k ′ ∈ [k + a, k + b] :
+                    xk+1 = Axk + Buk ,                   (1)                                   (x0:H , k ′ ) |= ϕ,                     (11)
+where                                   1                         (x0:H , k) |= ϕ1 U[a,b] ϕ2 ⇐⇒ ∃k ′ ∈ [k + a, k + b] s.t.
+                                                2
+                                                   
+           A=
+              I       ∆t I
+                            ,     B=     2 ∆t       I
+                                                         .   (2)                                (x0:H , k ′ ) |= ϕ2
+              0        I                     ∆t I
+                                                                                                 ∧ ∀k ′′ ∈ [k, k ′ ] : (x0:H , k ′′ ) |= ϕ1 .
+Here, I denotes the identity matrix of appropriate dimension                                                                            (12)
+and 0 denotes a zero matrix. State and control constraints are
+imposed as:
+                   xk ∈ X ,      uk ∈ U,                   (3)        STL also deﬁnes a robust semantics by associating each
+                                                                   formula ϕ with a real-valued function ρϕ (x0:H , k) such that
+where X and U are convex polyhedral sets encoding                  (x0:H , k) |= ϕ if and only if ρϕ (x0:H , k) ≥ 0. The magnitude
+workspace bounds, velocity limits, and actuation constraints.      of ρϕ can be interpreted as the margin by which ϕ is satisﬁed
+                                                                                                                                                  Specification Repair
+                                                            Reasoning-Enhanced NL-STL Translator
+                                                                        LoRA       GRPO                                                           LLM Repair Decision
+        Natural Language Instruction                                                                                        Diagnosis                                          Relaxation
+                                                   濏濡濟澳濜瀁瀆瀇瀅瀈濶瀇濼瀂瀁濑                                                                                  Original NL
+                                                                                                                          IIS Extraction                                     Temporal Slack
+     濏濦瀃濴瀇濼濴濿澳濺瀂濴濿瀆濑 濏濧濸瀀瀃瀂瀅濴濿澳濶瀂瀁瀆瀇瀅濴濼瀁瀇瀆濑                                                 CoT Reasoning                                           Unrepaired STL
+                                                                                            濏瀇濻濼瀁濾濑濁濁濁濏濂瀇濻濼瀁濾濑           Confilict Mapping                                   Predicate Slack
+                                                 濏濙濸瀊激瀆濻瀂瀇澳濘瀋濴瀀瀃濿濸瀆濑                                                                                Conflict Tuple
+     濏濦濴濹濸瀇瀌澳瀅瀈濿濸瀆濑     濏濣瀅濸濹濸瀅濸瀁濶濸瀆濑
+                                                                                                                   STL
+                                                                                            STL Generation
+                                                                                            濏濴瀁瀆瀊濸瀅濑濁濁濁濏濂濴瀁瀆瀊濸瀅濑                                     STL-Constrained Trajectory Planner
+                                                  濏濦瀌瀆瀇濸瀀澳濣瀅瀂瀀瀃瀇濑            LLM
+                                                                                                                                    Environment
+                                                                                                                                      Model
+       濏濣濿濸濴瀆濸澳濴瀅瀅濼瀉濸澳濴瀇澳濔瀅濸濴澳濔澳瀊濼瀇濻濼瀁澳                                                                                                                      STL to MILP Encoding
+       濄濃澳瀆濸濶瀂瀁濷瀆濁濁濁濑
+                                                                               濷
+
+                                                                               濷                                                                   Binary Auxiliary Var   Robustness Margin
+                                                       Prompt                  濷
+                                                                                                                                      UAV                                                      Trajectory Execution
+                                                                                       …                                             Dynamic
+                                                                       Synthetic CoT Data                                                                        Solver Status
+
+
+
+
+Fig. 1. Overview of the proposed language-guided planning framework. A natural-language instruction is translated into an STL speciﬁcation, which is
+enforced by a constrained planner. When infeasibility is detected, solver feedback is used to guide speciﬁcation reﬁnement and re-planning in a closed loop.
+
+
+
+or violated. Following robust STL semantics in [41], the                                                           The overall NL navigation problem addressed in this paper
+quantitative semantics is deﬁned recursively as:                                                                 can be summarized by the following relation:
+
+              ρµ (x0:H , k) = g(xk ),                                                              (13)                                (L, H) 7→ (ϕ, x0:H , u0:H−1 ).                                         (22)
+        ρ¬ϕ (x0:H , k) = −ρϕ (x0:H , k),                    (14)
+                                                                                                                  Due to ambiguity in natural language or conﬂicts among
+     ρϕ1 ∧ϕ2 (x0:H , k) = min ρϕ1 (x0:H , k), ρϕ2 (x0:H , k) ,                                                   temporal and spatial task requirements, the STL-constrained
+                                                            (15)                                                 planning problem induced by ϕ may be infeasible. In such
+                                                                                                               cases, the goal is to restore feasibility by minimally modifying
+     ρϕ1 ∨ϕ2 (x0:H , k) = max ρϕ1 (x0:H , k), ρϕ2 (x0:H , k) ,                                                   task-related components of the speciﬁcation while strictly
+                                                            (16)                                                 preserving all safety-critical constraints.
+     ρG[a,b] ϕ (x0:H , k) = ′ min     ρϕ (x0:H , k ′ ),     (17)
+                                          k ∈[k+a, k+b]                                                                   III. S YSTEM OVERVIEW AND F RAMEWORK
+                                                                                   ′
+     ρF[a,b] ϕ (x0:H , k) =                     max
+                                          ρϕ (x0:H , k ),             (18)                                          Fig. 1 shows the proposed framework for low-altitude UAV
+                                          k′ ∈[k+a, k+b]
+                                                                                                                navigation from a NL instruction L. The system translates
+ ρϕ1 U[a,b] ϕ2 (x0:H , k) = ′ max         min ρϕ2 (x0:H , k ′ ),                                                 L into a veriﬁable STL speciﬁcation, plans a dynamically
+                           k ∈[k+a, k+b]
+                                                              ′′
+                                                                                                                feasible trajectory under STL and physical constraints, and
+                                       min    ρ ϕ 1 (x0:H , k    )  . (19)                                       triggers speciﬁcation repair when the planning problem is
+                                    ′′     ′        k ∈[k, k ]
+                                                                                                                 infeasible.
+   In this paper, STL provides a veriﬁable intermediate spec-                                                       Reasoning-Enhanced NL-STL Translator. Given L , the
+iﬁcation between NL instructions and optimization-based tra-                                                     translator uses a structured prompt and a reasoning-enhanced
+jectory planning. Safety-critical requirements are enforced as                                                   LLM to generate an STL speciﬁcation ϕ. The model is
+hard STL constraints. Task-related objectives are expressed via                                                  trained on a synthetic NL-STL dataset augmented with CoT
+temporal operators and may be selectively relaxed when the                                                       reasoning traces, and is further ﬁne-tuned using parameter-
+resulting STL-constrained planning problem is infeasible.                                                        efﬁcient LoRA and GRPO to improve STL syntactic validity
+                                                                                                                 and semantic consistency.
+C. Problem Deﬁnition                                                                                                STL-Constrained Trajectory Planner. The planner converts
+   Consider a UAV operating in a known environment with                                                          ϕ into a MILP by introducing binary satisfaction variables for
+discrete-time dynamics and admissible state and control sets.                                                    STL subformulas and a robustness margin variable. The MILP
+Let L denote a NL instruction describing a navigation task.                                                      also incorporates the environment model and UAV dynamics
+The instruction is interpreted as a STL speciﬁcation:                                                            with state/control limits. If the solver is feasible, it returns a
+                                                                                                                 trajectory for execution, otherwise, it outputs an infeasibility
+                                              ϕ = T (L),                                           (20)          status that activates repair.
+                                                                                                                    Speciﬁcation Repair. Upon infeasibility, the system extracts
+where T (·) denotes a translation model.
+                                                                                                                 an IIS and maps conﬂicting MILP constraints back to STL
+   Given the induced STL speciﬁcation ϕ and a ﬁnite planning
+                                                                                                                 subformulas and time indices to form a conﬂict tuple. Using
+horizon H, the objective is to compute a dynamically feasible
+                                                                                                                 the original NL instruction, unrepaired STL, and conﬂict tuple,
+state trajectory x0:H and control sequence u0:H−1 such that:
+                                                                                                                 an LLM selects a repair mode for each conﬂict: temporal
+                                              x0:H |= ϕ.                                           (21)          relaxation or predicate relaxation, while safety constraints are
+                                                                                                                 never relaxed. The selected mode is implemented via temporal
+The resulting trajectory must satisfy the system dynamics, state                                                 or predicate slack variables with penalties, and the repaired
+and control constraints, and all safety-critical requirements                                                    STL is reconstructed and sent back to the planner for re-
+encoded in ϕ.                                                                                                    solving.
+                Input Data                        GRPO Optimization                                        Reward Function
+                                                                                                               CoT format reward
+
+              The UAV reaches region           Reference
+                                                                 O1    O2   ... ON
+            A within 49 seconds, reaches        Model
+            region B within 75 seconds,                                   KL
+             and avoids collisions with                               Divergence                               CoT length reward
+                                             Update
+              region C throughout the
+                                             Model             Policy
+                  entire operation.
+                                                               Model
+                                                                                                               STL syntax reward
+                Region A = signal_1_n
+                                                 A1                                  R1
+
+                Region B = signal_2_n            A2         Group                    R2                       STL Correct Reward
+                                                ...
+                                                          Computation                ...
+                Region C = signal_3_n            AN                                  RN
+
+
+
+
+                               Fig. 2. GRPO-based RL framework for reasoning-enhanced NL-to-STL generation.
+
+
+
+   Overall, the framework realizes L → ϕ → (x0:H , u0:H−1 )               The CoT annotations are generated using DeepSeek-V3.1
+with automatic diagnosis-and-repair in the loop, enabling               [42]. Given a NL instruction and its ground-truth STL formula,
+safe and executable UAV navigation while keeping repairs                the model reconstructs the key reasoning steps required for
+interpretable and minimally task-degrading.                             temporal logic construction, including predicate identiﬁcation,
+                                                                        temporal bound extraction, operator selection, and formula
+ IV. R EASONING -E NHANCED NL TO STL T RANSLATION                       composition. These CoT traces serve as an explicit inter-
+   This section presents a reasoning-enhanced pipeline for              mediate representation that exposes the semantic structure
+translating NL instructions into STL speciﬁcations. We con-             underlying the NL-to-STL mapping.
+struct training data by augmenting an existing NL-to-STL                  Applying this pipeline to the selected NL2TL samples
+dataset with explicit reasoning traces. A CoT data generation           yields a synthetic dataset with explicit supervision over both
+pipeline generates intermediate structured reasoning to connect         reasoning and ﬁnal STL outputs. This dataset forms the basis
+each instruction to its target STL formula, forming an NL-              for the subsequent cold-start supervised ﬁne-tuning stage and
+CoT-STL corpus. We then use this corpus for cold start su-              improves the structural robustness and semantic consistency
+pervised ﬁne-tuning and apply GRPO reinforcement learning               of downstream STL generation.
+to further improve STL syntactic correctness and semantic
+consistency. The overall training pipeline, including cold-start                           NL-STL data                          Prompt
+SFT and GRPO-based reinforcement learning, is illustrated in                     NL:Within the first 62 to 88 time       Now, I give you the natual
+Fig. 2.                                                                             units , signal_1_n shall be         language and STL for it, can
+                                                                                   consistently equal to 29.3 .             you give me several
+                                                                                 STL:G[62:88](signal_1_n==29.3)         sentences to conclude why
+A. Synthetic Dataset and CoT Data Generation                                                                             the nl transfor to this STL.
+   To improve NL-to-STL translation, we build a synthetic
+training corpus based on NL2TL [39]. We adopt NL2TL as
+the base dataset and collect 20K NL-STL pairs from it. While                               NL-STL CoT
+NL2TL provides aligned NL instructions and STL formulas,
+                                                                                     NL: Within the first 62 to 88 time units , signal_1_n shall be
+the intermediate semantic decomposition from NL to STL is                            consistently equal to 29.3 .
+missing, making it difﬁcult for the model to learn how linguis-                      STL: G[62:88](signal_1_n==29.3).
+tic cues are mapped to STL operators and temporal constraints.                       CoT: The requirement specifies a time window from 62 to 88
+                                                                                     time units, which corresponds to the bounded always
+To address this issue, each NL-STL pair is augmented with an                         operator G[62:88]. The condition that signal_1_n must be
+intermediate CoT, which serves as a structured bridge between                        consistently equal to 29.3 throughout this interval is
+the NL instruction and the corresponding STL speciﬁcation.                           expressed as signal_1_n==29.3.
+The CoT captures the essential semantic decomposition steps
+required for temporal logic construction, transforming each
+                                                                        Fig. 3. CoT Data Engine for augmenting NL2TL with intermediate reasoning
+original NL-STL pair into a NL-CoT-STL triplet. The overall             traces.
+data generation pipeline is illustrated in Fig. 3.
+B. Cold Start Stage                                                 relatively high temperature coefﬁcient τ to encourage explo-
+   Recent advances in reinforcement learning for reasoning,         ration and output diversity. For each sampled output Oi , we
+                                                                    compute a composite reward by summing four components:
+such as DeepSeek-R1 [43], indicate that policy optimization
+can improve long-horizon reasoning. However, NL-to-STL               Ri = RCoT format +RCoT length +RSTL syntax +RSTL correct . (23)
+translation requires both explicit CoT reasoning and strict
+adherence to STL syntax. Acquiring these capabilities purely        Each reward term is computed from the sampled output Oi .
+through end-to-end reinforcement learning from scratch is of-         To encourage the structural integrity of the CoT format, we
+ten unstable, due to rigid syntactic constraints and sparse task-   deﬁne the CoT format reward with three cases:
+level rewards. Therefore, we introduce a cold-start supervised                     
+ﬁne-tuning (SFT) stage to initialize the model before GRPO                         +k1 , if both <think>, <answer> exist
+                                                                                   
+training.                                                            RCoT format = +k2 , if exactly one exists,
+   The cold-start stage targets format alignment and reason-
+                                                                                   
+                                                                                     +k3 , if neither exists.
+                                                                                   
+ing induction. Given the rigidity of STL syntax and the                                                                      (24)
+scarcity of temporal-logic structures in general pre-training         To encourage sufﬁcient reasoning while penalizing ver-
+corpora, prompt-based approaches alone are insufﬁcient to           bosity, we deﬁne the CoT length reward:
+guarantee consistently well-formed outputs. We ﬁne-tune the                                                         
+model on the synthetic NL-CoT-STL dataset constructed in                          RCoT length = k4 · min LCoT , Lmax ,       (25)
+the previous section, where each sample follows a structured
+output pattern: the intermediate reasoning is enclosed within       where LCoT is the number of tokens inside the <think> span
+<think> tags, and the ﬁnal STL speciﬁcation is enclosed             and Lmax is the maximum allowed CoT length.
+within <answer> tags. We optimize the model using a                   To enforce syntactic validity of the generated STL, we
+standard maximum-likelihood objective, and implement SFT            deﬁne the STL syntax reward:
+via parameter-efﬁcient ﬁne-tuning with Low-Rank Adaptation                             (
+(LoRA) [44] to reduce memory and computational overhead                                  +k5 , if STL syntax is valid
+                                                                         RSTL syntax =                                    (26)
+while preserving the base model’s general language capability.                           −k5 , otherwise
+   This cold start initialization encourages the model to pro-
+                                                                    where validity requires that all variables belong to the pre-
+duce coherent reasoning traces and syntactically valid STL
+                                                                    deﬁned set and that all temporal operators are structurally
+formulas in a stable and controllable manner. By reducing
+                                                                    complete.
+the search space and variance encountered in subsequent
+reinforcement learning, it enables the GRPO optimization              To provide a dense similarity-based signal, we deﬁne a
+stage to focus on improving global structural validity and          BLEU-based STL correctness reward:
+semantic ﬁdelity, rather than correcting low-level formatting                          RSTL correct = k6 · BLEU,                (27)
+errors.
+                                                                    where BLEU [47] is computed by combining n-gram precision
+C. GRPO Reinforcement Learning                                      and a brevity penalty:
+   Although SFT enables the model to imitate correct outputs,                                      N
+                                                                                                              !
+it optimizes token-level likelihood rather than global structural
+                                                                                                  X
+                                                                                BLEU = BP · exp      wn log pn .         (28)
+validity. For structured outputs such as STL formulas, minor                                           n=1
+token errors can invalidate the entire formulas.
+   Reinforcement learning addresses this issue by directly op-      Here, pn is the modiﬁed n-gram precision of order n be-
+timizing task-level rewards. While Proximal Policy Optimiza-                                     PN STL sequences, wn is the
+                                                                    tween the generated and reference
+tion (PPO) [45] or Group-based Proximal Policy Optimization         corresponding weight with       n=1 wn = 1, and BP is the
+(GPPO) [46] are a widely adopted RL method for LLMs, it             brevity penalty determined by the lengths of the generated
+requires an additional value network and often suffers from         and reference sequences. We use {kj }6j=1 as scalar reward
+high computational cost and training instability. To overcome       coefﬁcients to balance the contributions of the reward terms.
+these limitations, we adopt GRPO [42]. GRPO eliminates the            After reward computation, we perform policy update using
+need for a value network by estimating the baseline using           GRPO. For each input, the rewards R = {Ri }G       i=1 of the
+group-level reward statistics.                                      sampled group are normalized relative to the group mean and
+   We explicitly structure the model output into a reasoning        variance, yielding the group-relative advantage:
+process enclosed by <think> tags and a ﬁnal STL formula                                           Ri − mean(R)
+enclosed by <answer> tags. The overall RL pipeline follows                              Âi,t =                ,                (29)
+                                                                                                     std(R)
+three stages including policy sampling, reward computation,
+and policy update.                                                  where t ∈ {1, . . . , |Oi |} indexes tokens in the generated tra-
+   Given an input instruction, we sample a group of G can-          jectory Oi . The same group-relative advantage Âi,t is assigned
+didate outputs {Oi }G i=1 from the current policy πθold with a      to all tokens in the trajectory Oi .
+ The GRPO objective combines a clipped policy update with                 over a ﬁnite horizon. This section presents a uniﬁed formula-
+KL regularization against a reference policy:                             tion that integrates STL-constrained trajectory planning with
+                   "    G        |Oi |                                    feasibility diagnosis and speciﬁcation repair.
+                     1 X 1 X
+    LGRPO (θ) = E                      LCLIP (θ, Âi,t )
+                     G i=1 |Oi | t=1                                      A. MILP Encoding of STL Satisfaction
+                                       #                 (30)
+                                                                          Given the discrete-time UAV dynamics and the STL spec-
+                 − β DKL πθ k πref      .
+                                                                          iﬁcation ϕ translated from the NL instruction by the LLM,
+                                                                          we encode satisfaction of ϕ over a ﬁnite planning horizon H
+  For each token position t in the trajectory Oi , we compute
+                                                                          using a MILP formulation.
+the importance ratio:
+                                                                             For each STL subformula ψ and discrete time step k, we
+                                  πθ (ai,t | si,t )                       introduce a binary auxiliary variable zψ,k ∈ {0, 1} indicating
+                    ri,t (θ) =                        ,           (31)
+                                 πθold (ai,t | si,t )                     whether ψ is satisﬁed at time k. The atomic predicate µ is
+where ai,t denotes the t-th generated token in trajectory                 deﬁned as an inequality over the system state xk of the form
+Oi , and si,t denotes the corresponding generation context,               µ(xk ) ≥ 0. The implication between the binary variable and
+consisting of the input and the previously generated tokens.              predicate satisfaction is encoded using Big-M constraints as
+   We then deﬁne the clipped surrogate objective:
+                                                                          µ(xk ) + (1 − zµ,k )M ≥ γ,         µ(xk ) − zµ,k M   ≤ γ, (33)
+    (i,t)
+  LCLIP = min ri,t (θ)Âi,t , clip(ri,t (θ), 1 − ǫ, 1 + ǫ)Âi,t .
+                                                               (32)       where M > 0 is a sufﬁciently large constant and γ ≥ 0 is a
+The policy parameters are then updated by gradient ascent on              global robustness margin variable. Unlike the quantitative STL
+LGRPO (θ).                                                                robustness ρϕ (x0:H , k) deﬁned in Section II-B, which evalu-
+   The complete GRPO training procedure, including cold-                  ates the satisfaction margin of a formula on a given trajectory,
+start initialization and main reinforcement learning phases, is           γ is an optimization variable that enforces a uniform lower
+summarized in Algorithm 1.                                                bound on predicate satisfaction across the entire trajectory.
+                                                                             Boolean compositions of STL  V formulas are encoded recur-
+Algorithm 1 GRPO Training for NL-to-STL Translator with                   sively. For a conjunction ψ = i ψi , we impose:
+Chain-of-Thought
+ 1: Phase 0: Cold Start                                                                       zψ,k ≤ zψi ,k+∆i ,       ∀i,            (34)
+ 2: Build D of NL-CoT-STL triplets with <think> and
+                                              (0)
+                                                                                                      W
+    <answer> tags; SFT to obtain πθ ;                                     and for a disjunction ψ =       i ψi :
+                        (0)                                         (0)
+ 3: Initialize πθ ← πθ and reference policy πref ← πθ ;                                                 X
+ 4: Phase 1: GRPO Main Training                                                                zψ,k ≤         zψi ,k+∆i ,             (35)
+ 5: for k = 1 to K do                                                                                     i
+
+ 6:    Set πθold ← πθ ;                                                   where ∆i denotes the relative time offset induced by the syntax
+ 7:    Sample a group {Oi }G    i=1 from πθold (· | x) with temper-       tree of ψ.
+       ature τ ;
+                                                                             Temporal operators are unfolded over their discrete-time
+ 8:    Compute rewards {Ri }G      i=1 where Ri = RCoT format +           intervals according to the STL semantics deﬁned in Section II-
+       RCoT length + RSTL syntax + RSTL correct ;
+                                                                          B. Speciﬁcally, G[a,b] operators are expanded as conjunctions
+ 9:    Compute µ = mean({Ri }), σ = std({Ri }), and set
+                                                                          over {k +a, . . . , k +b}, while F[a,b] operators are expanded as
+       Âi,t = (Ri − µ)/(σ + ε) for all t = 1, . . . , |O       i |;
+                                       PG             P|Oi |  (i,t)      disjunctions over the same interval. The until operator U[a,b]
+                                     1            1
+10:    Compute LGRPO (θ) = G i=1 |Oi | t=1 LCLIP −                        is handled analogously using its standard Boolean expansion.
+                        
+       β DKL [πθ kπref ] , where                                          All resulting Boolean constraints are encoded using Equations
+                                                                          (34)–(35).
+11:                          | si,t )/πθold (ai,t | si,t ) and
+            ri,t (θ) = πθ (ai,t
+                                                                             Satisfaction of the overall STL speciﬁcation is enforced by
+              (i,t)
+12:         LCLIP = min ri,t (θ)Âi,t , clip(ri,t (θ), 1 − ǫ, 1 +
+                                                                         introducing a root variable zϕ,0 and requiring:
+       ǫ)Âi,t ;
+13:    Update by gradient ascent: θ ← θ + η∇θ LGRPO (θ);                                       zϕ,0 = 1,           γ ≥ 0.             (36)
+14: end for
+                                                                          Any feasible solution to the resulting MILP therefore corre-
+                                                                          sponds to a trajectory x0:H that satisﬁes ϕ.
+   V. STL-C ONSTRAINED T RAJECTORY P LANNING AND
+                S PECIFICATION R EPAIR
+                                                                          B. STL-Constrained Optimization Formulation
+   Given the discrete-time UAV dynamics and the STL speci-
+ﬁcation generated from NL instructions, we formulate the tra-                Combining the system dynamics, state and control con-
+jectory generation problem as a constrained planning problem              straints, and the MILP encoding of STL satisfaction, we obtain
+the following mixed-integer optimization problem over the            induced by the STL semantics, O is the parent temporal
+horizon H:                                                           operator in the STL syntax tree, and R characterizes the
+                               H−1
+                               X                                     semantic role of the predicate. This representation allows the
+                                     x⊤        ⊤
+                                                       
+       min.             −γ+           k Qxk + uk Ruk         (P1)    LLM to reason jointly over the original task intent, the formal
+ x0:H , u0:H−1 , z, γ
+                               k=0                                   speciﬁcation structure, and the localized infeasibility infor-
+                 s.t.   x0 = xﬁxed ,                         (37a)   mation, without exposing solver-level variables or numerical
+                        xk+1 = Axk + Buk , ∀k = 0, . . . , H − 1,    relaxation parameters.
+                                                             (37b)      Safety-critical predicates, such as obstacle avoidance and
+                                                                     no-ﬂy constraints, are explicitly excluded from this interface
+                        xk ∈ X , uk ∈ U, ∀k = 0, . . . , H − 1,
+                                                                     and are never considered for relaxation.
+                                                             (37c)
+                                                                        Given this input, the LLM outputs a binary decision select-
+                        (33) − (36).                                 ing exactly one admissible repair mode for each infeasible
+  The objective in Problem (P1) seeks a trajectory that max-         atomic event: predicate relaxation or temporal relaxation.
+imizes the global robustness margin γ while penalizing state         To preserve interpretability and a clear separation between
+deviation and control effort through quadratic regularization.       spatial and temporal modiﬁcations, mixed repairs for a single
+Feasibility with γ ≥ 0 guarantees satisfaction of the STL            atomic event are intentionally disallowed. The LLM does not
+speciﬁcation, and larger values of γ correspond to increased         propose relaxation magnitudes, threshold values, or modiﬁed
+robustness against perturbations.                                    temporal bounds; it only determines which repair dimension is
+                                                                     permitted, while the quantitative extent of repair is determined
+C. Feasibility Certiﬁcation and IIS Extraction                       entirely by the optimization layer.
+   If the solver declares Problem (P1) infeasible, we perform           The LLM’s decisions are then realized at the numerical
+feasibility diagnosis using an IIS, which identiﬁes a minimal        level through selective relaxation in the MILP. If predicate
+set of constraints and variable bounds that cannot be satisﬁed       relaxation is selected for an atomic event, a nonnegative slack
+simultaneously. We adopt the IIS-based diagnosis procedure           variable sµ,k ≥ 0 is introduced to relax the corresponding
+in [36] to localize infeasibility at the speciﬁcation level.         Big-M constraint:
+   To enable semantic interpretation of solver feedback, each
+STL-induced constraint in the MILP is associated with a                            µ(xk ) + (1 − zµ,k )M + sµ,k ≥ γ.            (38)
+traceability record that links it to the originating STL sub-
+formula and time index. Using this mapping, the constraints          If temporal relaxation is selected, nonnegative temporal slack
+contained in the IIS are projected back to the STL syntax            variables τψ,k are introduced to relax the Boolean constraints
+tree and summarized as a set of infeasible atomic events,            arising from temporal operator expansion. For atomic events
+each characterized by an atomic predicate and its associated         deemed non-negotiable, no relaxation variables are introduced
+temporal context. This diagnosis result localizes the source         and the corresponding constraints remain unchanged.
+of infeasibility in a form suitable for high-level reasoning and        After introducing the selected relaxations, we resolve the
+serves as structured input to the subsequent speciﬁcation repair     optimization problem with an augmented objective that penal-
+stage.                                                               izes the total relaxation magnitude:
+D. LLM-Guided Repair via Predicate-Temporal Choice                                X                            X            X
+                                                                                       x⊤          ⊤
+                                                                                                          
+                                                                     min. −γ+           k Qxk + uk Ruk +λp         sµ,k +λt     τψ,k ,
+   When the STL-constrained optimization problem is infea-                        k
+sible, our objective is to restore feasibility by minimally                                                                    (39)
+modifying task-related requirements while strictly preserving        where λp , λt > 0 weight the relative cost of predicate and
+all safety-critical constraints. Unlike prior approaches that        temporal relaxations. The optimized relaxation values provide
+require the designer to manually specify which predicates or         quantitative guidance for constructing an explicit repaired
+temporal parameters are eligible for repair, we delegate the         STL speciﬁcation ϕ̃: predicate relaxations are translated into
+choice of repair dimension to a LLM, which operates at the           adjusted numerical thresholds or geometric parameters, while
+semantic level and does not directly manipulate numerical            temporal relaxations are mapped to modiﬁed temporal bounds.
+optimization variables.                                              Finally, ϕ̃ is reconstructed without slack variables and re-
+   For each infeasible atomic event identiﬁed by the IIS-            encoded into a standard STL-constrained MILP; solving this
+based diagnosis in Section V-C, the LLM is provided with             problem yields a dynamically feasible trajectory that satisﬁes
+a structured input that combines symbolic, temporal, and             ϕ̃ exactly.
+semantic information. Speciﬁcally, the input consists of: (i)           The introduction of the LLM does not modify the un-
+the original NL instruction from which the task speciﬁcation         derlying IIS-based diagnosis or the optimization-based repair
+was generated, (ii) the unrepaired STL speciﬁcation ϕ, and           mechanism. For any ﬁxed set of LLM repair-mode selections,
+(iii) a structured description of each diagnosed atomic event        feasibility and quantitative minimality are enforced by the
+represented as a tuple (µ, σ, O, R), where µ denotes the atomic      MILP formulation, while the LLM inﬂuences only the ad-
+predicate inequality, σ is its discrete-time support interval        missible repair dimension for each diagnosed atomic event.
+             VI. E XPERIMENTAL E VALUATION                                   1.0
+   This section presents a comprehensive experimental evalu-                 0.9
+ation of the proposed NL navigation framework. The experi-                   0.8
+
+                                                                      Accuracy
+ments are designed to assess the effectiveness of the system
+at multiple levels, ranging from NL understanding and formal                 0.7
+speciﬁcation generation to closed-loop trajectory planning and               0.6
+execution. We ﬁrst evaluate the performance of the proposed                                                            SFT
+                                                                             0.5                                       Cold Start
+reasoning-enhanced NL-to-STL translation model in isolation,
+                                                                                                                       GRPO
+focusing on its syntactic correctness with respect to ground-                0.4
+truth temporal logic speciﬁcations. We then assess the full                         2        4         6           8      10
+                                                                                                     Step
+planning framework in simulation, where the translated STL
+speciﬁcations are integrated with the MILP-based trajectory        Fig. 4. NL-to-STL translation accuracy during SFT and GRPO training.
+planner. These experiments evaluate the system’s ability to
+generate dynamically feasible trajectories, enforce safety-
+critical constraints, and recover from infeasible speciﬁcations   reward-based optimization can better correct sequence-level
+through selective repair. Finally, we demonstrate the appli-      and global structural errors that are difﬁcult to eliminate using
+cability of the proposed approach in real-world experiments       token-level likelihood training alone.
+using a quadrotor UAV platform in a representative search-
+and-rescue task.                                                                                TABLE I
+                                                                           NL- TO -STL TRANSLATION PERFORMANCE COMPARISON .
+A. NL-to-STL Translation Experiments
+   This subsection evaluates the proposed reasoning-enhanced       Method                               Model size     Accuracy (%)
+NL to STL Translation model, with an emphasis on its ability       Llama2-ﬁnetuned                           13B               94.8
+to generate syntactically valid and semantically accurate STL      T5-ﬁnetuned                              220M               93.1
+speciﬁcations from NL instructions. The translator is built        Qwen2.5-0.5B (prompt-only)               0.5B               45.2
+upon Qwen2.5-0.5B-Instruct and trained using the reasoning-        Qwen2.5-0.5B-ﬁnetuned w/o                0.5B               93.3
+enhanced pipeline described in Section IV.                         CoT
+   All experiments are conducted on the NL2TL dataset [39],        Qwen2.5-0.5B-ﬁnetuned w/                 0.5B               98.0
+where 20K NL-STL pairs are used for training and an ad-            CoT (Proposed)
+ditional 4K samples are held out for testing. We compare
+against several representative baselines, including a Llama2-        Quantitative results are summarized in Table I. The prompt-
+ﬁnetuned model [40], a T5-ﬁnetuned model [39], the original       only Qwen2.5-0.5B-Instruct model achieves an accuracy of
+Qwen2.5-0.5B-Instruct model without task-speciﬁc adaptation,      only 45.2%, highlighting the difﬁculty of reliably generating
+and a Qwen2.5-0.5B-Instruct model ﬁne-tuned on NL-STL             well-formed STL speciﬁcations without task-speciﬁc adap-
+pairs without CoT supervision. All ﬁne-tuned baselines are        tation. Supervised ﬁne-tuning without CoT already yields a
+trained on the same data split and evaluated under identical      substantial improvement, raising accuracy to 93.3%, which is
+decoding constraints.                                             comparable to or slightly better than the T5-ﬁnetuned baseline.
+   Translation performance is measured using accuracy, de-        The Llama2-ﬁnetuned model achieves 94.8% accuracy but
+ﬁned as the exact-match rate between the generated STL            relies on a signiﬁcantly larger parameter count.
+speciﬁcation and the ground-truth formula after canonical            By contrast, the proposed Qwen2.5-0.5B-Instruct model
+normalization of syntax and operators.This metric is intention-   ﬁne-tuned with CoT supervision and GRPO achieves an
+ally strict, as any syntactic error, incorrect temporal bound,    accuracy of 98.0%, outperforming all baselines while using
+or logical mismatch renders the output incorrect, reﬂecting       substantially fewer parameters. Compared with the same back-
+the requirement that generated speciﬁcations must be directly     bone trained without CoT, this corresponds to an absolute
+executable by downstream formal planners.                         improvement of 5.8 percentage points, demonstrating that
+   Fig. 4 shows the convergence of the proposed NL-to-            explicit reasoning supervision plays a critical role in reducing
+STL translation model across training stages. SFT denotes         temporal-logic composition errors. These results indicate that
+supervised ﬁne-tuning on data without CoT. The accuracy           for NL-to-STL translation, semantic alignment and structural
+improves steadily as the model learns the rigid STL grammar       reasoning are more decisive than raw model scale, and that
+and its alignment with natural-language expressions, but the      the proposed reasoning-enhanced training pipeline is highly
+gains gradually saturate. The cold-start stage corresponds to     effective for producing executable formal speciﬁcations.
+supervised ﬁne-tuning on data with CoT, which yields a clear
+jump in accuracy, suggesting that CoT provides useful inter-      B. Simulation Navigation Experiments
+mediate reasoning signals that improve structural correctness.       In this subsection, we evaluate the proposed NL navigation
+After introducing GRPO, the model achieves further improve-       framework in simulation. All simulations are conducted in a
+ments with a smoother, more stable trajectory, indicating that    100, m × 100, m planar workspace at a ﬁxed altitude, with
+static obstacles and no-ﬂy zones. The UAV dynamics follow
+the discrete-time linear model described in Section II with
+sampling time ∆t = 1, s, and the control limits enforce a max-
+imum speed of vmax = 5, m/s and a maximum acceleration
+of amax = 1, m/s2 throughout the planning horizon.
+   1) Feasible STL Task Examples: We ﬁrst present represen-
+tative task instances whose NL instructions can be translated
+into feasible STL speciﬁcations without any repair. These
+examples are used to illustrate the correspondence between
+language-level task descriptions, the translated STL formulas,
+and the resulting dynamically feasible trajectories.
+
+                                                                           Fig. 6. Simulated trajectory for Task 2. The UAV sequentially reaches the
+                                                                           speciﬁed target regions while avoiding the no-ﬂy zone at all times.
+
+
+
+                                                                            This instruction is translated by the proposed translation
+                                                                           module into the following STL speciﬁcation:
+                                                                                                           
+                                                                                ϕ2 = ¬Rd U[0,T ] Rk            ∧ F[0,T ] Rg
+                                                                                    ∧ G[0,T ] ¬Ro1 ∧ G[0,T ] ¬Ro2 ∧ G[0,T ] ¬Ro3 .                (41)
+
+                                                                              Here, the until operator captures the temporal dependency
+                                                                           that the UAV is prohibited from entering the restricted corridor
+                                                                           or gate region Rd until it has visited the corresponding
+Fig. 5. Simulated trajectory for Task 1. The UAV reaches the goal region
+within the speciﬁed time window while avoiding obstacles.                  authorization region Rk . Continuous avoidance of no-ﬂy zones
+                                                                           and obstacles is encoded as global safety constraints. The
+                                                                           planner successfully synthesizes a trajectory that satisﬁes
+  Task 1 (Disjunctive intermediate goals with obstacle
+                                                                           the sequential access requirement while respecting all safety
+avoidance). The NL instruction is:
+                                                                           constraints, as illustrated in Fig. 6.
+     “The UAV must avoid the obstacle (Ro1 ) and (Ro2 )                       2) Speciﬁcation Repair Example: We next consider a rep-
+     before reaching a goal (Rg ). Along the way, the                      resentative UAV task in which a NL instruction induces an
+     UAV must reach one of two intermediate targets                        STL speciﬁcation that is infeasible under the given dynamics
+     (Rt1 ) or (Rt2 ).”                                                    and environmental constraints. This example demonstrates
+ This instruction is translated by the proposed translation                how the proposed language-guided speciﬁcation repair mech-
+module into the following STL speciﬁcation:                                anism restores feasibility by selectively relaxing temporal
+                                                                         requirements, while preserving all safety-critical constraints
+          ϕ1 = F[0,T ] Rt1 ∨ F[0,T ] Rt2                                   and geometric task deﬁnitions.
+
+              ∧ F[0,T ] Rg ∧ G[0,T ] ¬Ro1 ∧ G[0,T ] ¬Ro2 .         (40)
+
+   The resulting STL speciﬁcation is directly enforced by the
+MILP-based planner, which successfully ﬁnds a dynamically
+feasible trajectory satisfying all constraints. Fig. 5 visualizes
+the planned trajectory, where the UAV reaches one of the
+intermediate targets and subsequently enters the goal region
+while maintaining safe clearance from the obstacle region.
+   Task 2 (Sequential authorization and constrained pas-
+sage). The NL instruction is:
+     “The UAV must enter designated authorization re-
+     gions Rk before it is allowed to pass through the
+     corresponding restricted air corridors or gates Rd
+     and ﬁnally reach the target location Rg . Throughout                  Fig. 7. Simulated trajectory for the repaired task. The UAV reaches the goal
+     the mission, the UAV is required to avoid obstacle                    region after temporal repair while continuously avoiding the obstacle.
+     (Ro1 ), (Ro2 ) and (Ro3 ).”
+                                Fig. 8. Executed UAV trajectory for the real-world search-and-rescue experiment.
+
+
+
+   Task 3 (Time-constrained goal reaching with obstacle                  geometric predicates unchanged. In particular, the size and
+avoidance). The NL instruction provided by the human oper-               location of the goal region Rg and the obstacle-avoidance
+ator is:                                                                 constraint G[0,T ] ¬Ro are treated as safety-critical and are not
+     “The UAV must always avoid the obstacle region                      modiﬁed. A slack variable is introduced on the upper bound
+     (Ro ) and reach the goal region (Rg ) within 20 s.”                 of the eventually operator, and a weighted ℓ1 penalty is used
+   This instruction is translated by the proposed translation            to minimize the amount of temporal relaxation.
+module into the following STL speciﬁcation:                                 As a result, the repaired speciﬁcation becomes:
+
+               ϕ3 = G[0,T ] ¬Ro ∧ F[0,20] Rg ,                   (42)                    ϕrepair
+                                                                                          3      = G[0,T ] ¬Ro ∧ F[0,30] Rg ,        (43)
+where Ro denotes the obstacle region and Rg denotes the                  corresponding to an extension of the reachability deadline
+goal region. The global operator G enforces continuous ob-               from 20 s to 30 s.
+stacle avoidance over the entire planning horizon, while the                The repaired STL speciﬁcation is then enforced by the
+eventually operator F[0,20] requires the UAV to reach the goal           MILP-based planner, which successfully synthesizes a dynam-
+within a strict deadline of 20 s.                                        ically feasible trajectory. As shown in Fig. 7, the UAV detours
+   Under the system dynamics and control limits described                around Ro , maintains continuous safety, and reaches the
+earlier in this section, the resulting MILP problem is infeasible.       original goal region Rg within the relaxed temporal window.
+The obstacle lies directly between the initial position and the          This example illustrates that the proposed framework can
+goal, forcing the UAV to execute a detour. Given the bounded             reconcile high-level time-critical language instructions with
+velocity and acceleration, the solver determines that the UAV            low-level dynamical feasibility through targeted, interpretable
+cannot reach Rg within the speciﬁed 20 s without violating               speciﬁcation repair, without compromising safety constraints
+either the dynamic constraints or the obstacle-avoidance re-             or task semantics.
+quirement.
+   Upon detecting infeasibility, the speciﬁcation repair proce-
+                                                                         C. Real-World Experiments
+dure is automatically triggered. The MILP solver computes an
+IIS, and the conﬂicting constraints are traced back to the STL              To validate the proposed framework under real-world con-
+subformulas using the constraint-to-speciﬁcation mapping. In             ditions, we conduct a real-World experiment involving an
+this case, the conﬂict is localized to the temporal bound of the         UAV performing a search-and-rescue task guided by NL
+reachability requirement F[0,20] Rg .                                    instructions.
+   Guided by the LLM, the repair module is instructed to relax              1) Experimental Setup: The experiments are carried out
+only the temporal component of the task, while keeping all               using a DJI Matrice 300 RTK quadrotor equipped with an
+                                                                                 window while respecting all safety constraints speciﬁed by the
+                                                                                 STL formula. During the mission, the UAV detected a victim
+                                                                                 waiting for rescue inside the region Rs1 and reported the
+                                                                                 ﬁnding to the ground operator for subsequent response. The
+                                                                                 experiment demonstrates that the proposed language-guided
+                                                                                 planning framework can be deployed on a real UAV system
+                                                                                 and can reliably execute complex, temporally constrained tasks
+         (a) UAV platform                      (b) Annotated test site map       derived from NL instructions.
+
+Fig. 9. Real-world experimental setup for the search-and-rescue task. (a) DJI                              VII. C ONCLUSION
+Matrice 300 RTK equipped with an onboard 4G/5G wireless signal acquisition
+and localization device. (b) Annotated test site map showing designated rescue      This paper presented a uniﬁed framework for NL low-
+areas and no-ﬂy zones.                                                           altitude UAV navigation by translating free-form instructions
+                                                                                 into STL speciﬁcations and synthesizing dynamically fea-
+                                                                                 sible trajectories under formal constraints. By integrating a
+onboard 4G/5G wireless signal acquisition and localization de-
+                                                                                 reasoning-enhanced LLM with MILP-based STL-constrained
+vice. The UAV operates in an outdoor environment with a pre-
+                                                                                 planning, the proposed approach enables robust NL-to-STL
+deﬁned bounded workspace that includes designated search-
+                                                                                 translation while rigorously enforcing safety-critical require-
+and-rescue regions and safety-restricted no-ﬂy zones. State
+                                                                                 ments. A solver-in-the-loop speciﬁcation repair mechanism
+estimation is provided by the onboard RTK positioning system
+                                                                                 was further introduced, in which an LLM provides seman-
+and fused inertial measurements, while LLM translation and
+                                                                                 tic guidance to selectively relax non-safety-critical task con-
+STL planning are performed offboard and transmitted to the
+                                                                                 straints while strictly preserving safety guarantees. Extensive
+UAV via a wireless communication link. Fig. 9 illustrates the
+                                                                                 simulation results and real-world ﬂight experiments demon-
+real-world experimental setup, including the UAV platform
+                                                                                 strate that the proposed framework achieves safe, interpretable,
+and the annotated test site with rescue areas and no-ﬂy zones.
+                                                                                 and adaptable UAV navigation in complex low-altitude envi-
+   2) Search-and-Rescue Task Description: We consider a
+                                                                                 ronments. Future work will focus on extending the framework
+representative search-and-rescue scenario in which the UAV is
+                                                                                 to partially observable environments, multi-UAV coordination,
+instructed to search multiple designated regions within a ﬁxed
+                                                                                 and online adaptation under dynamic task revisions.
+time window while continuously avoiding all no-ﬂy zones. The
+task is speciﬁed through the following NL instruction:                                                         R EFERENCES
+   • “Search the three rescue areas Rs1 , Rs2 , and Rs3 within
+                                                                                  [1] S. K. K. Hari, S. Rathinam, S. Darbha, K. Kalyanam, S. G. Manyam,
+     60 seconds, while avoiding all no-ﬂy zones.”                                     and D. Casbeer, “Optimal UAV route planning for persistent monitoring
+   This instruction is translated by the proposed translation                         missions,” IEEE Transactions on Robotics, vol. 37, no. 2, pp. 550–566,
+                                                                                      2020.
+module into the following STL speciﬁcation:                                       [2] Y. Ping, T. Liang, H. Ding, G. Lei, J. Wu, X. Zou, K. Shi, R. Shao,
+                                                                                      C. Zhang, W. Zhang, W. Yuan, and T. Zhang, “Multimodal large
+ϕSAR = F[0,60] Rs1 ∧ F[0,60] Rs2 ∧ F[0,60] Rs3                                        language models-enabled UAV swarm: Towards efﬁcient and intelligent
+                                                                                      autonomous aerial systems,” IEEE Wireless Communications, pp. 1–9,
+            ∧ G[0,60] ¬Rnf 1 ∧ G[0,60] ¬Rnf 2 ∧ G[0,60] ¬Rnf 3                        2025.
+            ∧ G[0,60] ¬Rnf 4 ∧ G[0,60] ¬Rnf 5 .           (44)                    [3] M. Chen, L. Yang, J. Cao, G. Zhu, W. Yuan, H. Jiang, and D. Niyato,
+                                                                                      “Cargo UAVs pick-up systems for low-altitude economy with commu-
+   Here, Rs1 , Rs2 , and Rs3 denote the three designated search                       nication quality, battery energy, and time window constraints,” IEEE
+                                                                                      Transactions on Mobile Computing, pp. 1–18, 2025.
+regions, while Rnf 1 –Rnf 5 represent the individual no-ﬂy                        [4] T. Liang, H. Ding, Y. Ping, T. Zhang, L. Zhou, Q. Zhang, and T. Q. Quek,
+zones in the environment. The global operator G[0,60] enforces                        “Satellite-assisted UAV control: Sensing and communication scheduling
+continuous avoidance of all no-ﬂy regions over the entire                             for energy efﬁcient data collection,” IEEE Internet of Things Journal,
+                                                                                      2025.
+mission horizon, encoding safety-critical constraints that must                   [5] R. Zhang, G. Liu, Y. Liu, C. Zhao, J. Wang, Y. Xu, D. Niyato, J. Kang,
+never be violated. The eventually operators F[0,60] require that                      Y. Li, S. Mao et al., “Toward edge general intelligence with agentic AI
+each search region be visited at least once within the 60-second                      and agentiﬁcation: Concepts, technologies, and future directions,” arXiv
+                                                                                      preprint arXiv:2508.18725, 2025.
+time window, without imposing a strict visitation order among                     [6] H. Liu, G. Wu, L. Zhou, W. Pedrycz, and P. N. Suganthan, “Tangent-
+them.                                                                                 based path planning for UAV in a 3-D low altitude urban environment,”
+   The resulting STL speciﬁcation captures the essential                              IEEE Transactions on Intelligent Transportation Systems, vol. 24, no. 11,
+                                                                                      pp. 12 062–12 077, 2023.
+requirements of the search-and-rescue task, namely time-                          [7] R. Shao, W. Li, L. Zhang, R. Zhang, Z. Liu, R. Chen, and L. Nie, “Large
+bounded coverage of all designated search areas and persistent                        VLM-based vision-language-action models for robotic manipulation: A
+avoidance of restricted airspace, and is subsequently enforced                        survey,” arXiv preprint arXiv:2508.13073, 2025.
+                                                                                  [8] S. Tellex, N. Gopalan, H. Kress-Gazit, and C. Matuszek, “Robots that
+by the MILP-based planner to generate a dynamically feasible                          use language,” Annual Review of Control, Robotics, and Autonomous
+patrol trajectory.                                                                    Systems, vol. 3, no. 1, pp. 25–55, 2020.
+   3) Experimental Results: Fig. 8 shows the executed pa-                         [9] B. Quartey, E. Rosen, S. Tellex, and G. Konidaris, “Veriﬁably following
+                                                                                      complex robot instructions with foundation models,” in 2025 IEEE
+trol trajectory during the search-and-rescue task. The UAV                            International Conference on Robotics and Automation (ICRA). IEEE,
+successfully completes the patrol within the prescribed time                          2025, pp. 1–8.
+[10] C. Belta and S. Sadraddini, “Formal methods for control synthesis:           [28] N. Gopalan, D. Arumugam, L. L. Wong, and S. Tellex, “Sequence-to-
+     An optimization perspective,” Annual Review of Control, Robotics, and             Sequence language grounding of Non-Markovian task speciﬁcations.” in
+     Autonomous Systems, vol. 2, no. 1, pp. 115–140, 2019.                             Robotics: Science and Systems, vol. 2018, 2018.
+[11] S. Liu, H. Zhang, Y. Qi, P. Wang, Y. Zhang, and Q. Wu, “Aeri-                [29] C. Wang, C. Ross, Y.-L. Kuo, B. Katz, and A. Barbu, “Learning
+     alVLN: Vision-and-language navigation for UAVs,” in Proceedings of                a natural-language to LTL executable semantic parser for grounded
+     the IEEE/CVF International Conference on Computer Vision, 2023, pp.               robotics,” in Conference on Robot Learning. PMLR, 2021, pp. 1706–
+     15 384–15 394.                                                                    1718.
+[12] M. Chandarana, E. L. Meszaros, A. Trujillo, and B. D. Allen, “’Fly           [30] R. Patel, E. Pavlick, and S. Tellex, “Grounding language to Non-
+     Like This’: Natural language interface for uav mission planning,” in              Markovian tasks with no supervision of task speciﬁcations.” in Robotics:
+     International Conference on Advances in Computer-Human Interactions,              Science and Systems, vol. 2020, 2020.
+     no. NF1676L-26108, 2017.                                                     [31] J. Pan, G. Chou, and D. Berenson, “Data-efﬁcient learning of natural
+[13] M. Chandarana, E. L. Meszaros, A. Trujillo, and B. Danette Allen, “Nat-           language to linear temporal logic translators for robot task speciﬁcation,”
+     ural language based multimodal interface for UAV mission planning,”               arXiv preprint arXiv:2303.08006, 2023.
+     in Proceedings of the Human Factors and Ergonomics Society Annual            [32] F. Fuggitti and T. Chakraborti, “Nl2ltl–a python package for converting
+     Meeting, vol. 61, no. 1. SAGE Publications Sage CA: Los Angeles,                  natural language instructions to linear temporal logic formulas,” in
+     CA, 2017, pp. 68–72.                                                              Proceedings of the AAAI Conference on Artiﬁcial Intelligence, vol. 37,
+[14] F. Yao, Y. Liu, W. Zhang, Z. Zhu, C. Li, N. Liu, P. Hu, Y. Yue, K. Wei,           no. 13, 2023, pp. 16 428–16 430.
+     X. He et al., “AeroVerse-Review: Comprehensive survey on aerial              [33] J. X. Liu, Z. Yang, I. Idrees, S. Liang, B. Schornstein, S. Tellex, and
+     embodied vision-and-language navigation,” The Innovation Informatics,             A. Shah, “Grounding complex natural language commands for temporal
+     vol. 1, no. 1, pp. 100 015–1, 2025.                                               tasks in unseen environments,” in Conference on Robot Learning.
+[15] P. Anderson, Q. Wu, D. Teney, J. Bruce, M. Johnson, N. Sünderhauf,               PMLR, 2023, pp. 1084–1110.
+     I. Reid, S. Gould, and A. Van Den Hengel, “Vision-and-language               [34] R. Zhang, S. Tang, Y. Liu, D. Niyato, Z. Xiong, S. Sun, S. Mao, and
+     navigation: Interpreting visually-grounded navigation instructions in real        Z. Han, “Toward agentic AI: Generative information retrieval inspired
+     environments,” in Proceedings of the IEEE conference on computer                  intelligent communications and networking,” IEEE Communications
+     vision and pattern recognition, 2018, pp. 3674–3683.                              Magazine, vol. 64, no. 1, pp. 197–204, 2026.
+                                                                                  [35] R. Zhang, H. Du, Y. Liu, D. Niyato, J. Kang, Z. Xiong, A. Jamalipour,
+[16] K. Narasimhan, T. Kulkarni, and R. Barzilay, “Language understanding
+                                                                                       and D. I. Kim, “Generative AI agents with large language model for
+     for text-based games using deep reinforcement learning,” in Proceedings
+                                                                                       satellite networks via a mixture of experts transmission,” IEEE Journal
+     of the 2015 Conference on Empirical Methods in Natural Language
+                                                                                       on Selected Areas in Communications, 2024.
+     Processing, L. Màrquez, C. Callison-Burch, and J. Su, Eds. Lisbon,
+                                                                                  [36] S. Ghosh, D. Sadigh, P. Nuzzo, V. Raman, A. Donzé, A. L. Sangiovanni-
+     Portugal: Association for Computational Linguistics, Sep. 2015, pp.
+                                                                                       Vincentelli, S. S. Sastry, and S. A. Seshia, “Diagnosis and repair for
+     1–11. [Online]. Available: https://aclanthology.org/D15-1001/
+                                                                                       synthesis from signal temporal logic speciﬁcations,” in Proceedings of
+[17] X. Wang, Q. Huang, A. Celikyilmaz, J. Gao, D. Shen, Y.-F. Wang,
+                                                                                       the 19th International Conference on Hybrid Systems: Computation and
+     W. Y. Wang, and L. Zhang, “Reinforced cross-modal matching and
+                                                                                       Control, 2016, pp. 31–40.
+     self-supervised imitation learning for vision-language navigation,” in       [37] A. T. Buyukkocak and D. Aksaray, “Temporal relaxation of signal
+     Proceedings of the IEEE/CVF conference on computer vision and
+                                                                                       temporal logic speciﬁcations for resilient control synthesis,” in 2022
+     pattern recognition, 2019, pp. 6629–6638.
+                                                                                       IEEE 61st Conference on Decision and Control (CDC). IEEE, 2022,
+[18] Y. Hong, Q. Wu, Y. Qi, C. Rodriguez-Opazo, and S. Gould, “VLN                     pp. 2890–2896.
+     BERT: A recurrent vision-and-language BERT for navigation,” in Pro-          [38] ——, “Resilient online planning for mobile robots with minimal re-
+     ceedings of the IEEE/CVF conference on Computer Vision and Pattern                laxation of signal temporal logic speciﬁcations,” IEEE Robotics and
+     Recognition, 2021, pp. 1643–1653.                                                 Automation Letters, 2025.
+[19] W. Zhang, C. Gao, S. Yu, R. Peng, B. Zhao, Q. Zhang, J. Cui, X. Chen,        [39] Y. Chen, R. Gandhi, Y. Zhang, and C. Fan, “Nl2tl: Transforming
+     and Y. Li, “CityNavAgent: Aerial vision-and-language navigation with              natural languages to temporal logics using large language models,” arXiv
+     hierarchical semantic planning and global memory,” arXiv preprint                 preprint arXiv:2305.07766, 2023.
+     arXiv:2505.05622, 2025.                                                      [40] Y. Mao, T. Zhang, X. Cao, Z. Chen, X. Liang, B. Xu, and H. Fang,
+[20] P. Saxena, N. Raghuvanshi, and N. Goveas, “UAV-VLN: End-to-                       “Nl2stl: Transformation from logic natural language to signal temporal
+     End vision language guided navigation for uavs,” arXiv preprint                   logics using llama2,” in 2024 IEEE International Conference on Cyber-
+     arXiv:2504.21432, 2025.                                                           netics and Intelligent Systems (CIS) and IEEE International Conference
+[21] J. Lee, T. Miyanishi, S. Kurita, K. Sakamoto, D. Azuma, Y. Matsuo,                on Robotics, Automation and Mechatronics (RAM). IEEE, 2024, pp.
+     and N. Inoue, “Citynav: Language-goal aerial navigation dataset with              469–474.
+     geographic information,” arXiv preprint arXiv:2406.14240, 2024.              [41] A. Donzé and O. Maler, “Robust satisfaction of temporal logic over
+[22] R. Zhang, H. Du, Y. Liu, D. Niyato, J. Kang, S. Sun, X. Shen, and                 real-valued signals,” in International conference on formal modeling and
+     H. V. Poor, “Interactive AI with retrieval-augmented generation for next          analysis of timed systems. Springer, 2010, pp. 92–106.
+     generation networking,” IEEE Network, vol. 38, no. 6, pp. 414–424,           [42] DeepSeek-AI, A. Liu, B. Feng, B. Xue, B. Wang, B. Wu,
+     2024.                                                                             and et al., “Deepseek-v3 technical report.” [Online]. Available:
+[23] S. Sanyal and K. Roy, “Asma: An adaptive safety margin algorithm                  https://arxiv.org/abs/2412.19437
+     for vision-language drone navigation via scene-aware control barrier         [43] DeepSeek-AI, D. Guo, D. Yang, H. Zhang, J. Song, R. Zhang,
+     functions,” IEEE Robotics and Automation Letters, 2025.                           , and et al., “DeepSeek-R1: Incentivizing reasoning capability
+[24] Y. Zhang, V. N. Fernandez-Ayala, and D. V. Dimarogonas, “Multi-robot              in LLMs via reinforcement learning,” 2025. [Online]. Available:
+     human-in-the-loop control under spatiotemporal speciﬁcations,” in 2024            https://arxiv.org/abs/2501.12948
+     IEEE International Conference on Robotics and Automation (ICRA),             [44] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang,
+     2024, pp. 4841–4847.                                                              W. Chen et al., “LORA: Low-rank adaptation of large language models.”
+[25] S. Xu, X. Luo, Y. Huang, L. Leng, R. Liu, and C. Liu, “Nl2hltl2plan:              ICLR, vol. 1, no. 2, p. 3, 2022.
+     Scaling up natural language understanding for multi-robots through           [45] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov,
+     hierarchical temporal logic task speciﬁcations,” IEEE Robotics and                “Proximal policy optimization algorithms,” 2017. [Online]. Available:
+     Automation Letters, 2025.                                                         https://arxiv.org/abs/1707.06347
+[26] Y. Wu, Z. Xiong, Y. Hu, S. S. Iyengar, N. Jiang, A. Bera, L. Tan,            [46] R. Zhang, Y. Liu, S. Tang, J. Wang, D. Niyato, G. Sun, Y. Li, and S. Sun,
+     and S. Jagannathan, “SELP: Generating safe and efﬁcient task plans for            “Covert prompt transmission for secure large language model services,”
+     robot agents with large language models,” in 2025 IEEE International              IEEE Journal on Selected Areas in Communications, pp. 1–1, 2025.
+     Conference on Robotics and Automation (ICRA). IEEE, 2025, pp.                [47] K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “BLEU: a method for
+     2599–2605.                                                                        automatic evaluation of machine translation,” in Proceedings of the 40th
+[27] H. Kress-Gazit, G. E. Fainekos, and G. J. Pappas, “From structured                annual meeting of the Association for Computational Linguistics, 2002,
+     english to robot motion,” in 2007 IEEE/RSJ International Conference               pp. 311–318.
+     on Intelligent Robots and Systems. IEEE, 2007, pp. 2717–2722.
+
