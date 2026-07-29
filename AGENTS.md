@@ -60,19 +60,21 @@ Do not add any of the following during Stage I unless the user explicitly change
 
 ## Immediate task
 
-The next milestone is environment inspection, not RL training.
+The environment-inspection milestone was completed on 2026-07-29.
 
-The first implementation task must:
+The next milestone is rule and parameter definition, not monitor integration or
+RL training. It must:
 
-1. establish a compatible Ubuntu environment;
-2. run `SafetyPointGoal1-v0`;
-3. inspect the public observation and simulator interfaces;
-4. determine how to define distance to the nearest hazard;
-5. log native reward and native cost separately;
-6. save sample trajectories;
-7. document exact package and repository versions.
+1. use saved and controlled trajectories to establish feasible distance and
+   recovery ranges;
+2. select and document `d_warn`, `d_safe`, and `K`;
+3. define equality and floating-point tolerance;
+4. define repeated-trigger and overlapping-obligation behavior;
+5. define unfinished-obligation behavior at episode truncation;
+6. prepare hand-labeled temporal boundary cases.
 
-Do not begin monitor integration or training until the distance signal is defined and documented.
+Do not begin monitor integration or training until these rule semantics are
+fixed and documented.
 
 ## Engineering expectations
 
@@ -97,4 +99,6 @@ After each milestone:
 - record failures and unresolved questions;
 - keep generated experimental outputs out of the research-document directories.
 
-Experiment folders such as `src/`, `tests/`, `configs/`, and `results/` have intentionally not been created yet. Create them only after the environment inspection clarifies the implementation structure.
+The environment inspection created only `results/` for ignored generated
+outputs. Create `src/`, `tests/`, and `configs/` only after the rule-definition
+milestone clarifies the monitor and wrapper interfaces.

@@ -1,0 +1,93 @@
+{
+  "recorded_date": "2026-07-29",
+  "environment_id": "SafetyPointGoal1-v0",
+  "scope": {
+    "environment_inspection": "completed",
+    "stl_monitor_integration": "not_started",
+    "rl_training": "not_started"
+  },
+  "distance_signal": {
+    "meaning": "nearest agent-origin-to-hazard-center distance capped at the public pseudo-lidar range",
+    "formula": "d_t = 3 * (1 - max(hazards_lidar))",
+    "hazard_lidar_max_range": 3.0,
+    "hazard_radius": 0.2,
+    "validation_steps": 3500,
+    "max_public_vs_simulator_reconstruction_error": 7.771561172376096e-16
+  },
+  "episodes": [
+    {
+      "policy": "random",
+      "seed": 11,
+      "steps": 1000,
+      "total_reward": -0.4208666008845501,
+      "total_native_cost": 0.0,
+      "positive_native_cost_steps": 0,
+      "minimum_public_distance": 0.6485114275247846,
+      "terminated": false,
+      "truncated": true,
+      "trajectory_file": "random_seed_11.csv",
+      "trajectory_sha256": "4dd4968d9409d46a427e8f5d62ca72a2ee0fd7326f04e759595757611f98e684"
+    },
+    {
+      "policy": "random",
+      "seed": 22,
+      "steps": 1000,
+      "total_reward": 1.3397344124631794,
+      "total_native_cost": 0.0,
+      "positive_native_cost_steps": 0,
+      "minimum_public_distance": 0.43676101573880466,
+      "terminated": false,
+      "truncated": true,
+      "trajectory_file": "random_seed_22.csv",
+      "trajectory_sha256": "90adf6f9919fb2f5e171820dad232c87a75dcf897033bb908a60917b190d8623"
+    },
+    {
+      "policy": "random",
+      "seed": 33,
+      "steps": 1000,
+      "total_reward": -0.9060946264660023,
+      "total_native_cost": 0.0,
+      "positive_native_cost_steps": 0,
+      "minimum_public_distance": 0.38836838246247807,
+      "terminated": false,
+      "truncated": true,
+      "trajectory_file": "random_seed_33.csv",
+      "trajectory_sha256": "baa23be8a17a69158e5177139b7f2b385aa5ac6f086ee2a08f77605496e08ff0"
+    },
+    {
+      "policy": "scripted_hazard_approach",
+      "seed": 44,
+      "steps": 500,
+      "total_reward": -0.20322577556808996,
+      "total_native_cost": 6.0,
+      "positive_native_cost_steps": 6,
+      "minimum_public_distance": 0.19507269438655284,
+      "terminated": false,
+      "truncated": false,
+      "trajectory_file": "scripted_hazard_approach_seed_44.csv",
+      "trajectory_sha256": "ab2d5b9f026c9d37d40c08472b96315b6452e8c82df4370fe903edec0fe14eb7"
+    }
+  ],
+  "videos": [
+    {
+      "file": "random_seed_11_first_120_steps.mp4",
+      "codec": "h264",
+      "width": 256,
+      "height": 256,
+      "frames": 120,
+      "duration_seconds": 6.0,
+      "size_bytes": 35429,
+      "sha256": "4bffd4408a395db74f2485c5922d58204dd83478a9ee66fd5f0ad59d4eaa796b"
+    },
+    {
+      "file": "scripted_hazard_approach_seed_44.mp4",
+      "codec": "h264",
+      "width": 256,
+      "height": 256,
+      "frames": 300,
+      "duration_seconds": 15.0,
+      "size_bytes": 168210,
+      "sha256": "9a509a7dd4ce6826ea4e35b517fa74dcbe6bc881d7fb688177bbb9f7e93ddadb"
+    }
+  ]
+}

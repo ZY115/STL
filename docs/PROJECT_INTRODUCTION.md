@@ -13,7 +13,7 @@ Stage I 选择 `SafetyPointGoal1-v0` 作为 benchmark，研究机器人进入障
 - **Slides**：介绍原始研究问题、完整链路中的不确定性、三阶段拆分、Stage I 的 application、benchmark、STL 规则、实验比较、适用范围，以及 Stage I 成功后如何进入 Stage II。
 - **Stage I Engineering Plan**：记录完成 Stage I 所需的开源资源、相关论文、系统模块、现有组件与自行开发部分，以及环境搭建后的工程步骤。
 
-目前已经完成问题定义和 Stage I 实验规划，尚未开始环境安装、代码实现或 RL 训练。下一步是搭建 Safety-Gymnasium 环境，运行 `SafetyPointGoal1-v0`，并确认可以可靠获得 hazard distance、native reward 和 native cost。
+目前已经完成问题定义、Stage I 实验规划和 environment inspection。独立实验环境已安装，`SafetyPointGoal1-v0`、RTAMT、OmniSafe PPO-Lagrangian 构造和无头渲染均已验证；公开 `hazards_lidar` 可以可靠重建最近 hazard center distance。尚未实现 monitor、wrapper 或开始 RL 训练。下一步是选择 `d_warn`、`d_safe` 和 `K`，并冻结 temporal boundary semantics。
 
 ## English version
 
@@ -32,4 +32,4 @@ Stage I uses `SafetyPointGoal1-v0` to examine whether an agent can recover to a 
 - **Slides:** explain the original problem, independent uncertainties, three-stage decomposition, selected application and benchmark, Stage I rule and experiment, limitations, and the transition to Stage II.
 - **Stage I Engineering Plan:** records the required repositories and papers, planned system components, reused and self-developed modules, engineering work packages, and immediate preparation steps.
 
-The problem definition and Stage I experiment plan are complete. Environment setup, implementation, and RL training have not yet started. The immediate next step is to run `SafetyPointGoal1-v0` and verify access to the hazard-distance signal, native reward, and native cost.
+The problem definition, Stage I experiment plan, and environment inspection are complete. The dedicated environment, `SafetyPointGoal1-v0`, RTAMT, OmniSafe PPO-Lagrangian construction, and off-screen rendering have been verified. Public `hazards_lidar` reconstructs the nearest hazard center distance. Monitor and wrapper implementation and RL training have not started. The immediate next step is to select `d_warn`, `d_safe`, and `K` and freeze the temporal boundary semantics.

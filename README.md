@@ -6,7 +6,7 @@
 
 它用于解决一个实际问题：当项目被移动到另一台 Ubuntu 电脑、由另一个 Codex 账号继续时，不依赖原聊天记录或账号 memory，也能准确理解当前研究目标、已经做出的决定、Stage I 的实验计划和下一步工作。
 
-该文件夹目前只包含研究规划、参考资料和交接说明。实验代码目录将在环境和接口确认后再建立。
+该文件夹包含研究规划、参考资料、可复现环境记录和环境检查结果。STL monitor、wrapper 和训练代码尚未建立。
 
 ## 长期研究目标
 
@@ -76,24 +76,25 @@ G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
 - 已确定 Stage I 只测试一条 bounded-recovery STL 规则；
 - 已形成 Stage I research plan slides；
 - 已形成 Stage I engineering plan；
-- 尚未安装实验环境；
-- 尚未确定 `d_t` 的最终计算方式；
+- 已建立并验证独立 Conda 环境 `stl-stage1`；
+- 已运行 `SafetyPointGoal1-v0`、RTAMT 和 OmniSafe PPO-Lagrangian 构造测试；
+- 已验证 EGL 无头渲染和轨迹保存；
+- 已确定 `d_t` 为由公开 `hazards_lidar` 重建的最近中心距离，并截断到 lidar range 3；
+- 已保存随机策略和 scripted hazard-approach 样例轨迹；
 - 尚未选择 `d_warn`、`d_safe` 和 `K`；
 - 尚未编写 monitor、wrapper 或训练代码；
 - 尚未开始 RL training。
 
 ## 当前唯一的下一步
 
-先进行 environment-only smoke test：
+冻结 bounded-recovery 规则的参数和边界语义：
 
-1. 在 Ubuntu 上建立兼容的 Python 环境；
-2. 安装并运行 Safety-Gymnasium；
-3. 执行 `SafetyPointGoal1-v0` 的随机或简单策略；
-4. 检查 public API 能否提供定义 `d_t` 所需的 agent/hazard 信息；
-5. 分别记录 native reward、native cost、termination 和 trajectory；
-6. 形成一份简短的 environment inspection report。
+1. 使用已保存轨迹和受控策略检查可达的距离与恢复速度；
+2. 选择并记录 `d_warn`、`d_safe` 和 `K`；
+3. 明确 equality、floating-point tolerance、重复触发和 episode truncation；
+4. 准备手工标注的 temporal boundary cases。
 
-在该步骤完成前，不应开始 RL training，也不应加入自然语言层。
+这些语义冻结并形成测试用例后，才开始 monitor 实现。RL training 和自然语言层仍不在当前步骤中。
 
 ## 推荐阅读顺序
 
@@ -117,11 +118,21 @@ safety-stl-stage1-handoff/
 ├── DECISIONS.md
 ├── HANDOFF_PROMPT.md
 ├── MANIFEST.md
+├── environment.stage1.yml
 ├── docs/
 │   ├── PROJECT_INTRODUCTION.md
+│   ├── environment_setup.md
+│   ├── environment_inspection.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
 │   └── slides/
+├── results/
+│   ├── .gitignore
+│   └── environment_inspection/
+│       ├── README.md
+│       ├── summary.json
+│       ├── random_seed_11_first_120_steps.mp4
+│       └── scripted_hazard_approach_seed_44.mp4
 └── references/
     ├── REFERENCES.md
     ├── papers/

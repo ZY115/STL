@@ -22,13 +22,13 @@ until this summary is complete and consistent with the documents.
 After confirming the summary, use:
 
 ```text
-Begin only the Stage I environment-inspection milestone.
+The Stage I environment-inspection milestone is complete.
 
-Check the current official requirements of Safety-Gymnasium, OmniSafe,
-RTAMT, MuJoCo, and Ubuntu. Propose a compatible, reproducible environment
-before installing anything.
+Begin only the bounded-recovery rule-definition milestone.
 
-The first technical objective is to run SafetyPointGoal1-v0 and determine
-which public signal can define distance to the nearest hazard. Do not begin
-RL training or add the language layer.
+Use the saved environment-inspection trajectories and controlled rollouts to
+choose feasible values for d_warn, d_safe, and K. Freeze equality,
+floating-point, repeated-trigger, and episode-truncation semantics and prepare
+hand-labeled temporal boundary cases. Do not begin monitor integration, RL
+training, or the language layer until these decisions are documented.
 ```

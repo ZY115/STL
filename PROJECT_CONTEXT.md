@@ -334,13 +334,15 @@ G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
 
 ### Intended meaning
 
-- `d_t`: distance from the agent to the nearest hazard;
+- `d_t`: nearest agent-origin-to-hazard-center distance, capped at the public
+  pseudo-lidar range of 3;
 - `d_warn`: warning threshold;
 - `d_safe`: recovery threshold;
 - `K`: recovery deadline;
 - `d_warn < d_safe`: hysteresis between entering warning and completing recovery.
 
-The exact distance definition and numerical values remain open.
+The distance definition was fixed after environment inspection. The numerical
+values of `d_warn`, `d_safe`, and `K` remain open.
 
 ## 13. Planned Stage I comparison
 
@@ -445,11 +447,23 @@ It does not establish that the complete language-grounded safety system is solve
 
 ## 18. Current implementation status
 
-No experiment environment has been installed as part of this project handoff.
+The dedicated `stl-stage1` Conda environment was installed and verified on
+2026-07-29. Safety-Gymnasium, MuJoCo, OmniSafe, RTAMT, CPU PyTorch, off-screen
+rendering, and trajectory saving passed smoke tests.
 
-No project monitor, wrapper, training configuration, or RL result exists yet.
+The public `hazards_lidar` observation was verified as an exact source of the
+nearest center-distance signal within its range:
 
-The next work should begin with environment inspection, not with language translation or training.
+```text
+d_t = 3 * (1 - max(hazards_lidar))
+```
+
+Sample random and scripted trajectories were saved locally. No project monitor,
+wrapper, training configuration, or RL result exists yet.
+
+The next work should freeze `d_warn`, `d_safe`, `K`, and temporal boundary
+semantics before monitor implementation. It should not begin with language
+translation or RL training.
 
 ## 19. Continuity rule
 

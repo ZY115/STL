@@ -1,0 +1,7 @@
+*
+!.gitignore
+!environment_inspection/
+environment_inspection/*
+!environment_inspection/README.md
+!environment_inspection/summary.json
+!environment_inspection/*.mp4

@@ -59,12 +59,22 @@ The task reward should remain unchanged across the main experimental conditions.
 
 Let $d_t$ denote the agent's distance from the nearest hazard at environment step $t$.
 
-Before implementation, the exact meaning of distance must be fixed. Two possible definitions are:
+The environment inspection fixed the Stage I definition:
 
-1. distance between the agent center and the hazard center;
-2. clearance between the agent boundary and the hazard boundary.
+```text
+d_t = 3 * (1 - max(hazards_lidar))
+```
 
-Boundary clearance is preferable because it has a more direct physical safety interpretation. However, the final choice must match the signals that can be obtained reliably from Safety-Gymnasium.
+This is the nearest agent-origin-to-hazard-center distance, capped at the public
+pseudo-lidar range of 3 simulator length units. It is reconstructed from the
+default public policy observation and does not require privileged simulator
+state.
+
+On 3500 collected steps, this signal agreed with the simulator center distance,
+capped at 3, to floating-point precision. It is not boundary-to-boundary
+clearance. The later parameter choice must satisfy
+$d_{\mathrm{warn}} < d_{\mathrm{safe}} < 3$ so that lidar-range clipping cannot
+change a warning or recovery judgment.
 
 ### 2.5 Single STL Rule
 
@@ -186,16 +196,25 @@ RTAMT should initially serve as a reference monitor, or offline oracle, for chec
 
 ### 4.4 Version and Platform Record
 
-The three repositories evolve independently. The first successful setup should record:
+The first successful setup was completed on 2026-07-29 and is recorded in
+`docs/environment_setup.md`. The exact resolved environment is stored in
+`environment.stage1.yml`.
 
-- repository commit hashes or package versions;
-- Python version;
-- MuJoCo version;
-- operating system and hardware;
-- the exact environment ID and configuration;
-- the OmniSafe algorithm configuration.
+The core package versions are:
 
-Installation commands should be added to this document only after they have been tested on the actual experiment machine.
+| Component | Version |
+|---|---:|
+| Python | 3.8.20 |
+| PyTorch | 2.4.1+cpu |
+| Safety-Gymnasium | 1.0.0 |
+| Gymnasium | 0.28.1 |
+| MuJoCo | 2.3.3 |
+| OmniSafe | 0.5.0 |
+| RTAMT | 0.3.5 |
+
+The tested host is Ubuntu 22.04.5 LTS. `MUJOCO_GL=egl` is used for off-screen
+rendering, and the Conda environment clears the host's global ROS/Isaac
+`PYTHONPATH`.
 
 ---
 
@@ -263,6 +282,8 @@ The following work packages describe what must eventually be implemented. They d
 
 **Goal:** verify that the selected benchmark runs and exposes enough information to construct the safety signal.
 
+**Status:** completed on 2026-07-29.
+
 Required checks:
 
 - reset and step through `SafetyPointGoal1-v0`;
@@ -272,7 +293,8 @@ Required checks:
 - record native reward, native cost, termination, and truncation behavior;
 - save several random or scripted trajectories.
 
-**Output:** a short environment note describing the available signals and the final definition of $d_t$.
+**Output:** `docs/environment_inspection.md`, the environment lock file, and
+locally saved trajectories under `results/environment_inspection/`.
 
 ### Work Package 2: Rule and Parameter Definition
 
@@ -280,7 +302,7 @@ Required checks:
 
 Required decisions:
 
-- definition and unit of $d_t$;
+- confirm use of the fixed public-lidar $d_t$ definition;
 - values of $d_{\mathrm{warn}}$ and $d_{\mathrm{safe}}$;
 - value of $K$ in environment steps;
 - treatment of equality at each boundary;
@@ -400,22 +422,22 @@ The central engineering contribution of Stage I is therefore not a new simulator
 
 ## 8. Immediate Preparation
 
-The first preparation milestone consists of three tasks:
+The first preparation milestone was completed on 2026-07-29:
 
-1. **Create and record a compatible Python environment.**  
-   Select versions only after checking the current requirements of Safety-Gymnasium, OmniSafe, RTAMT, MuJoCo, and the experiment machine.
+1. **Compatible Python environment:** installed and locked as `stl-stage1`.
+2. **Core tools:** official package releases of Safety-Gymnasium, OmniSafe, and
+   RTAMT installed; no mutable editable checkout is used.
+3. **Environment-only smoke test:** random and scripted policies, RTAMT,
+   PPO-Lagrangian construction, EGL rendering, and trajectory saving verified.
 
-2. **Obtain the three core repositories.**  
-   Download Safety-Gymnasium, OmniSafe, and RTAMT from their official GitHub repositories. Record the exact commits used.
+The inspection answered:
 
-3. **Run an environment-only smoke test.**  
-   Execute a random policy in `SafetyPointGoal1-v0`, render or save at least one episode, and inspect the available reward, native cost, hazard, and position signals.
+- the benchmark runs for its full 1000-step horizon;
+- public `hazards_lidar` defines $d_t$ without privileged state;
+- native reward and native cost are logged separately;
+- no additional wrapper access is required for the primary distance signal.
 
-The immediate output is not an RL result. It is a short, verified environment report answering:
-
-- Can the benchmark run on the selected machine?
-- Which public signal should define $d_t$?
-- Can native reward and native cost be logged separately?
-- What additional wrapper access is required?
-
-Once these questions are answered, this document can be extended with tested installation commands, a repository layout, interface definitions, and the first trajectory-monitor tests.
+The next milestone is Work Package 2. Use controlled trajectories to choose
+$d_{\mathrm{warn}}$, $d_{\mathrm{safe}}$, and $K$, then freeze equality,
+floating-point, repeated-trigger, and truncation semantics. Do not begin RL
+training during this milestone.

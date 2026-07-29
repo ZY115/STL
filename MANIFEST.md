@@ -4,7 +4,10 @@
 
 This handoff package contains the durable research context required to continue the project on another computer or Codex account.
 
-It intentionally excludes LaTeX temporary files and does not yet contain experiment implementation directories.
+It intentionally excludes LaTeX temporary files. The environment-inspection
+milestone is complete; generated outputs live under an ignored `results/`
+directory, while monitor and training implementation directories do not yet
+exist.
 
 ## Root documents
 
@@ -17,6 +20,7 @@ It intentionally excludes LaTeX temporary files and does not yet contain experim
 | `HANDOFF_PROMPT.md` | First prompts to use with Codex on a new computer |
 | `MANIFEST.md` | Description of package contents |
 | `CHECKSUMS.sha256` | Integrity hashes for all packaged files |
+| `environment.stage1.yml` | Exact resolved Conda and pip environment |
 
 ## Project documents
 
@@ -24,6 +28,8 @@ It intentionally excludes LaTeX temporary files and does not yet contain experim
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
 | `docs/stage1_plan.md` | Detailed Stage I engineering plan and resource list |
+| `docs/environment_setup.md` | Tested setup commands, versions, and isolation notes |
+| `docs/environment_inspection.md` | Public API, distance definition, and smoke-test results |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -76,18 +82,27 @@ The package excludes:
 - `.fdb_latexmk`;
 - `.DS_Store`;
 - unrelated slide templates;
-- any untested experiment implementation.
+- raw generated CSV files below `results/`;
+- any untested monitor or training implementation.
+
+## Generated outputs
+
+`results/.gitignore` keeps raw generated CSV trajectories out of the
+research-document history. The local environment inspection produced CSV and
+MP4 files under `results/environment_inspection/`. Git retains the two compact
+MP4 renderings, the directory README, and the JSON summary. The summary includes
+statistics and SHA-256 hashes for both tracked videos and ignored raw CSV
+artifacts.
 
 ## Future additions
 
-After the Ubuntu environment inspection, the project may add:
+After the rule parameters and temporal semantics are frozen, the project may add:
 
-- a tested setup guide;
-- an environment lock file;
 - source code;
 - unit tests;
 - experiment configurations;
 - trajectory fixtures;
 - results and analysis.
 
-Their directory structure should be chosen after the actual Safety-Gymnasium and OmniSafe interfaces have been inspected.
+Their directory structure should be chosen from the fixed monitor and wrapper
+interfaces rather than created speculatively.

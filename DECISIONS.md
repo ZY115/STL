@@ -54,22 +54,42 @@ RTAMT is intended for offline or reference evaluation of saved trajectories. A s
 
 The STL rule defines the desired temporal condition. A cost-based Safe RL learner may still violate that condition during training or evaluation.
 
-### D10. No experiment directories are created yet
+### D10. The repository remained documentation-first until environment inspection
 
-The repository remains documentation-first until the Ubuntu environment and available signals are inspected.
+No experiment directories were created before the Ubuntu environment and available signals were inspected.
+
+The inspection is now complete. A `results/` directory exists only for generated
+environment-inspection outputs and excludes those outputs from Git. Monitor,
+training, configuration, and test directories remain deferred until their
+interfaces are defined.
+
+### D11. Stage I distance uses the public hazard pseudo-lidar
+
+For Stage I:
+
+```text
+d_t = 3 * (1 - max(hazards_lidar))
+```
+
+This is the nearest agent-origin-to-hazard-center distance capped at the default
+pseudo-lidar range of 3 simulator length units.
+
+Rationale:
+
+- `hazards_lidar` is part of the public policy observation;
+- the reconstruction agreed with privileged simulator center distance to
+  floating-point precision on 3500 collected steps;
+- center distance aligns directly with the benchmark's native hazard-distance
+  calculation;
+- no privileged simulator state is required by the monitor.
+
+Expected impact:
+
+- later thresholds must satisfy `d_warn < d_safe < 3`;
+- `d_t` must not be described as physical boundary-to-boundary clearance;
+- simulator positions remain available only as a validation diagnostic.
 
 ## Open decisions
-
-### O1. Definition of distance
-
-Decide whether `d_t` is:
-
-- center-to-center distance;
-- boundary clearance;
-- a quantity reconstructed from hazard lidar;
-- a privileged simulator-state quantity used only in Stage I.
-
-The final definition must be reproducible and recorded.
 
 ### O2. Rule parameters
 
