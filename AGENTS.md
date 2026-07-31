@@ -15,8 +15,9 @@ Before proposing changes or running installation commands, read:
 1. `README.md`
 2. `PROJECT_CONTEXT.md`
 3. `DECISIONS.md`
-4. `docs/stage1_plan.md`
-5. `references/REFERENCES.md`
+4. `docs/stage1_rule_monitor_spec.md`
+5. `docs/stage1_plan.md`
+6. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -33,7 +34,8 @@ Then summarize:
 - Benchmark: `SafetyPointGoal1-v0`.
 - Task objective: preserve the benchmark's native goal-reaching reward.
 - Safety rule:
-  `G(d_t < d_warn -> F_[0,K](d_t >= d_safe))`.
+  `G(e_t -> F_[0,K](d_t >= d_safe))`, where `e_t` begins one
+  hysteretic warning episode.
 - Initial Safe RL framework: OmniSafe.
 - Initial constrained algorithm: PPO-Lagrangian.
 - Reference STL monitor: RTAMT.
@@ -62,19 +64,21 @@ Do not add any of the following during Stage I unless the user explicitly change
 
 The environment-inspection milestone was completed on 2026-07-29.
 
-The next milestone is rule and parameter definition, not monitor integration or
-RL training. It must:
+The non-numerical rule and monitor semantics are now frozen in
+`docs/stage1_rule_monitor_spec.md`. The next milestone is parameter calibration
+followed by monitor implementation and agreement testing. It must:
 
-1. use saved and controlled trajectories to establish feasible distance and
-   recovery ranges;
-2. select and document `d_warn`, `d_safe`, and `K`;
-3. define equality and floating-point tolerance;
-4. define repeated-trigger and overlapping-obligation behavior;
-5. define unfinished-obligation behavior at episode truncation;
-6. prepare hand-labeled temporal boundary cases.
+1. add reproducible calibration and fixture-generation scripts;
+2. collect the prescribed controlled trajectories on the Ubuntu work computer;
+3. select and document `d_warn`, `d_safe`, and `K` using the fixed protocol;
+4. implement the fixed monitor state machine and direct offline oracle;
+5. add all synthetic boundary tests and stable environment fixtures;
+6. verify event-step agreement and RTAMT completed-window agreement;
+7. deliver the calibration and agreement reports.
 
-Do not begin monitor integration or training until these rule semantics are
-fixed and documented.
+Synthetic monitor tests may be written before calibration because their
+semantics are fixed. Do not begin the OmniSafe wrapper or RL training until the
+completion gate in the normative specification passes.
 
 ## Engineering expectations
 
@@ -100,5 +104,6 @@ After each milestone:
 - keep generated experimental outputs out of the research-document directories.
 
 The environment inspection created only `results/` for ignored generated
-outputs. Create `src/`, `tests/`, and `configs/` only after the rule-definition
-milestone clarifies the monitor and wrapper interfaces.
+outputs. The normative specification now defines the interfaces needed to
+create the limited `src/`, `tests/`, `configs/`, and `scripts/` surface listed
+in its one-pass work order. Do not add training code during this milestone.

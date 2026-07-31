@@ -163,5 +163,9 @@ does not choose:
 - repeated-trigger semantics;
 - the online STL-to-cost mapping.
 
-The next milestone is to select feasible rule parameters from controlled
-trajectories and freeze these temporal semantics before monitor implementation.
+The remaining non-numerical semantics are now fixed in
+`docs/stage1_rule_monitor_spec.md`. The next milestone is to add reproducible
+collection scripts, select feasible rule parameters from controlled
+trajectories using that document's protocol, and then implement and verify the
+fixed monitor. The OmniSafe wrapper and RL training remain outside that
+milestone.

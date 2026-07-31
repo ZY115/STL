@@ -34,13 +34,23 @@ It is selected to minimize unrelated perception and simulator engineering in the
 
 ### D6. Stage I uses one temporal rule
 
-The rule is bounded recovery:
+The rule is bounded recovery over a derived warning-episode event:
 
 ```text
-G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
+G(e_t -> F_[0,K](d_t >= d_safe))
 ```
 
-Using one rule keeps monitor semantics and behavioral interpretation inspectable.
+`e_t` is true when the monitor is inactive and the distance first becomes
+smaller than `d_warn`. A warning episode remains active until the distance
+reaches `d_safe`; oscillation in between does not create overlapping
+obligations.
+
+The earlier pointwise formula is only an intuitive shorthand. Its literal
+semantics would create an obligation at every unsafe sample, which is not the
+fixed Stage I experiment.
+
+Using one event-triggered rule keeps monitor semantics and behavioral
+interpretation inspectable.
 
 ### D7. The initial Safe RL implementation uses OmniSafe
 
@@ -89,6 +99,78 @@ Expected impact:
 - `d_t` must not be described as physical boundary-to-boundary clearance;
 - simulator positions remain available only as a validation diagnostic.
 
+### D12. Equality and deadline semantics are fixed
+
+- `d_t == d_warn` is not warning;
+- `d_t == d_safe` is recovery;
+- a deadline at `t_0 + K` is inclusive;
+- recovery on the deadline sample succeeds;
+- recovery one sample later is late;
+- predicate comparisons do not use an epsilon.
+
+A tolerance of `1e-9` is used only to compare independently computed
+real-valued robustness values.
+
+### D13. The monitor uses one hysteretic warning episode
+
+Each environment has one of three monitor states:
+
+- `INACTIVE`;
+- `PENDING`;
+- `OVERDUE`.
+
+A warning episode begins only from `INACTIVE`, remains active through the band
+between `d_warn` and `d_safe`, and closes only at `d_t >= d_safe`. Missing the
+deadline emits one violation event and moves the episode to `OVERDUE`; it does
+not emit a new violation on every later step.
+
+### D14. Unfinished terminal obligations are explicit
+
+If an episode terminates or truncates before a pending deadline, the result is
+reported as `terminal_unresolved`, not silently satisfied or retroactively
+called a completed deadline violation.
+
+For training, this unresolved event receives one conservative binary cost so
+that ending the episode cannot erase an active obligation. A deadline violation
+already emitted on the final sample is not counted again.
+
+### D15. The first STL cost is a sparse binary event cost
+
+`stl_cost` is 1 only when:
+
+- a recovery deadline is missed; or
+- a pending obligation becomes terminal-unresolved.
+
+It is 0 on warning entry, ordinary pending steps, recovery, and overdue steps
+after the first violation. Robustness is diagnostic only in the first
+implementation.
+
+### D16. Temporal monitor state is added to every policy condition
+
+The wrapper will append:
+
+- active-obligation indicator;
+- overdue indicator;
+- normalized remaining deadline.
+
+Task-only, native-cost, and STL-cost conditions receive the same augmented
+observation. This avoids both hidden temporal state and an observation advantage
+for only one condition.
+
+### D17. Incomplete traces do not inherit undocumented library semantics
+
+The custom online monitor is checked against a direct offline enumerator.
+RTAMT is used on completed obligation windows. Pending terminal windows are
+classified explicitly as unresolved rather than relying on a monitor library's
+finite-trace default.
+
+### D18. Rule semantics are frozen before numerical calibration
+
+`docs/stage1_rule_monitor_spec.md` is the normative rule and monitor contract.
+The Ubuntu machine must supply calibration evidence for `d_warn`, `d_safe`, and
+`K`, but no further semantic choice is required before implementing synthetic
+tests.
+
 ## Open decisions
 
 ### O2. Rule parameters
@@ -100,31 +182,6 @@ Choose:
 - `K`.
 
 The values must be feasible under the environment dynamics and fixed before training.
-
-### O3. Boundary semantics
-
-Decide:
-
-- whether equality counts as warning or recovery;
-- how floating-point tolerance is handled;
-- whether warning obligations overlap;
-- what happens when a new warning occurs during recovery;
-- how unfinished obligations are treated at truncation.
-
-### O4. Online cost mapping
-
-Possible initial mappings include:
-
-- binary cost only when a deadline expires;
-- cost while an obligation is active;
-- robustness-based dense cost;
-- a combination of event cost and robustness.
-
-The first mapping should be the simplest one whose semantics can be tested clearly.
-
-### O5. Agent observation
-
-Decide whether monitor state, such as remaining recovery time, must be added to the policy observation to avoid hidden temporal state.
 
 ### O6. Quantitative success criterion
 

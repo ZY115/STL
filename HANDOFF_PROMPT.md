@@ -4,7 +4,8 @@ Run Codex from the root of this folder and use the following prompt before reque
 
 ```text
 Read AGENTS.md, README.md, PROJECT_CONTEXT.md, DECISIONS.md,
-docs/stage1_plan.md, and references/REFERENCES.md.
+docs/stage1_rule_monitor_spec.md, docs/stage1_plan.md, and
+references/REFERENCES.md.
 
 First summarize:
 1. the long-term research objective;
@@ -24,11 +25,17 @@ After confirming the summary, use:
 ```text
 The Stage I environment-inspection milestone is complete.
 
-Begin only the bounded-recovery rule-definition milestone.
+Begin only the bounded-recovery rule-and-monitor milestone.
 
-Use the saved environment-inspection trajectories and controlled rollouts to
-choose feasible values for d_warn, d_safe, and K. Freeze equality,
-floating-point, repeated-trigger, and episode-truncation semantics and prepare
-hand-labeled temporal boundary cases. Do not begin monitor integration, RL
-training, or the language layer until these decisions are documented.
+Treat docs/stage1_rule_monitor_spec.md as normative. Do not redesign its
+equality, deadline, warning-episode, terminal, cost, or observation semantics.
+
+On the Ubuntu work computer, execute its one-pass work order: add reproducible
+calibration scripts, collect the declared controlled rollouts, choose d_warn,
+d_safe, and K using the fixed protocol, generate stable fixtures, implement the
+monitor and direct offline oracle, and verify them against the declared
+semantic tests and RTAMT completed-window checks.
+
+Deliver all artifacts listed in the completion gate. Do not begin the OmniSafe
+wrapper, RL training, or the language layer during this milestone.
 ```

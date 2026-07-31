@@ -1,5 +1,11 @@
 # Stage I Engineering Plan: Gold-STL Safe RL Experiment
 
+> **Normative implementation note:** this document describes the overall Stage
+> I plan. Exact warning-episode semantics, deadline handling, monitor outputs,
+> calibration protocol, and tests are fixed in
+> `docs/stage1_rule_monitor_spec.md`. That specification takes precedence over
+> older shorthand in this plan or the slides.
+
 ## 1. Purpose and Stage I Objective
 
 The long-term research goal is to accept a natural-language task containing both a task objective and a temporal safety requirement, translate the safety requirement into Signal Temporal Logic (STL), and use the resulting specification during Safe Reinforcement Learning (Safe RL) training.
@@ -82,10 +88,11 @@ The Stage I rule is:
 
 > If the agent enters a warning zone, it must return to a safe distance within $K$ environment steps.
 
-One STL representation is:
+Let \(e_t\) denote the start of a new hysteretic warning episode. The exact
+Stage I representation is:
 
 $$
-\mathbf{G}\left(d_t < d_{\mathrm{warn}}
+\mathbf{G}\left(e_t
 \rightarrow
 \mathbf{F}_{[0,K]}\left(d_t \ge d_{\mathrm{safe}}\right)\right),
 $$
@@ -96,6 +103,11 @@ where:
 - $d_{\mathrm{safe}}$ is the recovered-safe-distance threshold;
 - $K$ is the maximum permitted recovery time in environment steps;
 - $d_{\mathrm{warn}} < d_{\mathrm{safe}}$ creates separation between entering the warning region and completing recovery.
+
+The previously used pointwise antecedent \(d_t<d_{\mathrm{warn}}\) is an
+intuitive shorthand only. Literal pointwise semantics would create a new
+obligation on every unsafe sample. The normative specification instead creates
+one obligation per warning episode and defines its state transitions exactly.
 
 The numerical values will not be chosen arbitrarily. They should be fixed after examining example trajectories and checking that recovery within $K$ steps is physically feasible.
 
@@ -300,16 +312,21 @@ locally saved trajectories under `results/environment_inspection/`.
 
 **Goal:** turn the plain-language bounded-recovery rule into a fixed experimental specification.
 
-Required decisions:
+**Status:** non-numerical semantics completed; parameter calibration pending.
 
-- confirm use of the fixed public-lidar $d_t$ definition;
+Remaining calibration actions:
+
 - values of $d_{\mathrm{warn}}$ and $d_{\mathrm{safe}}$;
 - value of $K$ in environment steps;
-- treatment of equality at each boundary;
-- treatment of an episode that ends before a pending recovery deadline;
-- handling of repeated warning events while a recovery obligation is active.
+- stable trajectory fixtures for on-time recovery, violation, and unresolved
+  termination.
 
-**Output:** one fixed rule definition and a small set of hand-labeled success and failure trajectories.
+The public-lidar signal, equality, deadline, repeated-trigger, terminal, and
+cost semantics are already fixed by the normative specification.
+
+**Output:** the normative definition in
+`docs/stage1_rule_monitor_spec.md`, calibrated parameters, and a small set of
+stable success, violation, and unresolved fixtures.
 
 ### Work Package 3: Trajectory Monitor
 
@@ -437,7 +454,8 @@ The inspection answered:
 - native reward and native cost are logged separately;
 - no additional wrapper access is required for the primary distance signal.
 
-The next milestone is Work Package 2. Use controlled trajectories to choose
-$d_{\mathrm{warn}}$, $d_{\mathrm{safe}}$, and $K$, then freeze equality,
-floating-point, repeated-trigger, and truncation semantics. Do not begin RL
-training during this milestone.
+The next milestone follows `docs/stage1_rule_monitor_spec.md`. Add reproducible
+collection scripts, use controlled trajectories to choose
+$d_{\mathrm{warn}}$, $d_{\mathrm{safe}}$, and $K$, then implement the already
+fixed state machine, offline oracle, semantic tests, and RTAMT agreement check.
+Do not begin the OmniSafe wrapper or RL training during this milestone.

@@ -30,6 +30,7 @@ exist.
 | `docs/stage1_plan.md` | Detailed Stage I engineering plan and resource list |
 | `docs/environment_setup.md` | Tested setup commands, versions, and isolation notes |
 | `docs/environment_inspection.md` | Public API, distance definition, and smoke-test results |
+| `docs/stage1_rule_monitor_spec.md` | Normative rule semantics, monitor contract, calibration protocol, tests, and Ubuntu work order |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -96,13 +97,15 @@ artifacts.
 
 ## Future additions
 
-After the rule parameters and temporal semantics are frozen, the project may add:
+The temporal semantics are now frozen. During the next rule-and-monitor
+milestone, the project may add only the implementation surface declared in
+`docs/stage1_rule_monitor_spec.md`:
 
-- source code;
-- unit tests;
-- experiment configurations;
-- trajectory fixtures;
-- results and analysis.
+- calibration and fixture-generation scripts;
+- signal, monitor, and offline-oracle source code;
+- the fixed rule configuration;
+- semantic unit tests and stable fixtures;
+- calibration and monitor-agreement reports.
 
-Their directory structure should be chosen from the fixed monitor and wrapper
-interfaces rather than created speculatively.
+Wrapper, training, and language-layer code remain deferred until that
+document's completion gate passes.

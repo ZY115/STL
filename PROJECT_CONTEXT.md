@@ -329,11 +329,12 @@ That simplicity is useful for attribution in Stage I but limits external validit
 ### STL form
 
 ```text
-G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
+G(e_t -> F_[0,K](d_t >= d_safe))
 ```
 
 ### Intended meaning
 
+- `e_t`: start of a new hysteretic warning episode;
 - `d_t`: nearest agent-origin-to-hazard-center distance, capped at the public
   pseudo-lidar range of 3;
 - `d_warn`: warning threshold;
@@ -342,7 +343,13 @@ G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
 - `d_warn < d_safe`: hysteresis between entering warning and completing recovery.
 
 The distance definition was fixed after environment inspection. The numerical
-values of `d_warn`, `d_safe`, and `K` remain open.
+values of `d_warn`, `d_safe`, and `K` remain open. Equality, inclusive
+deadline, repeated-trigger, terminal, binary-cost, and policy-state semantics
+are fixed in `docs/stage1_rule_monitor_spec.md`.
+
+Older project materials use `d_t < d_warn` directly as the formula antecedent.
+That is an intuitive shorthand, not the normative experiment: literal
+pointwise semantics would create a new obligation at every unsafe sample.
 
 ## 13. Planned Stage I comparison
 
@@ -377,8 +384,8 @@ The hand-coded timer is useful but not required for the first smoke test.
 ### Step 2: freeze rule semantics
 
 - select `d_warn`, `d_safe`, and `K`;
-- define boundary behavior;
-- label success and failure trajectories.
+- use the already fixed boundary and event semantics;
+- generate stable success, violation, and unresolved fixtures.
 
 ### Step 3: build and validate the monitor
 
@@ -461,9 +468,11 @@ d_t = 3 * (1 - max(hazards_lidar))
 Sample random and scripted trajectories were saved locally. No project monitor,
 wrapper, training configuration, or RL result exists yet.
 
-The next work should freeze `d_warn`, `d_safe`, `K`, and temporal boundary
-semantics before monitor implementation. It should not begin with language
-translation or RL training.
+The temporal boundary and monitor semantics are now frozen. The next work must
+follow `docs/stage1_rule_monitor_spec.md`: add reproducible collection scripts,
+calibrate `d_warn`, `d_safe`, and `K`, implement the monitor and offline oracle,
+and pass the declared semantic and RTAMT agreement tests. It should not begin
+with the OmniSafe wrapper, language translation, or RL training.
 
 ## 19. Continuity rule
 

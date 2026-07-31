@@ -50,15 +50,20 @@ Stage I 使用 `SafetyPointGoal1-v0`：
 - application：二维静态障碍导航；
 - task：Point agent 到达目标；
 - safety signal：agent 到最近 hazard 的距离；
-- safety rule：进入 warning zone 后，在 `K` 个 environment steps 内恢复到 safe distance；
+- safety rule：一个新的 warning episode 开始后，在 `K` 个 environment steps
+  内恢复到 safe distance；
 - initial Safe RL algorithm：OmniSafe 中的 PPO-Lagrangian；
 - reference STL monitor：RTAMT。
 
-STL 规则为：
+精确的事件触发规则为：
 
 ```text
-G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
+G(e_t -> F_[0,K](d_t >= d_safe))
 ```
+
+其中 `e_t` 表示 monitor 当前没有未完成义务、且 `d_t < d_warn` 时开始的
+warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公式只作为
+直观简写；`docs/stage1_rule_monitor_spec.md` 给出规范语义。
 
 当前研究问题是：
 
@@ -81,20 +86,27 @@ G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
 - 已验证 EGL 无头渲染和轨迹保存；
 - 已确定 `d_t` 为由公开 `hazards_lidar` 重建的最近中心距离，并截断到 lidar range 3；
 - 已保存随机策略和 scripted hazard-approach 样例轨迹；
+- 已冻结 equality、inclusive deadline、重复触发、episode 结束和
+  binary STL cost 语义；
+- 已冻结 monitor 状态机、输出字段、policy temporal state 和测试标准；
+- 已给出 Ubuntu 参数校准协议及一次性实现工作单；
 - 尚未选择 `d_warn`、`d_safe` 和 `K`；
 - 尚未编写 monitor、wrapper 或训练代码；
 - 尚未开始 RL training。
 
-## 当前唯一的下一步
+## 下一里程碑
 
-冻结 bounded-recovery 规则的参数和边界语义：
+在 Ubuntu 工作电脑上执行
+`docs/stage1_rule_monitor_spec.md` 中的 rule-and-monitor milestone：
 
-1. 使用已保存轨迹和受控策略检查可达的距离与恢复速度；
-2. 选择并记录 `d_warn`、`d_safe` 和 `K`；
-3. 明确 equality、floating-point tolerance、重复触发和 episode truncation；
-4. 准备手工标注的 temporal boundary cases。
+1. 补齐可复现的 calibration collection scripts；
+2. 收集受控 approach-and-escape trajectories；
+3. 按预先定义的选择协议确定 `d_warn`、`d_safe` 和 `K`；
+4. 生成稳定 fixtures 并实现 monitor、offline oracle 和 semantic tests；
+5. 验证 custom monitor、direct oracle 和 RTAMT 在完整义务窗口上一致。
 
-这些语义冻结并形成测试用例后，才开始 monitor 实现。RL training 和自然语言层仍不在当前步骤中。
+在这一里程碑通过 completion gate 之前，不开始 wrapper、RL training
+或自然语言层。
 
 ## 推荐阅读顺序
 
@@ -104,9 +116,10 @@ G(d_t < d_warn -> F_[0,K](d_t >= d_safe))
 2. `README.md`
 3. `PROJECT_CONTEXT.md`
 4. `DECISIONS.md`
-5. `docs/stage1_plan.md`
-6. `docs/slides/stage1_experiment_plan_slides.pdf`
-7. `references/REFERENCES.md`
+5. `docs/stage1_rule_monitor_spec.md`
+6. `docs/stage1_plan.md`
+7. `docs/slides/stage1_experiment_plan_slides.pdf`
+8. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -123,6 +136,7 @@ safety-stl-stage1-handoff/
 │   ├── PROJECT_INTRODUCTION.md
 │   ├── environment_setup.md
 │   ├── environment_inspection.md
+│   ├── stage1_rule_monitor_spec.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
 │   └── slides/
