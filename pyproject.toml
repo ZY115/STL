@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safety-stl-stage1"
+version = "0.1.0"
+description = "Stage I bounded-recovery STL monitor for SafetyPointGoal1-v0"
+requires-python = ">=3.8"
+dependencies = [
+  "gymnasium==0.28.1",
+  "numpy==1.23.5",
+  "PyYAML==6.0.3",
+  "rtamt==0.3.5",
+  "safety-gymnasium==1.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
