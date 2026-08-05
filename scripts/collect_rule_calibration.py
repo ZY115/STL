@@ -53,6 +53,7 @@ CSV_FIELDS = (
     "truncated",
     "agent_x",
     "agent_y",
+    "agent_forward_velocity",
     "target_hazard_center_distance",
     "nearest_hazard_distance_public",
     "nearest_hazard_center_distance_simulator",
@@ -92,73 +93,11 @@ def nearest_hazard_index(task: Any) -> int:
     return int(np.argmin(np.linalg.norm(hazards - agent, axis=1)))
 
 
-def select_outer_hazard(task: Any) -> int:
-    """Select a deterministic outer hazard with a clear approach segment."""
-
-    agent = np.asarray(task.agent.pos, dtype=np.float64)[:2]
-    hazards = np.asarray(task.hazards.pos, dtype=np.float64)[:, :2]
-    centroid = np.mean(hazards, axis=0)
-    radial = np.linalg.norm(hazards - centroid, axis=1)
-    distance_from_agent = np.linalg.norm(hazards - agent, axis=1)
-    radial_scaled = radial / max(float(np.max(radial)), 1e-12)
-    distance_scaled = distance_from_agent / max(float(np.max(distance_from_agent)), 1e-12)
-    clearances = []
-    for index, target in enumerate(hazards):
-        segment = target - agent
-        squared_length = float(np.dot(segment, segment))
-        other_hazards = np.delete(hazards, index, axis=0)
-        if squared_length < 1e-12:
-            clearance = 0.0
-        else:
-            projection = np.clip(((other_hazards - agent) @ segment) / squared_length, 0.0, 1.0)
-            closest = agent + projection[:, None] * segment
-            clearance = float(np.min(np.linalg.norm(other_hazards - closest, axis=1)))
-        clearances.append(clearance)
-    clearance_values = np.asarray(clearances, dtype=np.float64)
-    clearance_scaled = clearance_values / max(float(np.max(clearance_values)), 1e-12)
-    score = 1.5 * clearance_scaled + radial_scaled - 0.25 * distance_scaled
-    return int(np.argmax(score))
-
-
-def select_escape_waypoint(
-    task: Any,
-    target_hazard: int,
-    initial_agent: np.ndarray,
-) -> np.ndarray:
-    """Choose a clear outward ray without crossing the approached hazard."""
-
-    hazards = np.asarray(task.hazards.pos, dtype=np.float64)[:, :2]
-    target = hazards[target_hazard]
-    others = np.delete(hazards, target_hazard, axis=0)
-    initial_direction = np.asarray(initial_agent, dtype=np.float64)[:2] - target
-    initial_direction /= max(float(np.linalg.norm(initial_direction)), 1e-9)
-    best_score = -float("inf")
-    best_endpoint = target + 3.0 * initial_direction
-    for angle in np.linspace(0.0, 2.0 * math.pi, 360, endpoint=False):
-        direction = np.asarray([math.cos(angle), math.sin(angle)], dtype=np.float64)
-        alignment = float(np.dot(direction, initial_direction))
-        if alignment < 0.8:
-            continue
-        endpoint = target + 3.0 * direction
-        segment = endpoint - target
-        squared_length = float(np.dot(segment, segment))
-        projection = np.clip(((others - target) @ segment) / squared_length, 0.0, 1.0)
-        closest = target + projection[:, None] * segment
-        path_clearance = float(np.min(np.linalg.norm(others - closest, axis=1)))
-        endpoint_clearance = float(np.min(np.linalg.norm(others - endpoint, axis=1)))
-        score = path_clearance + 0.15 * endpoint_clearance + 0.10 * alignment
-        if score > best_score:
-            best_score = score
-            best_endpoint = endpoint
-    return best_endpoint
-
-
 def steering_action(
     task: Any,
     target_xy: np.ndarray,
     *,
-    forward_cap: float = 1.0,
-    reverse_while_turning: bool = False,
+    forward_action: float,
 ) -> np.ndarray:
     """Deterministically steer the Point agent toward a privileged waypoint."""
 
@@ -170,12 +109,7 @@ def steering_action(
     )
     heading_error = math.atan2(float(vector_ego[1]), float(vector_ego[0]))
     turn = float(np.clip(2.5 * heading_error, -1.0, 1.0))
-    if reverse_while_turning and abs(heading_error) > 1.2:
-        forward = -1.0
-    elif abs(heading_error) < 0.35:
-        forward = forward_cap
-    else:
-        forward = min(0.05, forward_cap)
+    forward = forward_action if abs(heading_error) < 0.10 else 0.0
     return np.asarray([forward, turn], dtype=np.float64)
 
 
@@ -183,7 +117,6 @@ def controlled_action(
     task: Any,
     target_hazard: int,
     phase: str,
-    escape_waypoint: np.ndarray,
 ) -> np.ndarray:
     hazards = np.asarray(task.hazards.pos, dtype=np.float64)[:, :2]
     target = hazards[target_hazard]
@@ -192,19 +125,14 @@ def controlled_action(
         target_distance = float(
             np.linalg.norm(np.asarray(task.agent.pos, dtype=np.float64)[:2] - target),
         )
-        if target_distance > 0.60:
-            forward_cap = 1.0
-        elif target_distance > 0.40:
-            forward_cap = 0.50
-        elif target_distance > 0.28:
-            forward_cap = 0.20
-        else:
-            forward_cap = 0.05
-        return steering_action(task, waypoint, forward_cap=forward_cap)
-    elif phase == "brake":
+        forward_action = 0.20 if target_distance > 0.80 else 0.15
+        return steering_action(task, waypoint, forward_action=forward_action)
+    elif phase == "decelerate":
         return np.asarray([-1.0, 0.0], dtype=np.float64)
+    elif phase == "final_approach":
+        return steering_action(task, target, forward_action=0.05)
     else:
-        return steering_action(task, escape_waypoint, reverse_while_turning=True)
+        return np.asarray([-1.0, 0.0], dtype=np.float64)
 
 
 def row_for_sample(
@@ -228,6 +156,8 @@ def row_for_sample(
     public_distance = observation_distance(environment, observation)
     simulator_distance = simulator_nearest_hazard_center_distance(task)
     agent = np.asarray(task.agent.pos, dtype=np.float64)[:2]
+    velocity_world = np.asarray(task.agent.vel, dtype=np.float64)
+    velocity_ego = velocity_world @ np.asarray(task.agent.mat, dtype=np.float64)
     if target_hazard_index is None:
         target_distance = None
     else:
@@ -255,6 +185,7 @@ def row_for_sample(
         "truncated": bool(truncated),
         "agent_x": float(agent[0]),
         "agent_y": float(agent[1]),
+        "agent_forward_velocity": float(velocity_ego[0]),
         "target_hazard_center_distance": target_distance,
         "nearest_hazard_distance_public": public_distance,
         "nearest_hazard_center_distance_simulator": simulator_distance,
@@ -275,13 +206,11 @@ def collect_controlled(seed: int, raw_directory: Path, max_steps: int) -> Dict[s
     try:
         observation, info = environment.reset(seed=seed)
         task = environment.unwrapped.task
-        target_hazard = select_outer_hazard(task)
+        target_hazard = nearest_hazard_index(task)
         target_position = np.asarray(task.hazards.pos[target_hazard], dtype=np.float64)[:2]
         initial_agent = np.asarray(task.agent.pos, dtype=np.float64)[:2]
-        escape_waypoint = select_escape_waypoint(task, target_hazard, initial_agent)
         initial_distance = observation_distance(environment, observation)
         phase = "approach"
-        brake_steps_remaining = 0
         rows = [
             row_for_sample(
                 environment,
@@ -309,12 +238,17 @@ def collect_controlled(seed: int, raw_directory: Path, max_steps: int) -> Dict[s
             target_distance = float(
                 np.linalg.norm(np.asarray(task.agent.pos, dtype=np.float64)[:2] - target_position),
             )
-            if phase == "approach" and target_distance <= 0.30:
-                phase = "brake"
-                brake_steps_remaining = 8
+            velocity_world = np.asarray(task.agent.vel, dtype=np.float64)
+            velocity_ego = velocity_world @ np.asarray(task.agent.mat, dtype=np.float64)
+            if phase == "approach" and target_distance <= 0.45:
+                phase = "decelerate"
+            if phase == "decelerate" and float(velocity_ego[0]) <= 0.01:
+                phase = "final_approach"
+            if phase == "final_approach" and target_distance <= 0.28:
+                phase = "escape"
                 reached_approach_target = True
                 escape_start_sample = action_index
-            action = controlled_action(task, target_hazard, phase, escape_waypoint)
+            action = controlled_action(task, target_hazard, phase)
             observation, reward, native_cost, terminated, truncated, info = environment.step(action)
             sample_index = action_index + 1
             rows.append(
@@ -335,11 +269,7 @@ def collect_controlled(seed: int, raw_directory: Path, max_steps: int) -> Dict[s
                     truncated=truncated,
                 ),
             )
-            if phase == "brake":
-                brake_steps_remaining -= 1
-                if brake_steps_remaining == 0:
-                    phase = "escape"
-            if phase in ("brake", "escape") and rows[-1]["nearest_hazard_distance_public"] > 0.9:
+            if phase == "escape" and rows[-1]["nearest_hazard_distance_public"] > 0.9:
                 reached_escape_target = True
                 termination_reason = "distance_above_0.9"
                 break
@@ -359,12 +289,19 @@ def collect_controlled(seed: int, raw_directory: Path, max_steps: int) -> Dict[s
             "initial_public_distance": initial_distance,
             "target_hazard_index": target_hazard,
             "target_hazard_xy": target_position.tolist(),
-            "escape_waypoint_xy": escape_waypoint.tolist(),
             "reached_approach_target": reached_approach_target,
             "escape_start_sample": escape_start_sample,
             "reached_escape_target": reached_escape_target,
             "termination_reason": termination_reason,
             "minimum_public_distance": min(row["nearest_hazard_distance_public"] for row in rows),
+            "minimum_approach_public_distance": min(
+                row["nearest_hazard_distance_public"]
+                for row in rows
+                if row["phase"] != "escape"
+            ),
+            "minimum_target_hazard_distance": min(
+                row["target_hazard_center_distance"] for row in rows
+            ),
             "maximum_reconstruction_error": max(
                 row["public_distance_reconstruction_error"] for row in rows
             ),
@@ -617,19 +554,16 @@ def build_summary(
         "controller": {
             "privileged_geometry_used": True,
             "purpose": "controlled calibration data generation only",
-            "target_selection": "outer hazard maximizing radial position with distance penalty",
-            "approach_phase_switch_center_distance": 0.30,
+            "target_selection": "nearest hazard at reset",
+            "approach_phase_switch_center_distance": 0.28,
             "intended_minimum_center_distance": 0.25,
-            "escape_waypoint": (
-                "3.0-unit ray chosen from 360 candidates on the approach-side half-plane; "
-                "score maximizes clearance from all non-target hazards"
-            ),
+            "escape_waypoint": "none; preserve heading and drive backward",
             "escape_stop_public_distance": 0.9,
             "action_law": (
-                "turn=clip(2.5*heading_error,-1,1); approach forward cap decreases "
-                "from 1.0 to 0.05 near the target; escape starts with eight [-1,0] "
-                "braking actions and then applies -1.0 reverse braking while "
-                "|heading_error|>1.2"
+                "turn=clip(2.5*heading_error,-1,1); forward action is zero until "
+                "|heading_error|<0.10; approach uses 0.20/0.15, applies [-1,0] "
+                "at distance 0.45 until forward velocity <=0.01, finishes at 0.05, "
+                "then escape repeats [-1,0] along the same line"
             ),
         },
         "controlled_seed_range": [min(run["seed"] for run in controlled), max(run["seed"] for run in controlled)],
