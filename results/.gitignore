@@ -9,3 +9,6 @@ environment_inspection/*
 rule_calibration/*
 !rule_calibration/README.md
 !rule_calibration/summary.json
+!monitor_agreement/
+monitor_agreement/*
+!monitor_agreement/summary.json

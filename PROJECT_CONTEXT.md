@@ -342,10 +342,11 @@ G(e_t -> F_[0,K](d_t >= d_safe))
 - `K`: recovery deadline;
 - `d_warn < d_safe`: hysteresis between entering warning and completing recovery.
 
-The distance definition was fixed after environment inspection. The numerical
-values of `d_warn`, `d_safe`, and `K` remain open. Equality, inclusive
-deadline, repeated-trigger, terminal, binary-cost, and policy-state semantics
-are fixed in `docs/stage1_rule_monitor_spec.md`.
+The distance definition was fixed after environment inspection. The formal
+2026-08-05 calibration selected `d_warn=0.45`, `d_safe=0.55`, and `K=79`
+environment steps. Equality, inclusive deadline, repeated-trigger, terminal,
+binary-cost, and policy-state semantics are fixed in
+`docs/stage1_rule_monitor_spec.md`.
 
 Older project materials use `d_t < d_warn` directly as the formula antecedent.
 That is an intuitive shorthand, not the normative experiment: literal
@@ -465,14 +466,17 @@ nearest center-distance signal within its range:
 d_t = 3 * (1 - max(hazards_lidar))
 ```
 
-Sample random and scripted trajectories were saved locally. No project monitor,
-wrapper, training configuration, or RL result exists yet.
+Sample random and scripted trajectories were saved locally. On 2026-08-05, the
+formal 30-controlled/30-random calibration selected the fixed numerical rule.
+The public signal extractor, causal online monitor, independent offline oracle,
+fixture generator, and agreement runner now exist. Twenty-three tests passed;
+online/direct event steps and costs agreed exactly, and RTAMT agreed on all 13
+completed windows with maximum robustness difference 0.
 
-The temporal boundary and monitor semantics are now frozen. The next work must
-follow `docs/stage1_rule_monitor_spec.md`: add reproducible collection scripts,
-calibrate `d_warn`, `d_safe`, and `K`, implement the monitor and offline oracle,
-and pass the declared semantic and RTAMT agreement tests. It should not begin
-with the OmniSafe wrapper, language translation, or RL training.
+No OmniSafe wrapper, training configuration, or RL result exists yet. The next
+work package is the wrapper and a small integration smoke test. Main training
+must wait until quantitative success and evaluation decisions are predeclared.
+Language translation remains outside Stage I.
 
 ## 19. Continuity rule
 

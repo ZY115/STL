@@ -1,0 +1,14 @@
+fixture_sample_index,source_sample_index,source_seed,source_policy,source_phase,action_forward,action_turn,reward,native_cost,nearest_hazard_distance_public,terminated,truncated
+0,51,1026,controlled_approach_escape,approach,0.15,0.10806574987268452,0.016765501637633573,0.0,0.47744056605991725,False,False
+1,52,1026,controlled_approach_escape,approach,0.15,0.1095821230068964,0.01713363186198169,0.0,0.458588301339235,False,False
+2,53,1026,controlled_approach_escape,approach,0.15,0.11031412278126644,0.017476633671767106,0.0,0.4393181893545145,False,False
+3,54,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.016667252129972665,0.0,0.42089678431895283,False,False
+4,55,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.014989062565339717,0.0,0.40430338163263535,False,False
+5,56,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.013383066510685326,0.0,0.3894689246214047,False,False
+6,57,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.011843891717273625,0.0,0.37632673166245645,False,False
+7,58,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.0103682518750694,0.0,0.36481260662872306,False,False
+8,59,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.008953066750463146,0.0,0.35486476268639855,False,False
+9,60,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.007595386953083372,0.0,0.3464237427564344,False,False
+10,61,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.006292391923643503,0.0,0.33943234362223673,False,False
+11,62,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.005041390168732063,0.0,0.33383554303241647,False,False
+12,63,1026,controlled_approach_escape,decelerate,-1.0,0.0,0.0038398188413337753,0.0,0.3295804287780779,False,True

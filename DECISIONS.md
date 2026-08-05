@@ -68,10 +68,10 @@ The STL rule defines the desired temporal condition. A cost-based Safe RL learne
 
 No experiment directories were created before the Ubuntu environment and available signals were inspected.
 
-The inspection is now complete. A `results/` directory exists only for generated
-environment-inspection outputs and excludes those outputs from Git. Monitor,
-training, configuration, and test directories remain deferred until their
-interfaces are defined.
+The inspection is complete. The later normative specification defined and the
+rule-and-monitor milestone created the limited source, test, configuration,
+script, fixture, and evidence directories. Wrapper and training surfaces remain
+deferred to the next work package.
 
 ### D11. Stage I distance uses the public hazard pseudo-lidar
 
@@ -171,17 +171,29 @@ The Ubuntu machine must supply calibration evidence for `d_warn`, `d_safe`, and
 `K`, but no further semantic choice is required before implementing synthetic
 tests.
 
+### D19. Stage I numerical rule parameters are calibrated
+
+The formal 2026-08-05 run selected:
+
+```text
+d_warn = 0.45
+d_safe = 0.55
+K = 79 environment steps
+```
+
+All 30 controlled trials produced valid recoveries. The selected recovery-time
+Q95 was 63 steps, so the predeclared equation produced
+`ceil(1.25 * 63) = 79`. Its random-policy trigger rate was 17/30 (56.67%), the
+eligible primary-grid rate closest to 50%.
+
+### D20. The rule-and-monitor completion gate passed
+
+The online monitor, independent direct oracle, stable environment fixtures, and
+RTAMT completed-window checks passed with zero event-step, Boolean, cost, or
+robustness mismatches. The next work package may implement the OmniSafe wrapper,
+but this result is not an RL result or safety guarantee.
+
 ## Open decisions
-
-### O2. Rule parameters
-
-Choose:
-
-- `d_warn`;
-- `d_safe`;
-- `K`.
-
-The values must be feasible under the environment dynamics and fixed before training.
 
 ### O6. Quantitative success criterion
 

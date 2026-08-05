@@ -1,0 +1,68 @@
+{
+  "d_safe": 0.55,
+  "d_warn": 0.45,
+  "deadline_steps": 79,
+  "environment_id": "SafetyPointGoal1-v0",
+  "fixtures": [
+    {
+      "collector_imposed_terminal_flag": false,
+      "crop_source_start": 51,
+      "crop_source_stop": 132,
+      "expected_outcome": "recovery",
+      "file": "on_time.csv",
+      "fixture_deadline_step": 81,
+      "fixture_samples": 82,
+      "fixture_trigger_step": 2,
+      "label": "on_time",
+      "sha256": "1c551913afca10970cdd6ea902e7553c6202da7f897dfe046e9b2d5302afabcc",
+      "source_file": "results/rule_calibration/raw/controlled_seed_1026.csv",
+      "source_recovery_step": 111,
+      "source_recovery_steps": 58,
+      "source_seed": 1026,
+      "source_sha256": "ca54b1c01be3091da0a04d9f5842f44d2db13a60ea5f226dc58cab0d80fa9de0",
+      "source_trigger_step": 53,
+      "terminal_mode": "none"
+    },
+    {
+      "collector_imposed_terminal_flag": false,
+      "expected_outcome": "deadline_violation",
+      "file": "violation.csv",
+      "fixture_deadline_step": 81,
+      "fixture_samples": 87,
+      "fixture_trigger_step": 2,
+      "label": "violation",
+      "sha256": "fae05eac8de7fa9182205db9b8957f3ae8b99d743420ba497ada39ea576d09fa",
+      "source_policy": "controlled_approach_hold",
+      "source_seed": 3000,
+      "source_trigger_step": 67,
+      "source_type": "reproducible_live_environment_generation",
+      "target_hazard_index": 4,
+      "target_hazard_xy": [
+        -0.43079785192768294,
+        -0.28839718144639725
+      ],
+      "terminal_mode": "none"
+    },
+    {
+      "collector_imposed_terminal_flag": true,
+      "crop_source_start": 51,
+      "crop_source_stop": 63,
+      "expected_outcome": "terminal_unresolved",
+      "file": "unresolved.csv",
+      "fixture_deadline_step": 81,
+      "fixture_samples": 13,
+      "fixture_trigger_step": 2,
+      "label": "unresolved",
+      "sha256": "93a78f888d73d5e5fffb35c6ace6f69f627d11d74f2199bbae16d236694148e2",
+      "source_file": "results/rule_calibration/raw/controlled_seed_1026.csv",
+      "source_recovery_step": 111,
+      "source_recovery_steps": 58,
+      "source_seed": 1026,
+      "source_sha256": "ca54b1c01be3091da0a04d9f5842f44d2db13a60ea5f226dc58cab0d80fa9de0",
+      "source_trigger_step": 53,
+      "terminal_mode": "truncated"
+    }
+  ],
+  "note": "All distances come from real SafetyPointGoal1-v0 executions. On-time and unresolved traces are cropped from formal calibration runs; violation is regenerated with the deterministic approach-hold controller. The unresolved fixture marks its deliberate collection cutoff as truncated.",
+  "schema_version": 1
+}

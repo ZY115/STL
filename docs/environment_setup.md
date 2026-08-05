@@ -184,6 +184,27 @@ Importing Safety-Gymnasium emits a Gymnasium-Robotics warning about reward chang
 in three Adroit Hand environments. Stage I uses `SafetyPointGoal1-v0`, so the
 warning does not affect the selected benchmark.
 
+## 2026-08-05 reproducibility recheck
+
+The existing environment was converged to `environment.stage1.yml` with:
+
+```bash
+conda env update -n stl-stage1 -f environment.stage1.yml --prune
+```
+
+All locked dependencies were already satisfied. With the documented
+`PYTHONPATH` isolation applied, `pip check` again reported
+`No broken requirements found`. The local Stage I project was then installed as
+an editable package without adding dependencies:
+
+```bash
+python -m pip install --no-deps --no-build-isolation -e .
+```
+
+The benchmark/public-distance smoke test and the 23 signal, monitor, oracle,
+fixture, and RTAMT agreement tests passed. The locked PyTorch build remains
+CPU-only; GPU training was not part of this milestone.
+
 ## Removal
 
 If this dedicated environment is no longer needed:

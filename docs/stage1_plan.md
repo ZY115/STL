@@ -312,14 +312,14 @@ locally saved trajectories under `results/environment_inspection/`.
 
 **Goal:** turn the plain-language bounded-recovery rule into a fixed experimental specification.
 
-**Status:** non-numerical semantics completed; parameter calibration pending.
+**Status:** completed on 2026-08-05.
 
-Remaining calibration actions:
+Calibrated values and fixtures:
 
-- values of $d_{\mathrm{warn}}$ and $d_{\mathrm{safe}}$;
-- value of $K$ in environment steps;
-- stable trajectory fixtures for on-time recovery, violation, and unresolved
-  termination.
+- $d_{\mathrm{warn}}=0.45$;
+- $d_{\mathrm{safe}}=0.55$;
+- $K=79$ environment steps;
+- tracked fixtures for on-time recovery, violation, and unresolved termination.
 
 The public-lidar signal, equality, deadline, repeated-trigger, terminal, and
 cost semantics are already fixed by the normative specification.
@@ -331,6 +331,10 @@ stable success, violation, and unresolved fixtures.
 ### Work Package 3: Trajectory Monitor
 
 **Goal:** evaluate the bounded-recovery rule consistently.
+
+**Status:** completed on 2026-08-05. The online monitor and independent direct
+oracle had zero event-step and cost mismatches. RTAMT agreed on all completed
+windows with maximum robustness difference 0.
 
 The minimal online monitor must:
 
@@ -349,6 +353,8 @@ Saved trajectories should also be evaluated with RTAMT. The custom monitor and R
 ### Work Package 4: STL Safety-Cost Wrapper
 
 **Goal:** expose the temporal-rule result through an interface that OmniSafe can use.
+
+**Status:** next work package; not started.
 
 The wrapper should conceptually provide:
 
@@ -426,10 +432,10 @@ Stage I should proceed to Stage II only if:
 | Native hazard cost | Safety-Gymnasium | Reuse as baseline |
 | PPO-Lagrangian | OmniSafe | Reuse and configure |
 | Reference STL evaluation | RTAMT | Reuse for trajectory checking |
-| Hazard-distance extraction | Our work | Implement |
-| Rule parameterization | Our work | Define and justify |
-| Stateful bounded-recovery monitor | Our work | Implement and test |
-| STL-to-cost conversion | Our work | Design and implement |
+| Hazard-distance extraction | Our work | Implemented and tested |
+| Rule parameterization | Our work | Calibrated and fixed |
+| Stateful bounded-recovery monitor | Our work | Implemented and tested |
+| STL-to-cost conversion | Our work | Binary event mapping implemented; wrapper pending |
 | Safe RL wrapper integration | Our work | Implement |
 | Temporal evaluation metrics | Our work | Implement and analyze |
 
@@ -443,7 +449,7 @@ The first preparation milestone was completed on 2026-07-29:
 
 1. **Compatible Python environment:** installed and locked as `stl-stage1`.
 2. **Core tools:** official package releases of Safety-Gymnasium, OmniSafe, and
-   RTAMT installed; no mutable editable checkout is used.
+   RTAMT installed; no mutable editable checkout is used for those dependencies.
 3. **Environment-only smoke test:** random and scripted policies, RTAMT,
    PPO-Lagrangian construction, EGL rendering, and trajectory saving verified.
 
@@ -454,8 +460,9 @@ The inspection answered:
 - native reward and native cost are logged separately;
 - no additional wrapper access is required for the primary distance signal.
 
-The next milestone follows `docs/stage1_rule_monitor_spec.md`. Add reproducible
-collection scripts, use controlled trajectories to choose
-$d_{\mathrm{warn}}$, $d_{\mathrm{safe}}$, and $K$, then implement the already
-fixed state machine, offline oracle, semantic tests, and RTAMT agreement check.
-Do not begin the OmniSafe wrapper or RL training during this milestone.
+The rule-and-monitor milestone was completed on 2026-08-05 with
+$d_{\mathrm{warn}}=0.45$, $d_{\mathrm{safe}}=0.55$, and $K=79$. The next
+milestone is the OmniSafe wrapper and a small integration smoke test. It must
+preserve reward/native-cost/STL-cost separation and use identical augmented
+observations across comparison conditions. Main training waits for predeclared
+quantitative success and evaluation criteria.

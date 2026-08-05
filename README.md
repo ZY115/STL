@@ -6,7 +6,8 @@
 
 它用于解决一个实际问题：当项目被移动到另一台 Ubuntu 电脑、由另一个 Codex 账号继续时，不依赖原聊天记录或账号 memory，也能准确理解当前研究目标、已经做出的决定、Stage I 的实验计划和下一步工作。
 
-该文件夹包含研究规划、参考资料、可复现环境记录和环境检查结果。STL monitor、wrapper 和训练代码尚未建立。
+该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据和已经验证的
+STL monitor/oracle 实现。OmniSafe wrapper 和训练代码尚未建立。
 
 ## 长期研究目标
 
@@ -71,7 +72,7 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 
 ## 当前进度
 
-截至 2026-07-29：
+截至 2026-08-05：
 
 - 已完成原始问题定义；
 - 已完成核心文献梳理；
@@ -90,22 +91,24 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
   binary STL cost 语义；
 - 已冻结 monitor 状态机、输出字段、policy temporal state 和测试标准；
 - 已给出 Ubuntu 参数校准协议及一次性实现工作单；
-- 尚未选择 `d_warn`、`d_safe` 和 `K`；
-- 尚未编写 monitor、wrapper 或训练代码；
+- 已用 30 条受控轨迹和 30 条随机轨迹完成参数校准；
+- 已固定 `d_warn=0.45`、`d_safe=0.55`、`K=79` environment steps；
+- 已实现公开距离提取、在线 monitor 和独立 offline oracle；
+- 已生成 on-time、deadline violation 和 terminal-unresolved 稳定 fixtures；
+- 23 个测试全部通过，online/direct oracle event-step mismatch 为 0；
+- RTAMT 在 13 个完整义务窗口上 Boolean 与 robustness 全部一致，最大差异为 0；
+- rule-and-monitor completion gate 已通过；
+- 尚未编写 OmniSafe wrapper 或训练配置；
 - 尚未开始 RL training。
 
 ## 下一里程碑
 
-在 Ubuntu 工作电脑上执行
-`docs/stage1_rule_monitor_spec.md` 中的 rule-and-monitor milestone：
+rule-and-monitor milestone 已通过。下一里程碑是 OmniSafe wrapper 与小规模
+integration smoke test：保持 native reward、native cost 和 `stl_cost` 分离，给所有
+对照条件追加相同 temporal policy state，并验证 vectorized reset/step/logging 接口。
 
-1. 补齐可复现的 calibration collection scripts；
-2. 收集受控 approach-and-escape trajectories；
-3. 按预先定义的选择协议确定 `d_warn`、`d_safe` 和 `K`；
-4. 生成稳定 fixtures 并实现 monitor、offline oracle 和 semantic tests；
-5. 验证 custom monitor、direct oracle 和 RTAMT 在完整义务窗口上一致。
-
-在这一里程碑通过 completion gate 之前，不开始 wrapper、RL training
+在主训练之前，还必须预声明 violation reduction、goal-performance tolerance、
+seed 数、evaluation episode 数和不确定性报告方法。当前仍不开始主 RL training
 或自然语言层。
 
 ## 推荐阅读顺序
@@ -132,21 +135,44 @@ safety-stl-stage1-handoff/
 ├── HANDOFF_PROMPT.md
 ├── MANIFEST.md
 ├── environment.stage1.yml
+├── pyproject.toml
+├── configs/
+│   └── stage1_rule.yaml
+├── scripts/
+│   ├── collect_rule_calibration.py
+│   ├── generate_monitor_fixtures.py
+│   └── run_monitor_agreement.py
+├── src/safety_stl/
+│   ├── signals.py
+│   ├── monitor.py
+│   └── oracle.py
+├── tests/
+│   ├── test_distance_signal.py
+│   ├── test_monitor_boundaries.py
+│   ├── test_oracle_agreement.py
+│   └── fixtures/
 ├── docs/
 │   ├── PROJECT_INTRODUCTION.md
 │   ├── environment_setup.md
 │   ├── environment_inspection.md
 │   ├── stage1_rule_monitor_spec.md
+│   ├── rule_calibration_report.md
+│   ├── monitor_agreement_report.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
 │   └── slides/
 ├── results/
 │   ├── .gitignore
-│   └── environment_inspection/
-│       ├── README.md
-│       ├── summary.json
-│       ├── random_seed_11_first_120_steps.mp4
-│       └── scripted_hazard_approach_seed_44.mp4
+│   ├── environment_inspection/
+│   │   ├── README.md
+│   │   ├── summary.json
+│   │   ├── random_seed_11_first_120_steps.mp4
+│   │   └── scripted_hazard_approach_seed_44.mp4
+│   ├── rule_calibration/
+│   │   ├── README.md
+│   │   └── summary.json
+│   └── monitor_agreement/
+│       └── summary.json
 └── references/
     ├── REFERENCES.md
     ├── papers/

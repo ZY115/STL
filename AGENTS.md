@@ -62,23 +62,27 @@ Do not add any of the following during Stage I unless the user explicitly change
 
 ## Immediate task
 
-The environment-inspection milestone was completed on 2026-07-29.
+The environment inspection was completed on 2026-07-29. Parameter calibration,
+monitor/oracle implementation, stable fixtures, semantic tests, and RTAMT
+agreement passed the normative completion gate on 2026-08-05.
 
-The non-numerical rule and monitor semantics are now frozen in
-`docs/stage1_rule_monitor_spec.md`. The next milestone is parameter calibration
-followed by monitor implementation and agreement testing. It must:
+The next milestone is the OmniSafe wrapper and a small integration smoke test.
+It must:
 
-1. add reproducible calibration and fixture-generation scripts;
-2. collect the prescribed controlled trajectories on the Ubuntu work computer;
-3. select and document `d_warn`, `d_safe`, and `K` using the fixed protocol;
-4. implement the fixed monitor state machine and direct offline oracle;
-5. add all synthetic boundary tests and stable environment fixtures;
-6. verify event-step agreement and RTAMT completed-window agreement;
-7. deliver the calibration and agreement reports.
+1. preserve the benchmark's native task reward;
+2. expose native cost and STL cost as independent fields and logs;
+3. append the fixed active/overdue/remaining temporal state to every comparison
+   condition's policy observation;
+4. keep one independent monitor per vectorized environment and reset it from
+   the environment's reset observation;
+5. test reset, step, termination, truncation, and logging behavior;
+6. verify that PPO-Lagrangian can consume the selected cost in a minimal smoke
+   integration without claiming a training result.
 
-Synthetic monitor tests may be written before calibration because their
-semantics are fixed. Do not begin the OmniSafe wrapper or RL training until the
-completion gate in the normative specification passes.
+Before the main training study, predeclare the quantitative success criterion,
+seed count, evaluation episode count, task-performance tolerance, and
+uncertainty reporting. Do not add language translation or begin the main RL
+study during the wrapper milestone.
 
 ## Engineering expectations
 
@@ -103,7 +107,7 @@ After each milestone:
 - record failures and unresolved questions;
 - keep generated experimental outputs out of the research-document directories.
 
-The environment inspection created only `results/` for ignored generated
-outputs. The normative specification now defines the interfaces needed to
-create the limited `src/`, `tests/`, `configs/`, and `scripts/` surface listed
-in its one-pass work order. Do not add training code during this milestone.
+The completed rule-and-monitor milestone created the limited `src/`, `tests/`,
+`configs/`, `scripts/`, and evidence surface declared by the normative
+specification. Keep future wrapper/training outputs separate from calibration
+and semantic-test evidence.

@@ -152,20 +152,14 @@ correctness, training stability, safety improvement, or formal safety.
 
 ## Remaining questions
 
-Environment inspection resolves the definition and extraction of \(d_t\), but
-does not choose:
+Environment inspection by itself did not choose:
 
 - \(d_{\mathrm{warn}}\);
 - \(d_{\mathrm{safe}}\);
 - \(K\);
-- equality and floating-point boundary semantics;
-- unfinished-obligation handling at episode truncation;
-- repeated-trigger semantics;
-- the online STL-to-cost mapping.
 
-The remaining non-numerical semantics are now fixed in
-`docs/stage1_rule_monitor_spec.md`. The next milestone is to add reproducible
-collection scripts, select feasible rule parameters from controlled
-trajectories using that document's protocol, and then implement and verify the
-fixed monitor. The OmniSafe wrapper and RL training remain outside that
-milestone.
+Those numerical parameters were subsequently selected as 0.45, 0.55, and 79
+steps. Equality, floating-point, truncation, repeated-trigger, and cost semantics
+were fixed in `docs/stage1_rule_monitor_spec.md`; the corresponding monitor and
+agreement tests passed on 2026-08-05. The OmniSafe wrapper and RL training were
+not part of environment inspection.

@@ -1,0 +1,838 @@
+{
+  "aggregate": {
+    "completed_window_count": 13,
+    "cost_mismatch_count": 0,
+    "cost_sample_comparison_count": 1161,
+    "environment_fixture_count": 3,
+    "event_step_comparison_count": 85,
+    "event_step_mismatch_count": 0,
+    "fixture_hash_mismatch_count": 0,
+    "maximum_robustness_difference": 0.0,
+    "rtamt_boolean_mismatch_count": 0,
+    "synthetic_trace_count": 14,
+    "terminal_unresolved_trace_count": 2
+  },
+  "parameters": {
+    "agreement_tolerance": 1e-09,
+    "d_safe": 0.55,
+    "d_warn": 0.45,
+    "deadline_steps": 79
+  },
+  "schema_version": 1,
+  "traces": [
+    {
+      "completed_windows": [],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [],
+          "online": []
+        }
+      },
+      "kind": "synthetic",
+      "name": "always_above_warning",
+      "samples": 81,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 0
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            1
+          ],
+          "online": [
+            1
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "reset_inside_warning",
+      "samples": 81,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [],
+          "online": []
+        }
+      },
+      "kind": "synthetic",
+      "name": "warning_equality",
+      "samples": 80,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 0
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            1
+          ],
+          "online": [
+            1
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "safe_equality",
+      "samples": 81,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            1
+          ],
+          "online": [
+            1
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "recovery_one_step",
+      "samples": 81,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            79
+          ],
+          "online": [
+            79
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "recovery_on_deadline",
+      "samples": 80,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": -0.010000000000000009,
+          "direct_satisfied": false,
+          "episode_id": 1,
+          "rtamt_robustness": -0.010000000000000009,
+          "rtamt_satisfied": false,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [
+            79
+          ],
+          "online": [
+            79
+          ]
+        },
+        "late_recovery": {
+          "direct_oracle": [
+            80
+          ],
+          "online": [
+            80
+          ]
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "recovery_after_deadline",
+      "samples": 81,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": -0.11000000000000004,
+          "direct_satisfied": false,
+          "episode_id": 1,
+          "rtamt_robustness": -0.11000000000000004,
+          "rtamt_satisfied": false,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [
+            79
+          ],
+          "online": [
+            79
+          ]
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "remain_unsafe_after_deadline",
+      "samples": 85,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            79
+          ],
+          "online": [
+            79
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "hysteresis_band_pending",
+      "samples": 80,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            3
+          ],
+          "online": [
+            3
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "reentry_while_pending",
+      "samples": 82,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 0
+        },
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 81,
+          "direct_robustness": 0.0,
+          "direct_satisfied": true,
+          "episode_id": 2,
+          "rtamt_robustness": 0.0,
+          "rtamt_satisfied": true,
+          "trigger_step": 2
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            1,
+            3
+          ],
+          "online": [
+            1,
+            3
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0,
+            2
+          ],
+          "online": [
+            0,
+            2
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "two_warning_episodes",
+      "samples": 83,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 2
+    },
+    {
+      "completed_windows": [],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [
+            1
+          ],
+          "online": [
+            1
+          ]
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "truncate_pending",
+      "samples": 2,
+      "terminal_unresolved_count": 1,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 79,
+          "direct_robustness": -0.010000000000000009,
+          "direct_satisfied": false,
+          "episode_id": 1,
+          "rtamt_robustness": -0.010000000000000009,
+          "rtamt_satisfied": false,
+          "trigger_step": 0
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [
+            79
+          ],
+          "online": [
+            79
+          ]
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "terminate_on_deadline",
+      "samples": 80,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            1
+          ],
+          "online": [
+            1
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            0
+          ],
+          "online": [
+            0
+          ]
+        }
+      },
+      "kind": "synthetic",
+      "name": "recover_on_final_sample",
+      "samples": 2,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 81,
+          "direct_robustness": 0.2613385940332591,
+          "direct_satisfied": true,
+          "episode_id": 1,
+          "rtamt_robustness": 0.2613385940332591,
+          "rtamt_satisfied": true,
+          "trigger_step": 2
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [
+            60
+          ],
+          "online": [
+            60
+          ]
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            2
+          ],
+          "online": [
+            2
+          ]
+        }
+      },
+      "kind": "environment_fixture",
+      "name": "on_time",
+      "samples": 82,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [
+        {
+          "absolute_difference": 0.0,
+          "deadline_step": 81,
+          "direct_robustness": -0.10114512878605464,
+          "direct_satisfied": false,
+          "episode_id": 1,
+          "rtamt_robustness": -0.10114512878605464,
+          "rtamt_satisfied": false,
+          "trigger_step": 2
+        }
+      ],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [
+            81
+          ],
+          "online": [
+            81
+          ]
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            2
+          ],
+          "online": [
+            2
+          ]
+        }
+      },
+      "kind": "environment_fixture",
+      "name": "violation",
+      "samples": 87,
+      "terminal_unresolved_count": 0,
+      "trigger_count": 1
+    },
+    {
+      "completed_windows": [],
+      "cost_mismatch_count": 0,
+      "event_step_mismatch_count": 0,
+      "event_steps": {
+        "deadline_violation": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "late_recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "recovery": {
+          "direct_oracle": [],
+          "online": []
+        },
+        "terminal_unresolved": {
+          "direct_oracle": [
+            12
+          ],
+          "online": [
+            12
+          ]
+        },
+        "warning_trigger": {
+          "direct_oracle": [
+            2
+          ],
+          "online": [
+            2
+          ]
+        }
+      },
+      "kind": "environment_fixture",
+      "name": "unresolved",
+      "samples": 13,
+      "terminal_unresolved_count": 1,
+      "trigger_count": 1
+    }
+  ]
+}

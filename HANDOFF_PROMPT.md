@@ -23,19 +23,19 @@ until this summary is complete and consistent with the documents.
 After confirming the summary, use:
 
 ```text
-The Stage I environment-inspection milestone is complete.
+The Stage I environment-inspection and rule-and-monitor milestones are complete.
+The calibrated rule is d_warn=0.45, d_safe=0.55, K=79 environment steps.
 
-Begin only the bounded-recovery rule-and-monitor milestone.
+Begin only the OmniSafe wrapper and small integration-smoke milestone.
 
-Treat docs/stage1_rule_monitor_spec.md as normative. Do not redesign its
-equality, deadline, warning-episode, terminal, cost, or observation semantics.
+Treat docs/stage1_rule_monitor_spec.md and configs/stage1_rule.yaml as
+normative. Preserve native reward, native cost, and STL cost separately. Append
+the same active/overdue/remaining temporal observation state to task-only,
+native-cost, and STL-cost conditions. Keep independent monitor state per
+vectorized environment and test reset, step, termination, truncation, and logs.
 
-On the Ubuntu work computer, execute its one-pass work order: add reproducible
-calibration scripts, collect the declared controlled rollouts, choose d_warn,
-d_safe, and K using the fixed protocol, generate stable fixtures, implement the
-monitor and direct offline oracle, and verify them against the declared
-semantic tests and RTAMT completed-window checks.
-
-Deliver all artifacts listed in the completion gate. Do not begin the OmniSafe
-wrapper, RL training, or the language layer during this milestone.
+Verify that PPO-Lagrangian can consume the selected cost in a minimal smoke
+integration. Do not begin the main RL study or language layer. Before main
+training, first predeclare the quantitative success criterion, seeds,
+evaluation episodes, task-performance tolerance, and uncertainty reporting.
 ```

@@ -3,7 +3,8 @@
 ## Document status
 
 - **Status:** normative Stage I specification
-- **Version:** 1.0
+- **Version:** 1.1 (calibration result and completion status added; semantics unchanged)
+- **Implementation status:** completion gate passed on 2026-08-05
 - **Scope:** rule calibration, online monitoring, offline checking, and the
   STL-cost contract
 - **Not in scope:** Safe RL training, natural-language translation, robustness
@@ -27,14 +28,14 @@ formal rule or monitor design.
 
 | Item | Current status | Where it must be completed | Does it block monitor design? |
 |---|---|---|---|
-| A. Parameter-calibration trajectories | Missing from Git | Ubuntu work computer | No |
-| B. Reproducible collection scripts and stable fixtures | Missing from Git | Ubuntu work computer | No |
+| A. Parameter-calibration trajectories | Completed; summary/hashes tracked | Ubuntu work computer | No |
+| B. Reproducible collection scripts and stable fixtures | Completed and tracked | Ubuntu work computer | No |
 | C. Exact rule and temporal boundary semantics | Fixed in this document | Repository documentation | No |
 | D. Monitor state, outputs, cost, and test contract | Fixed in this document | Repository documentation | No |
 
-The values of \(d_{\mathrm{warn}}\), \(d_{\mathrm{safe}}\), and \(K\) remain
-unfilled until Item A is complete. Every other semantic choice needed to
-implement and test the monitor is fixed below.
+Item A selected \(d_{\mathrm{warn}}=0.45\), \(d_{\mathrm{safe}}=0.55\), and
+\(K=79\) environment steps. Every semantic choice needed to implement and test
+the monitor is fixed below.
 
 ---
 
@@ -57,6 +58,16 @@ The final parameters must satisfy
 0.2 < d_{\mathrm{warn}} < d_{\mathrm{safe}} < 3,
 \qquad
 K \in \mathbb{N}^{+}.
+\]
+
+The calibrated Stage I values are:
+
+\[
+d_{\mathrm{warn}}=0.45,
+\qquad
+d_{\mathrm{safe}}=0.55,
+\qquad
+K=79.
 \]
 
 The lower reference value 0.2 is the inspected hazard size used by the
@@ -588,9 +599,9 @@ Add a machine-readable configuration equivalent to:
 environment_id: SafetyPointGoal1-v0
 distance_source: hazards_lidar
 lidar_range: 3.0
-d_warn: null
-d_safe: null
-deadline_steps: null
+d_warn: 0.45
+d_safe: 0.55
+deadline_steps: 79
 warning_comparison: lt
 safe_comparison: ge
 trigger_mode: hysteretic_warning_episode
@@ -601,8 +612,8 @@ robustness_cost_enabled: false
 agreement_tolerance: 1.0e-9
 ```
 
-Replace only the three `null` values with calibration results. Do not modify
-the semantic fields without a recorded decision change.
+The three numerical values above are the calibration result. Do not modify them
+or any semantic field without a recorded decision change.
 
 ### Step 4: Implement the monitor and oracle
 
@@ -663,3 +674,8 @@ Only after this gate should the project implement the OmniSafe wrapper and
 begin a small integration smoke test. Quantitative training success thresholds,
 seed counts, and task-performance tolerances remain a separate pre-main-study
 decision.
+
+**Completion record:** all eight conditions passed on 2026-08-05. Evidence is
+stored in `docs/rule_calibration_report.md`,
+`docs/monitor_agreement_report.md`, `results/rule_calibration/summary.json`,
+`results/monitor_agreement/summary.json`, and `tests/fixtures/`.

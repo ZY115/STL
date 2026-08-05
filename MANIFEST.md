@@ -4,10 +4,10 @@
 
 This handoff package contains the durable research context required to continue the project on another computer or Codex account.
 
-It intentionally excludes LaTeX temporary files. The environment-inspection
-milestone is complete; generated outputs live under an ignored `results/`
-directory, while monitor and training implementation directories do not yet
-exist.
+It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
+environment-inspection and rule-and-monitor milestones are complete. Tested
+monitor code and stable evidence are tracked; wrapper and training code do not
+yet exist.
 
 ## Root documents
 
@@ -21,6 +21,7 @@ exist.
 | `MANIFEST.md` | Description of package contents |
 | `CHECKSUMS.sha256` | Integrity hashes for all packaged files |
 | `environment.stage1.yml` | Exact resolved Conda and pip environment |
+| `pyproject.toml` | Installable local Stage I Python package metadata |
 
 ## Project documents
 
@@ -31,6 +32,8 @@ exist.
 | `docs/environment_setup.md` | Tested setup commands, versions, and isolation notes |
 | `docs/environment_inspection.md` | Public API, distance definition, and smoke-test results |
 | `docs/stage1_rule_monitor_spec.md` | Normative rule semantics, monitor contract, calibration protocol, tests, and Ubuntu work order |
+| `docs/rule_calibration_report.md` | Formal calibration protocol, evidence, selected parameters, and limitations |
+| `docs/monitor_agreement_report.md` | Online/oracle/RTAMT agreement result |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -69,6 +72,19 @@ exist.
 
 These are reference snapshots, not project implementation code.
 
+## Stage I implementation
+
+| Path | Purpose |
+|---|---|
+| `configs/stage1_rule.yaml` | Fixed machine-readable calibrated rule |
+| `scripts/collect_rule_calibration.py` | Formal controlled/random data collection and parameter selection |
+| `scripts/generate_monitor_fixtures.py` | Stable environment fixture generation |
+| `scripts/run_monitor_agreement.py` | Machine-readable agreement evaluation and report generation |
+| `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
+| `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
+| `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
+| `tests/` | Signal, semantic-boundary, oracle agreement, and stable-fixture tests |
+
 ## Excluded files
 
 The package excludes:
@@ -84,7 +100,7 @@ The package excludes:
 - `.DS_Store`;
 - unrelated slide templates;
 - raw generated CSV files below `results/`;
-- any untested monitor or training implementation.
+- wrapper and training implementation not yet authorized by the current milestone.
 
 ## Generated outputs
 
@@ -95,17 +111,14 @@ MP4 renderings, the directory README, and the JSON summary. The summary includes
 statistics and SHA-256 hashes for both tracked videos and ignored raw CSV
 artifacts.
 
+The formal calibration adds `results/rule_calibration/summary.json`, which
+contains candidate statistics and hashes for 60 ignored raw trajectories. The
+agreement milestone tracks `results/monitor_agreement/summary.json` and three
+minimal fixtures under `tests/fixtures/`.
+
 ## Future additions
 
-The temporal semantics are now frozen. During the next rule-and-monitor
-milestone, the project may add only the implementation surface declared in
-`docs/stage1_rule_monitor_spec.md`:
-
-- calibration and fixture-generation scripts;
-- signal, monitor, and offline-oracle source code;
-- the fixed rule configuration;
-- semantic unit tests and stable fixtures;
-- calibration and monitor-agreement reports.
-
-Wrapper, training, and language-layer code remain deferred until that
-document's completion gate passes.
+The rule-and-monitor completion gate has passed. The next bounded addition is
+the OmniSafe cost wrapper and a small integration smoke test. Main training
+configuration/results wait for predeclared quantitative success criteria;
+language-layer code remains deferred beyond Stage I.
