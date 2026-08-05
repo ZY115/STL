@@ -143,10 +143,11 @@ seed 数、evaluation episode 数和不确定性报告方法。当前仍不开�
 2. `README.md`
 3. `PROJECT_CONTEXT.md`
 4. `DECISIONS.md`
-5. `docs/stage1_rule_monitor_spec.md`
-6. `docs/stage1_plan.md`
-7. `docs/slides/stage1_experiment_plan_slides.pdf`
-8. `references/REFERENCES.md`
+5. `docs/CURRENT_STAGE1_STATUS.md`
+6. `docs/stage1_rule_monitor_spec.md`
+7. `docs/stage1_plan.md`
+8. `docs/slides/stage1_experiment_plan_slides.pdf`
+9. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -181,6 +182,7 @@ safety-stl-stage1-handoff/
 │   └── fixtures/
 ├── docs/
 │   ├── PROJECT_INTRODUCTION.md
+│   ├── CURRENT_STAGE1_STATUS.md
 │   ├── environment_setup.md
 │   ├── environment_inspection.md
 │   ├── stage1_rule_monitor_spec.md

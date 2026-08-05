@@ -28,6 +28,7 @@ wrapper and training code do not yet exist.
 | File | Purpose |
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
+| `docs/CURRENT_STAGE1_STATUS.md` | Detailed Chinese status, visualization interpretation, remaining work, and next milestone acceptance criteria |
 | `docs/stage1_plan.md` | Detailed Stage I engineering plan and resource list |
 | `docs/environment_setup.md` | Tested setup commands, versions, and isolation notes |
 | `docs/environment_inspection.md` | Public API, distance definition, and smoke-test results |
