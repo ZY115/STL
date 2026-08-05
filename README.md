@@ -6,8 +6,9 @@
 
 它用于解决一个实际问题：当项目被移动到另一台 Ubuntu 电脑、由另一个 Codex 账号继续时，不依赖原聊天记录或账号 memory，也能准确理解当前研究目标、已经做出的决定、Stage I 的实验计划和下一步工作。
 
-该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据和已经验证的
-STL monitor/oracle 实现。OmniSafe wrapper 和训练代码尚未建立。
+该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
+STL monitor/oracle 实现，以及一条命令启动的实时/录像可视化入口。OmniSafe
+wrapper 和训练代码尚未建立。
 
 ## 长期研究目标
 
@@ -95,11 +96,34 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 - 已固定 `d_warn=0.45`、`d_safe=0.55`、`K=79` environment steps；
 - 已实现公开距离提取、在线 monitor 和独立 offline oracle；
 - 已生成 on-time、deadline violation 和 terminal-unresolved 稳定 fixtures；
-- 23 个测试全部通过，online/direct oracle event-step mismatch 为 0；
+- 27 个测试全部通过，online/direct oracle event-step mismatch 为 0；
 - RTAMT 在 13 个完整义务窗口上 Boolean 与 robustness 全部一致，最大差异为 0；
 - rule-and-monitor completion gate 已通过；
+- 已实现 `./scripts/visualize_stage1.sh` 一键实时启动，画面显示距离、monitor
+  状态、deadline、reward、native cost 和 STL cost；
+- 已验证 native GLFW 窗口、EGL annotated MP4、独立 CSV 和 JSON 输出；
 - 尚未编写 OmniSafe wrapper 或训练配置；
 - 尚未开始 RL training。
+
+## 可视化快速启动
+
+在仓库根目录运行：
+
+```bash
+./scripts/visualize_stage1.sh
+```
+
+默认使用 seed 44 的 scripted approach/escape 演示，在 MuJoCo 窗口右侧显示
+`d_t`、monitor 状态、剩余 deadline、事件和三个相互独立的累计量。生成带相同
+信息面板的 MP4：
+
+```bash
+./scripts/visualize_stage1.sh --render video
+```
+
+scripted controller 使用 privileged geometry 只是为了稳定地产生可见 warning 和
+recovery，不是 RL policy，也不是安全实验结果。完整命令、输出字段和限制见
+`docs/visualization.md`。
 
 ## 下一里程碑
 
@@ -141,15 +165,19 @@ safety-stl-stage1-handoff/
 ├── scripts/
 │   ├── collect_rule_calibration.py
 │   ├── generate_monitor_fixtures.py
-│   └── run_monitor_agreement.py
+│   ├── run_monitor_agreement.py
+│   ├── run_stage1_demo.py
+│   └── visualize_stage1.sh
 ├── src/safety_stl/
 │   ├── signals.py
 │   ├── monitor.py
-│   └── oracle.py
+│   ├── oracle.py
+│   └── visualization.py
 ├── tests/
 │   ├── test_distance_signal.py
 │   ├── test_monitor_boundaries.py
 │   ├── test_oracle_agreement.py
+│   ├── test_visualization.py
 │   └── fixtures/
 ├── docs/
 │   ├── PROJECT_INTRODUCTION.md
@@ -158,6 +186,7 @@ safety-stl-stage1-handoff/
 │   ├── stage1_rule_monitor_spec.md
 │   ├── rule_calibration_report.md
 │   ├── monitor_agreement_report.md
+│   ├── visualization.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
 │   └── slides/
@@ -171,8 +200,12 @@ safety-stl-stage1-handoff/
 │   ├── rule_calibration/
 │   │   ├── README.md
 │   │   └── summary.json
-│   └── monitor_agreement/
-│       └── summary.json
+│   ├── monitor_agreement/
+│   │   └── summary.json
+│   └── visualization/
+│       ├── README.md
+│       ├── summary.json
+│       └── stage1_demo.mp4
 └── references/
     ├── REFERENCES.md
     ├── papers/

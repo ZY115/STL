@@ -12,3 +12,8 @@ rule_calibration/*
 !monitor_agreement/
 monitor_agreement/*
 !monitor_agreement/summary.json
+!visualization/
+visualization/*
+!visualization/README.md
+!visualization/summary.json
+!visualization/stage1_demo.mp4

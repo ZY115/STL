@@ -201,9 +201,36 @@ an editable package without adding dependencies:
 python -m pip install --no-deps --no-build-isolation -e .
 ```
 
-The benchmark/public-distance smoke test and the 23 signal, monitor, oracle,
-fixture, and RTAMT agreement tests passed. The locked PyTorch build remains
-CPU-only; GPU training was not part of this milestone.
+The benchmark/public-distance smoke test and the original 23 signal, monitor,
+oracle, fixture, and RTAMT agreement tests passed. The locked PyTorch build
+remains CPU-only; GPU training was not part of this milestone.
+
+## 2026-08-05 visualization-runner verification
+
+No package installation was required. Pillow 10.4.0, ImageIO 2.35.1, and
+ImageIO-FFmpeg 0.5.1 were already present in `environment.stage1.yml`; they are
+now also declared in `pyproject.toml` because the runnable video path imports
+them directly.
+
+The following public entry points were tested:
+
+```bash
+./scripts/visualize_stage1.sh --render none --policy random --max-steps 5
+./scripts/visualize_stage1.sh --render video --policy scripted --seed 44
+./scripts/visualize_stage1.sh --render human --policy scripted --seed 44
+```
+
+The launcher chooses EGL for headless/video execution and overrides the Conda
+default with GLFW for the native X11 viewer. The full scripted run triggered at
+sample 75 and recovered at sample 130. The annotated video contained 147 H.264
+`yuv420p` frames. The native window opened, updated its STL overlay, and exited
+automatically after 146 actions. The expanded suite of 27 tests passed.
+
+The first native-viewer run inherited GLFW vertical synchronization and took
+several minutes in the available desktop session. The runner now disables
+viewer VSync and applies its own target-frame delay; the verified full run took
+about 7 seconds. This affects display speed only, not simulator steps or
+monitor semantics.
 
 ## Removal
 

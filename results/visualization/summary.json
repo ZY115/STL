@@ -1,0 +1,51 @@
+{
+  "actions": 146,
+  "artifacts": {
+    "trajectory_csv": "trajectory.csv",
+    "trajectory_csv_sha256": "1fbdf51b4883b5c99a40e97403760068433e2465b42e74a26df546ee7a818f8e",
+    "video": "stage1_demo.mp4",
+    "video_sha256": "a0a4b4d09b47b734e2de11734f9d215aba199cb1600f4d0ca20cb06f32055206"
+  },
+  "camera_name": "fixedfar",
+  "collector_cutoff_pending": false,
+  "created_utc": "2026-08-05T22:20:02.485051+00:00",
+  "environment_id": "SafetyPointGoal1-v0",
+  "episode_return": -0.05072260611171231,
+  "exit_reason": "scripted_recovery_complete",
+  "goal_events": 0,
+  "minimum_public_distance": 0.2569078607272788,
+  "monitor": {
+    "deadline_violation_count": 0,
+    "final_status": "inactive",
+    "recovery_count": 1,
+    "terminal_unresolved_count": 0,
+    "trigger_count": 1
+  },
+  "native_cost_total": 0.0,
+  "policy": "scripted",
+  "render_backend": "egl",
+  "render_mode": "video",
+  "rule": {
+    "d_safe": 0.55,
+    "d_warn": 0.45,
+    "deadline_steps": 79,
+    "distance_source": "hazards_lidar"
+  },
+  "samples": 147,
+  "schema_version": 1,
+  "scripted_policy_uses_privileged_geometry": true,
+  "seed": 44,
+  "software": {
+    "gymnasium": "0.28.1",
+    "imageio": "2.35.1",
+    "imageio-ffmpeg": "0.5.1",
+    "mujoco": "2.3.3",
+    "numpy": "1.23.5",
+    "pillow": "10.4.0",
+    "python": "3.8.20",
+    "safety-gymnasium": "1.0.0"
+  },
+  "stl_cost_total": 0,
+  "terminated": false,
+  "truncated": false
+}

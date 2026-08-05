@@ -6,8 +6,8 @@ This handoff package contains the durable research context required to continue 
 
 It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
 environment-inspection and rule-and-monitor milestones are complete. Tested
-monitor code and stable evidence are tracked; wrapper and training code do not
-yet exist.
+monitor code, a runnable visualization surface, and stable evidence are tracked;
+wrapper and training code do not yet exist.
 
 ## Root documents
 
@@ -34,6 +34,7 @@ yet exist.
 | `docs/stage1_rule_monitor_spec.md` | Normative rule semantics, monitor contract, calibration protocol, tests, and Ubuntu work order |
 | `docs/rule_calibration_report.md` | Formal calibration protocol, evidence, selected parameters, and limitations |
 | `docs/monitor_agreement_report.md` | Online/oracle/RTAMT agreement result |
+| `docs/visualization.md` | One-command live/video runner, outputs, verification, and limitations |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -80,10 +81,13 @@ These are reference snapshots, not project implementation code.
 | `scripts/collect_rule_calibration.py` | Formal controlled/random data collection and parameter selection |
 | `scripts/generate_monitor_fixtures.py` | Stable environment fixture generation |
 | `scripts/run_monitor_agreement.py` | Machine-readable agreement evaluation and report generation |
+| `scripts/run_stage1_demo.py` | Python environment/monitor visualization entry point |
+| `scripts/visualize_stage1.sh` | One-command Conda-aware launcher |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
-| `tests/` | Signal, semantic-boundary, oracle agreement, and stable-fixture tests |
+| `src/safety_stl/visualization.py` | Live viewer, annotated video, controller, and independent logs |
+| `tests/` | Signal, semantic-boundary, oracle agreement, visualization, and stable-fixture tests |
 
 ## Excluded files
 
@@ -100,7 +104,7 @@ The package excludes:
 - `.DS_Store`;
 - unrelated slide templates;
 - raw generated CSV files below `results/`;
-- wrapper and training implementation not yet authorized by the current milestone.
+- OmniSafe wrapper and training implementation not yet completed.
 
 ## Generated outputs
 
@@ -114,7 +118,9 @@ artifacts.
 The formal calibration adds `results/rule_calibration/summary.json`, which
 contains candidate statistics and hashes for 60 ignored raw trajectories. The
 agreement milestone tracks `results/monitor_agreement/summary.json` and three
-minimal fixtures under `tests/fixtures/`.
+minimal fixtures under `tests/fixtures/`. The visualization runner tracks one
+compact annotated MP4, its summary, and a README under
+`results/visualization/`; regenerated trajectory CSV files remain ignored.
 
 ## Future additions
 

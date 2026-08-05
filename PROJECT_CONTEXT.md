@@ -469,9 +469,12 @@ d_t = 3 * (1 - max(hazards_lidar))
 Sample random and scripted trajectories were saved locally. On 2026-08-05, the
 formal 30-controlled/30-random calibration selected the fixed numerical rule.
 The public signal extractor, causal online monitor, independent offline oracle,
-fixture generator, and agreement runner now exist. Twenty-three tests passed;
-online/direct event steps and costs agreed exactly, and RTAMT agreed on all 13
-completed windows with maximum robustness difference 0.
+fixture generator, agreement runner, and a one-command live/video visualization
+surface now exist. Twenty-seven tests passed; online/direct event steps and
+costs agreed exactly, and RTAMT agreed on all 13 completed windows with maximum
+robustness difference 0. The visualization keeps reward, native cost, and STL
+cost separate and stores its generated CSV/video/summary artifacts under
+`results/visualization/`.
 
 No OmniSafe wrapper, training configuration, or RL result exists yet. The next
 work package is the wrapper and a small integration smoke test. Main training
