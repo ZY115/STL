@@ -2,7 +2,7 @@
 
 ## 1. 文档目的
 
-本文档记录截至 2026-08-05 的 Stage I 完整状态，集中回答四个问题：
+本文档记录截至 2026-08-10 的 Stage I 完整状态，集中回答四个问题：
 
 1. 已经完成了哪些研究和工程步骤；
 2. 当前可视化具体展示了什么；
@@ -42,9 +42,9 @@ Safe RL 学习产生的错误。
 > STL 规则能否被正确监测并转换成 Safe RL cost，从而减少超时恢复失败，同时
 > 不造成不可接受的目标完成能力下降？
 
-目前已经完成环境、信号、规则、参数、monitor、reference agreement 和可视化；
-尚未完成 STL-cost wrapper、OmniSafe 训练集成和对照实验。因此目前没有 RL
-安全改进结论。
+目前已经完成环境、信号、规则、参数、monitor、reference agreement、可视化、
+STL-cost wrapper 和一次最小 OmniSafe update；尚未完成 matched-seed 对照训练和
+正式 evaluation。因此目前仍没有 RL 安全改进结论。
 
 ## 3. 固定的 Stage I 实验定义
 
@@ -219,6 +219,25 @@ step  -> observation, reward, native_cost, terminated, truncated, info
 - 参考摘要：[`summary.json`](../results/visualization/summary.json)
 - 使用说明：[`visualization.md`](visualization.md)
 
+### 4.7 OmniSafe wrapper 与 integration smoke
+
+已经实现三个注册环境：task-only、native-cost 和 STL-cost。所有条件共享原始
+60 维 observation 加 3 维 temporal state，native reward 保持不变，native cost、
+STL cost 和 selected learner cost 始终分开。
+
+新增 11 项 wrapper 测试，完整测试总数为 38。真实 seed 44 positive-cost probe
+在 100-step smoke horizon 上产生一次 terminal-unresolved，`stl_cost=1` 且
+selected cost 为 1。随后 PPO-Lagrangian 使用两个 vector env 完成 64 transitions、
+一个 epoch 和至少一次 update，并写出 checkpoint 与独立 cost metrics。
+
+一键复现：
+
+```bash
+./scripts/run_omnisafe_smoke.sh
+```
+
+完整结果见 [`omnisafe_integration_report.md`](omnisafe_integration_report.md)。
+
 ## 5. 当前可视化的实际架构
 
 当前可视化运行的是以下链路：
@@ -343,13 +362,16 @@ remaining deadline = 154 - 130 = 24 steps
 5. custom monitor、direct oracle 和 RTAMT 在声明范围内一致；
 6. reward、native cost 和 STL cost 可以独立产生和记录；
 7. simulator state、monitor state、日志和视频可以在同一 rollout 中对齐；
-8. 实时和 headless 两种运行方式都可复现。
+8. 实时和 headless 两种运行方式都可复现；
+9. 三种条件具有相同的 augmented observation shape/dtype；
+10. terminal final observation 会先完成 monitor 结算，再独立 reset 对应 vector slot；
+11. 真实 positive-cost 路径能把 `stl_cost=1` 路由为 learner cost 1；
+12. PPO-Lagrangian 能在该接口上完成一次最小 rollout/update 并写出 checkpoint。
 
 ## 7. 当前结果不能证明什么
 
 当前结果不能用于声称：
 
-- STL cost 已经传入 PPO-Lagrangian；
 - agent 已经通过训练学会 recovery；
 - STL-cost condition 降低了 violation rate；
 - goal success 或 episode return 得到保持；
@@ -363,23 +385,25 @@ remaining deadline = 154 - 130 = 24 steps
 
 | 工作 | 状态 | 主要缺失内容 |
 |---|---|---|
-| STL safety-cost wrapper | 未开始 | OmniSafe-compatible cost selection、diagnostics、temporal state |
-| Vectorized monitor integration | 未开始 | 每个并行 env 独立 reset/step/state/terminal 处理 |
-| OmniSafe registration | 未开始 | 注册 wrapped environment 并保持 API/shape/dtype 正确 |
-| PPO-Lagrangian integration smoke | 未开始 | 短 rollout/update、cost 到达 learner、日志和 checkpoint |
+| STL safety-cost wrapper | 已完成 | 三种 cost selection、diagnostics、temporal state 已测试 |
+| Vectorized monitor integration | 已完成 | final observation、独立 reset/state/terminal 已测试 |
+| OmniSafe registration | 已完成 | 三个 condition ID，统一 `(63,)` float32 observation |
+| PPO-Lagrangian integration smoke | 已完成 | 64 transitions、1 epoch、至少 1 update、checkpoint |
 | Quantitative success criteria | 未决定 | violation reduction、goal tolerance、seeds、episodes、uncertainty |
-| Three-condition configs | 未开始 | task-only、native-cost、STL-cost matched configuration |
+| Three-condition interface config | 已完成 | cost source 和共享 observation contract 已冻结 |
+| Main-study matched configs | 未开始 | 等待 quantitative success/evaluation 决策 |
 | Main RL training | 未开始 | matched seeds 的正式训练 |
 | Evaluation and statistical report | 未开始 | violation、recovery、goal、return、cost、uncertainty |
 | GPU training environment | 未完成 | 当前 PyTorch 为 CPU build，NVIDIA driver/CUDA 尚未验证 |
 | Checkpoint visualization | 未开始 | 当前入口还不能加载训练后的 OmniSafe policy |
 | Stage II language layer | 延后 | controlled NL-to-STL translation 与 grounding |
 
-## 9. 下一里程碑：OmniSafe wrapper 与 integration smoke test
+## 9. 已完成里程碑：OmniSafe wrapper 与 integration smoke test
 
-下一步不应该直接开始主训练，而应先完成一个小而可诊断的集成里程碑。
+该小而可诊断的集成里程碑已在 2026-08-10 完成；完整证据见
+[`omnisafe_integration_report.md`](omnisafe_integration_report.md)。
 
-### 9.1 Wrapper 必须提供的接口
+### 9.1 Wrapper 已提供的接口
 
 概念上，每一步需要同时保留：
 
@@ -417,7 +441,7 @@ normalized_remaining_deadline
 task-only、native-cost 和 STL-cost 三个条件都必须收到相同 augmented observation，
 避免只有 STL condition 获得额外时间状态信息。
 
-### 9.3 Vectorized 环境要求
+### 9.3 Vectorized 环境实现
 
 每个 parallel environment 必须拥有独立的：
 
@@ -430,9 +454,9 @@ task-only、native-cost 和 STL-cost 三个条件都必须收到相同 augmented
 
 一个 environment reset 或结束不能改变其他 environment 的 monitor。
 
-### 9.4 必须新增的测试
+### 9.4 新增测试
 
-至少覆盖：
+现已覆盖：
 
 1. wrapper reset 后 temporal state 正确；
 2. warning trigger 后 observation augmentation 正确；
@@ -445,9 +469,9 @@ task-only、native-cost 和 STL-cost 三个条件都必须收到相同 augmented
 9. vectorized env 的 monitor state 相互独立；
 10. OmniSafe reset/step API、device 和 tensor conversion 正确。
 
-### 9.5 Integration smoke test 验收标准
+### 9.5 Integration smoke test 验收结果
 
-在进入主训练前，短时 smoke test 至少需要确认：
+短时 smoke test 已确认：
 
 - OmniSafe 可以构造 wrapped `SafetyPointGoal1-v0`；
 - PPO-Lagrangian 可以完成短 rollout 和至少一次 update；
@@ -459,7 +483,11 @@ task-only、native-cost 和 STL-cost 三个条件都必须收到相同 augmented
 - 无 NaN、shape mismatch、device mismatch 或 silent cost replacement；
 - 保存最小 machine-readable smoke summary 和失败记录。
 
-该 smoke test 只证明接口可运行，不用于报告 safety improvement。
+真实 positive-cost probe 产生 `stl_cost=1` 且 selected learner cost 同为 1。
+PPO-Lagrangian 使用两个 vector env 完成 64 transitions、一个 epoch 和至少一次
+update，记录均为有限值并写出 checkpoint。该 policy rollout 自身没有触发 warning，
+所以其中三个 episode cost 指标均为 0；它只证明接口可运行，不用于报告 safety
+improvement。
 
 ## 10. Integration gate 通过后的顺序
 
@@ -511,19 +539,17 @@ env PYTHONNOUSERSITE=1 PYTHONPATH= \
   /home/jerry/anaconda3/envs/stl-stage1/bin/python -m pip check
 ```
 
-## 12. Git 状态和上传说明
+复现 OmniSafe integration smoke：
 
-可视化里程碑实现提交为：
-
-```text
-2c6d1fe Add runnable Stage I visualization
+```bash
+./scripts/run_omnisafe_smoke.sh
 ```
 
-本地分支与已读取的 `origin/main` 没有分叉，本地提交可以 fast-forward 上传。自动
-上传曾因当前执行会话没有 GitHub HTTPS credential 而失败；代码、文档和视频均已
-保存在本地 Git 历史中。
+## 12. Git 状态和上传说明
 
-在已经配置 GitHub 凭据的终端中执行：
+当前 wrapper/integration milestone 的代码、文档和 tracked summary 位于工作树中。
+上传前应先运行测试、检查 diff，并由仓库所有者提交。提交后，在已配置 GitHub
+凭据的终端中执行：
 
 ```bash
 cd /home/jerry/Desktop/STL

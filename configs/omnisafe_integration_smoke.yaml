@@ -1,0 +1,65 @@
+schema_version: 1
+milestone: omnisafe_wrapper_integration_smoke
+rule_config: configs/stage1_rule.yaml
+
+conditions:
+  task_only:
+    environment_id: Stage1SafetyPointGoal1TaskOnly-v0
+    selected_algorithm_cost: zero
+  native_cost:
+    environment_id: Stage1SafetyPointGoal1NativeCost-v0
+    selected_algorithm_cost: native_cost
+  stl_cost:
+    environment_id: Stage1SafetyPointGoal1STLCost-v0
+    selected_algorithm_cost: stl_cost
+
+shared_policy_observation:
+  base_environment_dimension: 60
+  appended_fields:
+    - active_obligation
+    - overdue_indicator
+    - normalized_remaining_deadline
+  augmented_dimension: 63
+
+positive_stl_cost_probe:
+  environment_id: Stage1SafetyPointGoal1STLCost-v0
+  seed: 44
+  max_episode_steps: 100
+  controller: privileged_scripted_validation_only
+  expected_warning_triggers: 1
+  expected_terminal_unresolved: 1
+  expected_stl_cost: 1.0
+  expected_selected_algorithm_cost: 1.0
+
+ppo_lagrangian_smoke:
+  algorithm: PPOLag
+  environment_id: Stage1SafetyPointGoal1STLCost-v0
+  seed: 20260810
+  train_cfgs:
+    device: cpu
+    torch_threads: 2
+    vector_env_nums: 2
+    parallel: 1
+    total_steps: 64
+  algo_cfgs:
+    steps_per_epoch: 64
+    update_iters: 1
+    batch_size: 32
+    obs_normalize: false
+    reward_normalize: false
+    cost_normalize: false
+  logger_cfgs:
+    use_wandb: false
+    use_tensorboard: false
+    save_model_freq: 1
+  model_cfgs:
+    actor:
+      hidden_sizes: [16, 16]
+    critic:
+      hidden_sizes: [16, 16]
+  env_cfgs:
+    max_episode_steps: 16
+
+scope_note: >-
+  This run proves only wrapper/API/cost-routing compatibility and one short
+  PPO-Lagrangian rollout/update. It is not a training result or safety claim.

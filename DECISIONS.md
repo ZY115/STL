@@ -193,6 +193,27 @@ RTAMT completed-window checks passed with zero event-step, Boolean, cost, or
 robustness mismatches. The next work package may implement the OmniSafe wrapper,
 but this result is not an RL result or safety guarantee.
 
+### D21. The OmniSafe wrapper and integration-smoke gate passed
+
+The three registered conditions are:
+
+```text
+Stage1SafetyPointGoal1TaskOnly-v0
+Stage1SafetyPointGoal1NativeCost-v0
+Stage1SafetyPointGoal1STLCost-v0
+```
+
+Every condition receives the same original 60-dimensional observation plus
+`active`, `overdue`, and normalized remaining-deadline state. The environment
+always logs native cost, STL cost, and selected algorithm cost separately; only
+the selected cost returned to OmniSafe differs.
+
+Terminal vector transitions are evaluated from `final_observation` before the
+corresponding monitor is reset from the auto-reset observation. Eleven new
+wrapper tests passed. A real positive-cost probe and a 64-transition,
+single-epoch PPO-Lagrangian CPU update passed on 2026-08-10. This closes the
+interface milestone but is not a main training result or safety guarantee.
+
 ## Open decisions
 
 ### O6. Quantitative success criterion

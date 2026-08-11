@@ -1,0 +1,132 @@
+{
+  "completed_at_utc": "2026-08-11T00:33:00.507568+00:00",
+  "gate_passed": true,
+  "milestone": "omnisafe_wrapper_integration_smoke",
+  "platform": {
+    "cuda_available": false,
+    "gymnasium": "0.28.1",
+    "mujoco": "2.3.3",
+    "omnisafe": "0.5.0",
+    "python": "3.8.20",
+    "rtamt": "0.3.5",
+    "safety_gymnasium": "1.0.0",
+    "system": "Linux-6.8.0-124-generic-x86_64-with-glibc2.17",
+    "torch": "2.4.1+cpu",
+    "torch_cuda_build": null
+  },
+  "positive_stl_cost_probe": {
+    "actions": 100,
+    "checks": {
+      "final_observation_retains_pending_state": true,
+      "returned_observation_is_reset_state": true,
+      "selected_algorithm_cost": true,
+      "selected_equals_stl": true,
+      "stl_cost": true,
+      "terminal_unresolved": true,
+      "warning_triggers": true
+    },
+    "environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+    "reset_observation_shape": [
+      63
+    ],
+    "returned_observation_shape": [
+      63
+    ],
+    "seed": 44,
+    "terminated": false,
+    "totals": {
+      "deadline_violations": 0,
+      "native_cost": 0.0,
+      "recoveries": 0,
+      "reward": 0.0046628339568997035,
+      "selected_algorithm_cost": 1.0,
+      "stl_cost": 1.0,
+      "terminal_unresolved": 1,
+      "warning_triggers": 1
+    },
+    "truncated": true
+  },
+  "ppo_lagrangian_smoke": {
+    "algorithm": "PPOLag",
+    "checkpoint_count": 2,
+    "checks": {
+      "all_progress_values_finite": true,
+      "augmented_observation_dimension": true,
+      "checkpoint_written": true,
+      "declared_steps_collected": true,
+      "one_epoch_written": true,
+      "one_or_more_update_iterations": true,
+      "separate_cost_metrics_present": true
+    },
+    "environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+    "log_dir": "/home/jerry/Desktop/STL/results/integration_smoke/omnisafe_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260810-2026-08-10-17-32-58",
+    "observation_shape": [
+      63
+    ],
+    "progress": {
+      "Loss/Loss_cost_critic": 0.01640130579471588,
+      "Loss/Loss_cost_critic/Delta": 0.01640130579471588,
+      "Loss/Loss_pi": -0.0005345605313777924,
+      "Loss/Loss_pi/Delta": -0.0005345605313777924,
+      "Loss/Loss_reward_critic": 0.025527361780405045,
+      "Loss/Loss_reward_critic/Delta": 0.025527361780405045,
+      "Metrics/EpCost": 0.0,
+      "Metrics/EpLen": 16.0,
+      "Metrics/EpRet": 0.005078616086393595,
+      "Metrics/LagrangeMultiplier": 0.0,
+      "Metrics/LagrangeMultiplier/Max": 0.0,
+      "Metrics/LagrangeMultiplier/Min": 0.0,
+      "Metrics/LagrangeMultiplier/Std": 0.0,
+      "Metrics/NativeCost": 0.0,
+      "Metrics/STLCost": 0.0,
+      "Metrics/STLDeadlineViolations": 0.0,
+      "Metrics/STLLateRecoveries": 0.0,
+      "Metrics/STLRecoveries": 0.0,
+      "Metrics/STLTerminalUnresolved": 0.0,
+      "Metrics/STLTriggers": 0.0,
+      "Metrics/SelectedAlgorithmCost": 0.0,
+      "Time/Epoch": 1.8135297298431396,
+      "Time/FPS": 35.29029846191406,
+      "Time/Rollout": 1.806746482849121,
+      "Time/Total": 1.8136751651763916,
+      "Time/Update": 0.006767749786376953,
+      "TotalEnvSteps": 64.0,
+      "Train/Entropy": 1.41908860206604,
+      "Train/Epoch": 0.0,
+      "Train/KL": 0.00012161408085376024,
+      "Train/LR": 0.0,
+      "Train/PolicyRatio": 1.0002453327178955,
+      "Train/PolicyRatio/Max": 1.0002453327178955,
+      "Train/PolicyRatio/Min": 1.0002453327178955,
+      "Train/PolicyRatio/Std": 0.0002453923225402832,
+      "Train/PolicyStd": 1.0001499652862549,
+      "Train/StopIter": 1.0,
+      "Value/Adv": 0.12053615599870682,
+      "Value/cost": -0.1710813045501709,
+      "Value/reward": -0.03450049087405205
+    },
+    "progress_sha256": "e7e7bde5e535d61156fdc113f7edbdea3f363802e2fba62a17d7f3b7a10dd575",
+    "result": {
+      "mean_episode_length": 16.0,
+      "mean_episode_return": 0.005078616086393595,
+      "mean_selected_episode_cost": 0.0
+    },
+    "rollout_alignment": {
+      "complete_horizons_per_vector_env": 2,
+      "episode_horizon": 16,
+      "steps_per_vector_env": 32
+    }
+  },
+  "registered_environment_ids": [
+    "Stage1SafetyPointGoal1TaskOnly-v0",
+    "Stage1SafetyPointGoal1NativeCost-v0",
+    "Stage1SafetyPointGoal1STLCost-v0"
+  ],
+  "repository": {
+    "config_path": "configs/omnisafe_integration_smoke.yaml",
+    "config_sha256": "216fab3ab92d0a75c0dccc9142f140306120e466742baf4f456489a9581a1908",
+    "git_head_before_milestone_commit": "3cfc99489b2c3cf09042ed31bbe6bd6589e6e0f9"
+  },
+  "schema_version": 1,
+  "scope": "interface smoke only; not a training result or safety claim"
+}

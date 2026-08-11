@@ -7,8 +7,8 @@
 它用于解决一个实际问题：当项目被移动到另一台 Ubuntu 电脑、由另一个 Codex 账号继续时，不依赖原聊天记录或账号 memory，也能准确理解当前研究目标、已经做出的决定、Stage I 的实验计划和下一步工作。
 
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
-STL monitor/oracle 实现，以及一条命令启动的实时/录像可视化入口。OmniSafe
-wrapper 和训练代码尚未建立。
+STL monitor/oracle、OmniSafe wrapper、integration smoke 证据，以及一条命令启动的
+实时/录像可视化入口。主 RL 对照训练尚未开始。
 
 ## 长期研究目标
 
@@ -73,7 +73,7 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 
 ## 当前进度
 
-截至 2026-08-05：
+截至 2026-08-10：
 
 - 已完成原始问题定义；
 - 已完成核心文献梳理；
@@ -102,8 +102,16 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 - 已实现 `./scripts/visualize_stage1.sh` 一键实时启动，画面显示距离、monitor
   状态、deadline、reward、native cost 和 STL cost；
 - 已验证 native GLFW 窗口、EGL annotated MP4、独立 CSV 和 JSON 输出；
-- 尚未编写 OmniSafe wrapper 或训练配置；
-- 尚未开始 RL training。
+- 已实现 task-only、native-cost、STL-cost 三个 OmniSafe 环境入口；
+- 三个条件共享相同的 60+3 维 policy observation，且 native reward、native
+  cost、STL cost 和 selected algorithm cost 保持独立；
+- 已验证 terminal/final-observation 顺序和每个 vector slot 的独立 monitor reset；
+- wrapper 新增 11 项测试，完整 38 项测试全部通过；
+- 真实 positive-cost probe 产生 1 次 terminal-unresolved，`stl_cost=1` 且送入
+  learner 的 selected cost 为 1；
+- PPO-Lagrangian 已在 CPU 上完成 64-transition、单 epoch、至少一次 update 的
+  integration smoke，并写出独立 cost 指标和 checkpoint；
+- 尚未预声明主实验定量成功标准，也尚未开始 matched-seed 主 RL training。
 
 ## 可视化快速启动
 
@@ -127,13 +135,19 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-rule-and-monitor milestone 已通过。下一里程碑是 OmniSafe wrapper 与小规模
-integration smoke test：保持 native reward、native cost 和 `stl_cost` 分离，给所有
-对照条件追加相同 temporal policy state，并验证 vectorized reset/step/logging 接口。
+OmniSafe wrapper 与 integration smoke gate 已通过。下一里程碑不是直接扩大训练，
+而是解决 open decision O6：预声明 violation reduction、goal-performance
+tolerance、matched seed 数、evaluation episode 数和不确定性报告方法，并据此冻结
+三个条件的 matched configs。当前仍不开始主 RL training 或自然语言层。
 
-在主训练之前，还必须预声明 violation reduction、goal-performance tolerance、
-seed 数、evaluation episode 数和不确定性报告方法。当前仍不开始主 RL training
-或自然语言层。
+wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
+`docs/omnisafe_integration_report.md`。
+
+复现已完成的 integration gate：
+
+```bash
+./scripts/run_omnisafe_smoke.sh
+```
 
 ## 推荐阅读顺序
 
@@ -143,12 +157,14 @@ seed 数、evaluation episode 数和不确定性报告方法。当前仍不开�
 2. `README.md`
 3. `PROJECT_CONTEXT.md`
 4. `DECISIONS.md`
-5. `docs/CURRENT_STAGE1_STATUS.md`
-6. `docs/stage1_rule_monitor_spec.md`
-7. `docs/stage1_plan.md`
-8. `docs/slides/stage1_current_progress_slides.pdf`
-9. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
-10. `references/REFERENCES.md`
+5. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+6. `docs/CURRENT_STAGE1_STATUS.md`
+7. `docs/stage1_rule_monitor_spec.md`
+8. `docs/stage1_plan.md`
+9. `docs/omnisafe_integration_report.md`
+10. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
+11. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
+12. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -158,27 +174,33 @@ safety-stl-stage1-handoff/
 ├── README.md
 ├── PROJECT_CONTEXT.md
 ├── DECISIONS.md
+├── EXPERIMENT_PROGRESS_CHANGELOG.md
 ├── HANDOFF_PROMPT.md
 ├── MANIFEST.md
 ├── environment.stage1.yml
 ├── pyproject.toml
 ├── configs/
-│   └── stage1_rule.yaml
+│   ├── stage1_rule.yaml
+│   └── omnisafe_integration_smoke.yaml
 ├── scripts/
 │   ├── collect_rule_calibration.py
 │   ├── generate_monitor_fixtures.py
 │   ├── run_monitor_agreement.py
 │   ├── run_stage1_demo.py
+│   ├── run_omnisafe_integration_smoke.py
+│   ├── run_omnisafe_smoke.sh
 │   └── visualize_stage1.sh
 ├── src/safety_stl/
 │   ├── signals.py
 │   ├── monitor.py
 │   ├── oracle.py
+│   ├── omnisafe_env.py
 │   └── visualization.py
 ├── tests/
 │   ├── test_distance_signal.py
 │   ├── test_monitor_boundaries.py
 │   ├── test_oracle_agreement.py
+│   ├── test_omnisafe_wrapper.py
 │   ├── test_visualization.py
 │   └── fixtures/
 ├── docs/
@@ -189,6 +211,7 @@ safety-stl-stage1-handoff/
 │   ├── stage1_rule_monitor_spec.md
 │   ├── rule_calibration_report.md
 │   ├── monitor_agreement_report.md
+│   ├── omnisafe_integration_report.md
 │   ├── visualization.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
@@ -205,10 +228,13 @@ safety-stl-stage1-handoff/
 │   │   └── summary.json
 │   ├── monitor_agreement/
 │   │   └── summary.json
-│   └── visualization/
+│   ├── visualization/
+│   │   ├── README.md
+│   │   ├── summary.json
+│   │   └── stage1_demo.mp4
+│   └── integration_smoke/
 │       ├── README.md
-│       ├── summary.json
-│       └── stage1_demo.mp4
+│       └── summary.json
 └── references/
     ├── REFERENCES.md
     ├── papers/

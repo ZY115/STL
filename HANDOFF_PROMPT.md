@@ -3,7 +3,8 @@
 Run Codex from the root of this folder and use the following prompt before requesting implementation:
 
 ```text
-Read AGENTS.md, README.md, PROJECT_CONTEXT.md, DECISIONS.md,
+Read AGENTS.md, README.md, EXPERIMENT_PROGRESS_CHANGELOG.md,
+PROJECT_CONTEXT.md, DECISIONS.md,
 docs/stage1_rule_monitor_spec.md, docs/stage1_plan.md, and
 references/REFERENCES.md.
 
@@ -23,19 +24,18 @@ until this summary is complete and consistent with the documents.
 After confirming the summary, use:
 
 ```text
-The Stage I environment-inspection and rule-and-monitor milestones are complete.
+The Stage I environment-inspection, rule-and-monitor, visualization, and
+OmniSafe wrapper/integration-smoke milestones are complete.
 The calibrated rule is d_warn=0.45, d_safe=0.55, K=79 environment steps.
 
-Begin only the OmniSafe wrapper and small integration-smoke milestone.
+Begin only the pre-main-study experimental declaration milestone.
 
-Treat docs/stage1_rule_monitor_spec.md and configs/stage1_rule.yaml as
-normative. Preserve native reward, native cost, and STL cost separately. Append
-the same active/overdue/remaining temporal observation state to task-only,
-native-cost, and STL-cost conditions. Keep independent monitor state per
-vectorized environment and test reset, step, termination, truncation, and logs.
+Read docs/omnisafe_integration_report.md and its tracked smoke summary. Preserve
+the fixed rule, three cost-routing conditions, identical temporal observation,
+and independent costs.
 
-Verify that PPO-Lagrangian can consume the selected cost in a minimal smoke
-integration. Do not begin the main RL study or language layer. Before main
-training, first predeclare the quantitative success criterion, seeds,
-evaluation episodes, task-performance tolerance, and uncertainty reporting.
+Propose explicit quantitative success criteria, matched seeds, evaluation
+episodes, task-performance tolerance, and uncertainty reporting. Clearly mark
+proposals versus confirmed decisions. Do not begin the main RL study or
+language layer until these choices are approved and recorded in DECISIONS.md.
 ```

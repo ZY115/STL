@@ -13,7 +13,7 @@ Stage I 选择 `SafetyPointGoal1-v0` 作为 benchmark，研究机器人进入障
 - **Slides**：介绍原始研究问题、完整链路中的不确定性、三阶段拆分、Stage I 的 application、benchmark、STL 规则、实验比较、适用范围，以及 Stage I 成功后如何进入 Stage II。
 - **Stage I Engineering Plan**：记录完成 Stage I 所需的开源资源、相关论文、系统模块、现有组件与自行开发部分，以及环境搭建后的工程步骤。
 
-目前已经完成问题定义、Stage I 实验规划、environment inspection 和 rule-and-monitor milestone。独立实验环境已按锁文件复核；公开 `hazards_lidar` 可以可靠重建最近 hazard center distance。正式校准选择 `d_warn=0.45`、`d_safe=0.55`、`K=79`。在线 monitor、独立 offline oracle、真实环境 fixtures 和 RTAMT agreement checks 已实现，23 个测试全部通过且未发现一致性误差。尚未实现 OmniSafe wrapper 或开始 RL 训练。下一步是 wrapper 与小规模 integration smoke test，主训练仍需先预声明量化成功标准。
+目前已经完成问题定义、Stage I 实验规划、environment inspection、rule-and-monitor milestone 和 OmniSafe wrapper integration gate。独立实验环境已按锁文件复核；公开 `hazards_lidar` 可以可靠重建最近 hazard center distance。正式校准选择 `d_warn=0.45`、`d_safe=0.55`、`K=79`。在线 monitor、独立 offline oracle、真实环境 fixtures、RTAMT agreement checks、三种 cost-routing 条件、vectorized monitor lifecycle 和一次最小 PPO-Lagrangian update 已实现，完整 38 个测试全部通过。matched-seed 主 RL 训练尚未开始，下一步必须先预声明量化成功和 evaluation 标准。
 
 ## English version
 
@@ -32,4 +32,4 @@ Stage I uses `SafetyPointGoal1-v0` to examine whether an agent can recover to a 
 - **Slides:** explain the original problem, independent uncertainties, three-stage decomposition, selected application and benchmark, Stage I rule and experiment, limitations, and the transition to Stage II.
 - **Stage I Engineering Plan:** records the required repositories and papers, planned system components, reused and self-developed modules, engineering work packages, and immediate preparation steps.
 
-The problem definition, Stage I experiment plan, environment inspection, and rule-and-monitor milestone are complete. The locked environment was reconfirmed, and public `hazards_lidar` reconstructs nearest hazard center distance. Formal calibration selected `d_warn=0.45`, `d_safe=0.55`, and `K=79`. The online monitor, independent offline oracle, real-environment fixtures, and RTAMT agreement checks are implemented; all 23 tests passed with no agreement mismatch. The OmniSafe wrapper and RL training have not started. The immediate next milestone is the wrapper and a small integration smoke test; quantitative success criteria must be declared before the main study.
+The problem definition, Stage I experiment plan, environment inspection, rule-and-monitor milestone, and OmniSafe wrapper integration gate are complete. The locked environment was reconfirmed, and public `hazards_lidar` reconstructs nearest hazard center distance. Formal calibration selected `d_warn=0.45`, `d_safe=0.55`, and `K=79`. The online monitor, independent offline oracle, real-environment fixtures, RTAMT agreement checks, three cost-routing conditions, vectorized monitor lifecycle, and a minimal PPO-Lagrangian update are implemented; all 38 tests pass. Main matched-seed RL training has not started. Quantitative success and evaluation criteria must be declared before that study.

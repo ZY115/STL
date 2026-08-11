@@ -13,11 +13,13 @@ Stage I does not contain a language model. It tests the downstream chain with on
 Before proposing changes or running installation commands, read:
 
 1. `README.md`
-2. `PROJECT_CONTEXT.md`
-3. `DECISIONS.md`
-4. `docs/stage1_rule_monitor_spec.md`
-5. `docs/stage1_plan.md`
-6. `references/REFERENCES.md`
+2. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+3. `PROJECT_CONTEXT.md`
+4. `DECISIONS.md`
+5. `docs/stage1_rule_monitor_spec.md`
+6. `docs/stage1_plan.md`
+7. `docs/omnisafe_integration_report.md`
+8. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -62,27 +64,24 @@ Do not add any of the following during Stage I unless the user explicitly change
 
 ## Immediate task
 
-The environment inspection was completed on 2026-07-29. Parameter calibration,
-monitor/oracle implementation, stable fixtures, semantic tests, and RTAMT
-agreement passed the normative completion gate on 2026-08-05.
+Environment inspection, calibration, monitor/oracle agreement, visualization,
+the OmniSafe wrapper, vectorized lifecycle tests, positive-cost routing probe,
+and a minimal PPO-Lagrangian update passed their gates by 2026-08-10.
 
-The next milestone is the OmniSafe wrapper and a small integration smoke test.
-It must:
+The next milestone is the pre-main-study experimental declaration. Before any
+main training:
 
-1. preserve the benchmark's native task reward;
-2. expose native cost and STL cost as independent fields and logs;
-3. append the fixed active/overdue/remaining temporal state to every comparison
-   condition's policy observation;
-4. keep one independent monitor per vectorized environment and reset it from
-   the environment's reset observation;
-5. test reset, step, termination, truncation, and logging behavior;
-6. verify that PPO-Lagrangian can consume the selected cost in a minimal smoke
-   integration without claiming a training result.
+1. propose and explicitly record the required violation-rate reduction;
+2. define acceptable goal-success or return degradation;
+3. fix matched training seeds and evaluation episode count;
+4. fix the uncertainty reporting method;
+5. freeze matched task-only, native-cost, and STL-cost configurations;
+6. align per-vector rollout length with complete episode horizons so an
+   OmniSafe epoch reset cannot erase a pending obligation;
+7. distinguish proposed values from user-confirmed decisions.
 
-Before the main training study, predeclare the quantitative success criterion,
-seed count, evaluation episode count, task-performance tolerance, and
-uncertainty reporting. Do not add language translation or begin the main RL
-study during the wrapper milestone.
+Do not run the main RL study until these choices are confirmed and recorded in
+`DECISIONS.md`. Do not add the Stage II language layer during this milestone.
 
 ## Engineering expectations
 

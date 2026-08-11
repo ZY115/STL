@@ -5,9 +5,10 @@
 This handoff package contains the durable research context required to continue the project on another computer or Codex account.
 
 It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
-environment-inspection and rule-and-monitor milestones are complete. Tested
-monitor code, a runnable visualization surface, and stable evidence are tracked;
-wrapper and training code do not yet exist.
+environment-inspection, rule-and-monitor, visualization, and OmniSafe-wrapper
+integration milestones are complete. Tested monitor/wrapper code, runnable
+visualization, and stable smoke evidence are tracked; main training has not
+started.
 
 ## Root documents
 
@@ -17,6 +18,7 @@ wrapper and training code do not yet exist.
 | `AGENTS.md` | Persistent project instructions automatically read by Codex |
 | `PROJECT_CONTEXT.md` | Full reasoning history and evolution from the original end-to-end idea to Stage I |
 | `DECISIONS.md` | Confirmed, open, and deferred research decisions |
+| `EXPERIMENT_PROGRESS_CHANGELOG.md` | Standalone Chinese engineering progress and modification history without raw experiment data |
 | `HANDOFF_PROMPT.md` | First prompts to use with Codex on a new computer |
 | `MANIFEST.md` | Description of package contents |
 | `CHECKSUMS.sha256` | Integrity hashes for all packaged files |
@@ -36,6 +38,7 @@ wrapper and training code do not yet exist.
 | `docs/rule_calibration_report.md` | Formal calibration protocol, evidence, selected parameters, and limitations |
 | `docs/monitor_agreement_report.md` | Online/oracle/RTAMT agreement result |
 | `docs/visualization.md` | One-command live/video runner, outputs, verification, and limitations |
+| `docs/omnisafe_integration_report.md` | Wrapper architecture, vector terminal order, tests, positive-cost probe, and PPO-Lagrangian smoke evidence |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -43,8 +46,8 @@ wrapper and training code do not yet exist.
 
 | File | Purpose |
 |---|---|
-| `docs/slides/stage1_current_progress_slides.pptx` | Editable 9-page overview of the three-stage research path, current Stage I evidence, and immediate next milestone |
-| `docs/slides/stage1_current_progress_slides.pdf` | Distribution copy of the current Stage I progress overview |
+| `docs/slides/stage1_current_progress_slides.pptx` | Editable 9-page 2026-08-10 pre-wrapper progress snapshot |
+| `docs/slides/stage1_current_progress_slides.pdf` | Distribution copy of the 2026-08-10 pre-wrapper progress snapshot |
 | `docs/slides/stage1_experiment_plan_slides.pdf` | Final 9-page staged experiment plan |
 | `docs/slides/stage1_experiment_plan_slides.tex` | TeX source for the Stage I plan slides |
 | `docs/slides/literature_review_three_papers_slides_6p.pdf` | Condensed 6-page literature-to-problem narrative |
@@ -81,16 +84,20 @@ These are reference snapshots, not project implementation code.
 | Path | Purpose |
 |---|---|
 | `configs/stage1_rule.yaml` | Fixed machine-readable calibrated rule |
+| `configs/omnisafe_integration_smoke.yaml` | Three condition IDs and bounded PPO-Lagrangian smoke configuration |
 | `scripts/collect_rule_calibration.py` | Formal controlled/random data collection and parameter selection |
 | `scripts/generate_monitor_fixtures.py` | Stable environment fixture generation |
 | `scripts/run_monitor_agreement.py` | Machine-readable agreement evaluation and report generation |
 | `scripts/run_stage1_demo.py` | Python environment/monitor visualization entry point |
 | `scripts/visualize_stage1.sh` | One-command Conda-aware launcher |
+| `scripts/run_omnisafe_integration_smoke.py` | Positive-cost routing probe and minimal PPO-Lagrangian rollout/update runner |
+| `scripts/run_omnisafe_smoke.sh` | Conda-aware one-command integration-smoke launcher |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
 | `src/safety_stl/visualization.py` | Live viewer, annotated video, controller, and independent logs |
-| `tests/` | Signal, semantic-boundary, oracle agreement, visualization, and stable-fixture tests |
+| `src/safety_stl/omnisafe_env.py` | Three cost modes, shared temporal observation, vector monitor lifecycle, and OmniSafe registration |
+| `tests/` | Signal, monitor/oracle, visualization, wrapper, vector lifecycle, and stable-fixture tests |
 
 ## Excluded files
 
@@ -107,7 +114,8 @@ The package excludes:
 - `.DS_Store`;
 - unrelated slide templates;
 - raw generated CSV files below `results/`;
-- OmniSafe wrapper and training implementation not yet completed.
+- bulk OmniSafe run directories and checkpoints below `results/integration_smoke/`;
+- main matched-seed training outputs, which do not exist yet.
 
 ## Generated outputs
 
@@ -125,9 +133,14 @@ minimal fixtures under `tests/fixtures/`. The visualization runner tracks one
 compact annotated MP4, its summary, and a README under
 `results/visualization/`; regenerated trajectory CSV files remain ignored.
 
+The wrapper milestone tracks `results/integration_smoke/summary.json` and its
+README. Bulk OmniSafe `progress.csv`, copied config, and checkpoint files remain
+ignored; the summary records the relevant values and progress hash.
+
 ## Future additions
 
-The rule-and-monitor completion gate has passed. The next bounded addition is
-the OmniSafe cost wrapper and a small integration smoke test. Main training
-configuration/results wait for predeclared quantitative success criteria;
-language-layer code remains deferred beyond Stage I.
+The OmniSafe wrapper/integration gate has passed. The next bounded addition is
+the pre-main-study declaration of quantitative success, task-performance
+tolerance, seeds, evaluation episodes, and uncertainty reporting. Main training
+must wait for those recorded decisions; language-layer code remains deferred
+beyond Stage I.

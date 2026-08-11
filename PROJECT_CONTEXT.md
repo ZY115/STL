@@ -476,10 +476,19 @@ robustness difference 0. The visualization keeps reward, native cost, and STL
 cost separate and stores its generated CSV/video/summary artifacts under
 `results/visualization/`.
 
-No OmniSafe wrapper, training configuration, or RL result exists yet. The next
-work package is the wrapper and a small integration smoke test. Main training
-must wait until quantitative success and evaluation decisions are predeclared.
-Language translation remains outside Stage I.
+On 2026-08-10, the OmniSafe wrapper and bounded integration smoke gate passed.
+Three registered conditions now share the same 63-dimensional augmented policy
+observation while independently retaining native cost, STL cost, and selected
+algorithm cost. Eleven wrapper-specific tests passed. A real scripted
+terminal-unresolved probe produced one positive STL cost and routed the same
+value to the learner-cost surface. OmniSafe PPO-Lagrangian then completed a
+64-transition, one-epoch CPU rollout and at least one parameter update with two
+vector environments. This proves interface compatibility only, not learned
+safety behavior.
+
+No matched-seed main RL result exists yet. The next work package must resolve
+the quantitative success and evaluation decisions before freezing the three
+main experiment configurations. Language translation remains outside Stage I.
 
 ## 19. Continuity rule
 

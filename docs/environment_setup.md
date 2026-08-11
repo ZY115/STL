@@ -232,6 +232,26 @@ viewer VSync and applies its own target-frame delay; the verified full run took
 about 7 seconds. This affects display speed only, not simulator steps or
 monitor semantics.
 
+## 2026-08-10 OmniSafe-wrapper verification
+
+No package installation or host change was required for the wrapper milestone.
+The existing locked CPU environment executed:
+
+```bash
+./scripts/run_omnisafe_smoke.sh
+```
+
+The run registered all three Stage I conditions, verified one real positive STL
+cost, and completed a 64-transition, one-epoch PPO-Lagrangian rollout and
+update with two vector environments. Eleven new wrapper tests passed, bringing
+the complete suite to 38 tests. Exact evidence and limitations are recorded in
+`docs/omnisafe_integration_report.md` and
+`results/integration_smoke/summary.json`.
+
+The environment remains CPU-only (`torch 2.4.1+cpu`, no CUDA build). This was
+sufficient for the bounded interface smoke and does not establish GPU training
+readiness.
+
 ## Removal
 
 If this dedicated environment is no longer needed:

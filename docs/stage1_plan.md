@@ -354,7 +354,7 @@ Saved trajectories should also be evaluated with RTAMT. The custom monitor and R
 
 **Goal:** expose the temporal-rule result through an interface that OmniSafe can use.
 
-**Status:** next work package; not started.
+**Status:** completed on 2026-08-10.
 
 The wrapper should conceptually provide:
 
@@ -379,11 +379,18 @@ Useful diagnostic fields include:
 
 The first implementation should use one clearly defined cost mapping. Binary violation cost is the simplest starting point. Robustness-based shaping can be added only after the binary semantics are verified.
 
-**Output:** an environment wrapper that preserves the original task while exposing an independent STL-derived cost.
+**Output:** three registered OmniSafe environment IDs implemented in
+`src/safety_stl/omnisafe_env.py`. They preserve the original task reward,
+retain native/STL/selected costs independently, and append the same temporal
+state to all policy observations. Terminal auto-reset ordering and vector-slot
+independence are covered by wrapper tests.
 
 ### Work Package 5: Safe RL Integration
 
 **Goal:** connect the wrapped environment to OmniSafe without changing unrelated components.
+
+**Status:** bounded integration smoke completed on 2026-08-10; main matched-seed
+training configurations are intentionally not frozen or run.
 
 The main conditions should share:
 
@@ -395,7 +402,11 @@ The main conditions should share:
 
 The primary change between conditions should be the safety cost supplied to the constrained learner.
 
-**Output:** reproducible configurations for task-only, native-cost, and STL-cost training.
+**Current output:** a reproducible three-condition interface configuration, one
+real positive STL-cost routing probe, and a 64-transition PPO-Lagrangian CPU
+smoke run that completed one epoch and at least one update. This is not a
+training result. Main configurations wait for the open quantitative-success
+decision.
 
 ### Work Package 6: Evaluation and Logging
 
@@ -435,9 +446,9 @@ Stage I should proceed to Stage II only if:
 | Hazard-distance extraction | Our work | Implemented and tested |
 | Rule parameterization | Our work | Calibrated and fixed |
 | Stateful bounded-recovery monitor | Our work | Implemented and tested |
-| STL-to-cost conversion | Our work | Binary event mapping implemented; wrapper pending |
-| Safe RL wrapper integration | Our work | Implement |
-| Temporal evaluation metrics | Our work | Implement and analyze |
+| STL-to-cost conversion | Our work | Binary mapping and three-mode wrapper implemented/tested |
+| Safe RL wrapper integration | Our work | Integration smoke passed; main training pending |
+| Temporal evaluation metrics | Our work | Wrapper episode logs implemented; main evaluation pending |
 
 The central engineering contribution of Stage I is therefore not a new simulator, STL parser, or Safe RL algorithm. It is the carefully tested connection between existing components, together with the temporal monitor, cost definition, and evaluation needed for the selected safety rule.
 
@@ -461,8 +472,8 @@ The inspection answered:
 - no additional wrapper access is required for the primary distance signal.
 
 The rule-and-monitor milestone was completed on 2026-08-05 with
-$d_{\mathrm{warn}}=0.45$, $d_{\mathrm{safe}}=0.55$, and $K=79$. The next
-milestone is the OmniSafe wrapper and a small integration smoke test. It must
-preserve reward/native-cost/STL-cost separation and use identical augmented
-observations across comparison conditions. Main training waits for predeclared
-quantitative success and evaluation criteria.
+$d_{\mathrm{warn}}=0.45$, $d_{\mathrm{safe}}=0.55$, and $K=79$. The OmniSafe
+wrapper and bounded integration smoke passed on 2026-08-10: 11 wrapper tests,
+one real positive-cost routing probe, and a 64-transition PPO-Lagrangian update
+all completed. Main training still waits for predeclared quantitative success
+and evaluation criteria.

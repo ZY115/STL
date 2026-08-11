@@ -17,3 +17,7 @@ visualization/*
 !visualization/README.md
 !visualization/summary.json
 !visualization/stage1_demo.mp4
+!integration_smoke/
+integration_smoke/*
+!integration_smoke/README.md
+!integration_smoke/summary.json
