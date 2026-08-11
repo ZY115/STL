@@ -30,6 +30,10 @@ started.
 | File | Purpose |
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
+| `docs/END_TO_END_RESEARCH_PIPELINE.md` | Authoritative long-term map: revised objective, benchmark role, method baselines, WP1--WP7 inputs/outputs/gates, result branches, references, and status |
+| `docs/research_direction_novelty_feasibility.md` | 2026-08-10 novelty correction, closest prior work, revised research question, theoretical feasibility, and staged experiment path |
+| `docs/theory_and_revised_experiment_8.10.md` | 8.10 Chinese theory analysis and revised matched experiment design for explicit NL-to-STL versus direct learned cost |
+| `docs/minimum_research_delivery_8.10.md` | Minimum teacher-facing research delivery: purpose, required artifacts, acceptance gates, and work-computer sequence |
 | `docs/CURRENT_STAGE1_STATUS.md` | Detailed Chinese status, visualization interpretation, remaining work, and next milestone acceptance criteria |
 | `docs/stage1_plan.md` | Detailed Stage I engineering plan and resource list |
 | `docs/environment_setup.md` | Tested setup commands, versions, and isolation notes |
@@ -48,6 +52,7 @@ started.
 |---|---|
 | `docs/slides/stage1_current_progress_slides.pptx` | Editable 9-page 2026-08-10 pre-wrapper progress snapshot |
 | `docs/slides/stage1_current_progress_slides.pdf` | Distribution copy of the 2026-08-10 pre-wrapper progress snapshot |
+| `docs/slides/source/current-progress-deck/` | Archived editable-shape PPTX generator and source notes; rendered PNGs are reproducible cache and remain untracked |
 | `docs/slides/stage1_experiment_plan_slides.pdf` | Final 9-page staged experiment plan |
 | `docs/slides/stage1_experiment_plan_slides.tex` | TeX source for the Stage I plan slides |
 | `docs/slides/literature_review_three_papers_slides_6p.pdf` | Condensed 6-page literature-to-problem narrative |
@@ -62,11 +67,11 @@ started.
 | `references/papers/2023_NL2TL.pdf` | Natural language to temporal logic |
 | `references/papers/2025_DeepLTL.pdf` | Executing complex LTL specifications with RL |
 | `references/papers/2018_Safe_RL_via_Shielding.pdf` | Alternative runtime safety enforcement |
-| `references/papers/2026_UAV_NL_STL_MILP_Repair.pdf` | NL-to-STL translation and repair in a UAV application |
+| `references/papers/2026_UAV_NL_STL_MILP_Repair_8.10.pdf` | NL-to-STL translation and repair in a UAV application; filename dated for the 2026-08-10 review |
 
 ## Additional literature
 
-`references/papers/related/` contains papers gathered during the 2023-2026 novelty and feasibility review.
+`references/papers/related/` contains papers gathered during the 2023-2026 novelty and feasibility review. The closest papers collected for the 2026-08-10 positioning update use `_8.10.pdf` filenames and are indexed by `references/papers/related/CLOSEST_PRIOR_WORK_8.10.md`.
 
 `references/extracted-text/` contains searchable text extracted from those papers. These files are analysis aids; the PDFs remain authoritative.
 
@@ -139,8 +144,8 @@ ignored; the summary records the relevant values and progress hash.
 
 ## Future additions
 
-The OmniSafe wrapper/integration gate has passed. The next bounded addition is
-the pre-main-study declaration of quantitative success, task-performance
-tolerance, seeds, evaluation episodes, and uncertainty reporting. Main training
-must wait for those recorded decisions; language-layer code remains deferred
-beyond Stage I.
+The OmniSafe wrapper/integration gate has passed. The next bounded additions are
+the pre-main-study declaration, explicit condition-specific cost limits, one
+positive-cost on-policy sanity run, and the small representation-comparison
+artifact described in `docs/minimum_research_delivery_8.10.md`. Large matched
+training must wait for those recorded decisions.

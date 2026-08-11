@@ -6,6 +6,10 @@
 
 它用于解决一个实际问题：当项目被移动到另一台 Ubuntu 电脑、由另一个 Codex 账号继续时，不依赖原聊天记录或账号 memory，也能准确理解当前研究目标、已经做出的决定、Stage I 的实验计划和下一步工作。
 
+长期研究路线、对照方法、每个阶段的输入输出、通过标准和预设结果分支统一见
+`docs/END_TO_END_RESEARCH_PIPELINE.md`。新电脑不能只读取“下一步”；完成当前 gate
+后，应按该文档继续进入下一个未完成 work package。
+
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
 STL monitor/oracle、OmniSafe wrapper、integration smoke 证据，以及一条命令启动的
 实时/录像可视化入口。主 RL 对照训练尚未开始。
@@ -38,12 +42,38 @@ train and evaluate a Safe RL agent
    暂时移除自然语言层，人工提供一条正确 STL 规则，验证 environment signal、monitor、safety cost 和 Safe RL 能否正确连接。
 
 2. **Stage II: Controlled language**  
-   在 Stage I 链路通过验证后，加入对象、距离和时间参数明确的受控自然语言，并评估 NL-to-STL translation accuracy 与 downstream behavior。
+   在 Stage I 链路通过验证后，加入对象、距离和时间参数明确的受控自然语言。使用同一 Safe RL 后端，比较显式 `NL -> STL -> verified cost` 与直接 `NL -> predicted cost`，并分别评估公式、轨迹 cost label 和最终策略行为。
 
 3. **Stage III: Broader setting**  
    进一步研究模糊语言、缺失参数、更多 STL 结构、感知噪声、动态障碍、其他 benchmark 和真实系统。
 
 当前只开展 **Stage I**。
+
+## 2026-08-10 研究定位更新
+
+最新文献核查确认，`STL monitor/state -> cost -> Lagrangian Safe RL` 已被多项
+工作覆盖，不能作为本项目的独立新方法。Stage I 的准确定位是：建立经过验证的
+gold-STL 语义参考和下游可行性基线，并为后续语言层提供错误隔离点；它不是策略
+性能的数学上界。
+
+当前暂定的项目级研究问题是：
+
+> 在相同 online Safe RL 后端和环境中，显式 NL-to-STL 中间表示是否比直接
+> NL-to-cost predictor 提供更高的语义忠实度、轨迹级可诊断性和时序安全表现？
+
+该精确受控比较在截至 2026-08-10 的定向检索中未发现直接对应工作，但这只是
+provisional novelty，不是“绝对无人做过”的证明。详细证据、相邻论文、理论可行性
+和修订后的实验路线见 `docs/research_direction_novelty_feasibility.md`。
+
+2026-08-10（8.10）新增的中文理论与实验说明见
+`docs/theory_and_revised_experiment_8.10.md`。该文档进一步明确：当前研究以受控
+实验为主体，但可以包含 temporal-memory necessity、formal-path conditional
+correctness 和 cost-error-to-policy-risk transfer 等理论分析；同时记录 Stage II
+不能向 direct learned-cost baseline 泄漏 gold monitor state 的公平性要求。
+
+当前预期的首要研究产出是一个小型受控 benchmark 和评估协议，而不是预先声称
+新的 translator、monitor 或 Safe RL 算法。只有比较暴露出可复现且现有方法无法
+处理的缺陷后，才据此设计新方法。
 
 ## Stage I 的具体问题
 
@@ -137,8 +167,10 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 OmniSafe wrapper 与 integration smoke gate 已通过。下一里程碑不是直接扩大训练，
 而是解决 open decision O6：预声明 violation reduction、goal-performance
-tolerance、matched seed 数、evaluation episode 数和不确定性报告方法，并据此冻结
-三个条件的 matched configs。当前仍不开始主 RL training 或自然语言层。
+tolerance、matched seed 数、evaluation episode 数和不确定性报告方法；同时明确
+native step cost 与 STL event cost 的预算语义和 `cost_limit`，完成真实 on-policy
+非零 STL cost sanity，并据此冻结三个条件的 matched configs。当前仍不开始主 RL
+training 或自然语言层。
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -155,16 +187,20 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 
 1. `AGENTS.md`
 2. `README.md`
-3. `PROJECT_CONTEXT.md`
+3. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 4. `DECISIONS.md`
 5. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-6. `docs/CURRENT_STAGE1_STATUS.md`
-7. `docs/stage1_rule_monitor_spec.md`
-8. `docs/stage1_plan.md`
-9. `docs/omnisafe_integration_report.md`
-10. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
-11. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
-12. `references/REFERENCES.md`
+6. `PROJECT_CONTEXT.md`
+7. `docs/research_direction_novelty_feasibility.md`
+8. `docs/theory_and_revised_experiment_8.10.md`
+9. `docs/minimum_research_delivery_8.10.md`
+10. `docs/CURRENT_STAGE1_STATUS.md`
+11. `docs/stage1_rule_monitor_spec.md`
+12. `docs/stage1_plan.md`
+13. `docs/omnisafe_integration_report.md`
+14. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
+15. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
+16. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -204,8 +240,11 @@ safety-stl-stage1-handoff/
 │   ├── test_visualization.py
 │   └── fixtures/
 ├── docs/
+│   ├── END_TO_END_RESEARCH_PIPELINE.md
 │   ├── PROJECT_INTRODUCTION.md
 │   ├── CURRENT_STAGE1_STATUS.md
+│   ├── research_direction_novelty_feasibility.md
+│   ├── theory_and_revised_experiment_8.10.md
 │   ├── environment_setup.md
 │   ├── environment_inspection.md
 │   ├── stage1_rule_monitor_spec.md

@@ -230,7 +230,10 @@ Open decision O6 仍未关闭：
 - goal success 或 episode return 的允许下降范围；
 - matched training seeds；
 - 每个 checkpoint/condition 的 evaluation episode 数；
-- uncertainty interval 和统计汇报方法。
+- uncertainty interval 和统计汇报方法；
+- native step cost 与 STL event cost 各自的 `cost_limit` 和预算语义；
+- PPO-Lagrangian rollout 内的 positive-cost sanity；
+- 所有 policy 共用的 gold-STL offline evaluation oracle。
 
 这些选择会直接改变正式实验的规模和结论，不应由实现过程静默决定。
 
@@ -270,3 +273,19 @@ Open decision O6 仍未关闭：
 
 不要在本文粘贴 raw data、完整训练表格或大段终端输出。实验数据和统计结论应继续
 保存在 `results/` 及对应专项报告中。
+
+## 12. 2026-08-10 长期 pipeline 与独立 handoff 补全
+
+新增 `docs/END_TO_END_RESEARCH_PIPELINE.md`，用于解决原 handoff 只强调当前
+milestone、完成后仍需重新询问研究方向的问题。新文档现已统一记录：
+
+- 原始目标和两次研究定位修改；
+- benchmark 的控制变量角色；
+- Stage I controls 与真正 language-method baselines 的区别；
+- candidate formal pipeline 的可解释假设和当前 novelty 边界；
+- WP1--WP7 的 inputs、outputs、gates 和预设 failure branches；
+- 参考论文、本地路径、当前状态和后续维护规则。
+
+同时更新 `AGENTS.md`、`README.md`、`HANDOFF_PROMPT.md`、`DECISIONS.md`、
+`PROJECT_CONTEXT.md` 和 `MANIFEST.md`，使新的 Codex session 必须先读取长期路线，
+并在完成当前 gate 后继续下一个未完成 work package。

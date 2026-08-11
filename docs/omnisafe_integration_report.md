@@ -199,7 +199,14 @@ predeclare:
 - acceptable goal-success or return degradation;
 - matched training seeds;
 - evaluation episode count;
-- uncertainty reporting method.
+- uncertainty reporting method;
+- explicit condition-specific `lagrange_cfgs.cost_limit` values and their
+  semantic interpretation;
+- a positive-cost event inside an actual PPO-Lagrangian rollout;
+- one common gold-STL offline evaluator for every policy.
+
+Native per-step hazard cost and STL missed-obligation event cost use different
+units. The same numeric budget must not be treated as automatically comparable.
 
 Only after those choices are recorded in `DECISIONS.md` should the three matched
 training configurations and small-budget sanity runs be frozen.

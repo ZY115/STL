@@ -46,6 +46,26 @@ Safe RL 学习产生的错误。
 STL-cost wrapper 和一次最小 OmniSafe update；尚未完成 matched-seed 对照训练和
 正式 evaluation。因此目前仍没有 RL 安全改进结论。
 
+### 2.1 2026-08-10 研究定位修正
+
+最新文献核查发现，以下方法成分均已有直接先例：STL 的历史/状态扩展、STL
+constraint 的 Lagrangian DRL、online STL monitor 输出作为 observation/reward、
+logic violation 转 PPO-Lagrangian cost，以及 full-STL multi-constraint CRL。
+
+因此 Stage I 不再被描述为一个新的 STL-to-Safe-RL 算法。它的作用是建立：
+
+```text
+gold STL -> verified monitor -> Safe RL
+```
+
+这一可验证下游基线。后续 Stage II 才测试当前暂定的项目级研究问题：在相同
+environment 和 online Safe RL backend 下，显式 `NL -> STL -> verified cost`
+是否比直接 `NL -> predicted cost` 具有更好的语义忠实度、轨迹级可诊断性和
+最终时序安全表现。
+
+该新问题的文献边界、理论可行性和修订实验路线见
+[`research_direction_novelty_feasibility.md`](research_direction_novelty_feasibility.md)。
+
 ## 3. 固定的 Stage I 实验定义
 
 | 项目 | 固定内容 |
@@ -267,7 +287,9 @@ BoundedRecoveryMonitor
 MuJoCo overlay + CSV + JSON + optional MP4
 ```
 
-这条链路尚未经过 OmniSafe wrapper，也没有策略更新或神经网络训练。
+这张图描述的是独立的 scripted visualization 路径；该演示本身不经过 OmniSafe
+wrapper，也不包含策略更新或神经网络训练。项目中的 wrapper 和最小训练更新已在
+后续独立 integration smoke 中通过，见第 9 节。
 
 ### 5.1 Scripted controller 的作用
 
@@ -390,6 +412,7 @@ remaining deadline = 154 - 130 = 24 steps
 | OmniSafe registration | 已完成 | 三个 condition ID，统一 `(63,)` float32 observation |
 | PPO-Lagrangian integration smoke | 已完成 | 64 transitions、1 epoch、至少 1 update、checkpoint |
 | Quantitative success criteria | 未决定 | violation reduction、goal tolerance、seeds、episodes、uncertainty |
+| Condition-specific cost budgets | 未决定 | native step cost 与 STL event cost 不能静默共用默认 numeric limit |
 | Three-condition interface config | 已完成 | cost source 和共享 observation contract 已冻结 |
 | Main-study matched configs | 未开始 | 等待 quantitative success/evaluation 决策 |
 | Main RL training | 未开始 | matched seeds 的正式训练 |

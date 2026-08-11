@@ -1,0 +1,17 @@
+Communication job: By the end, project collaborators should understand why the research is staged, what Stage I must prove, which half is complete, what the current evidence means, and what the next milestone must accomplish.
+
+Audience: research group members who know RL/STL at a high level but should not need implementation details to follow the plan.
+
+Visual direction: retain the existing deck's white background, Hermes orange accent, soft supporting colors, simple process diagrams, and low information density.
+
+Sources used:
+- /Users/yuhang/Downloads/STL/README.md
+- /Users/yuhang/Downloads/STL/PROJECT_CONTEXT.md
+- /Users/yuhang/Downloads/STL/DECISIONS.md
+- /Users/yuhang/Downloads/STL/docs/CURRENT_STAGE1_STATUS.md
+- /Users/yuhang/Downloads/STL/docs/rule_calibration_report.md
+- /Users/yuhang/Downloads/STL/docs/monitor_agreement_report.md
+- /Users/yuhang/Downloads/STL/docs/stage1_rule_monitor_spec.md
+- /Users/yuhang/Downloads/STL/docs/visualization.md
+
+No external visual assets are used. All visuals are editable PowerPoint shapes.

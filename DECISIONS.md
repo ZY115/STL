@@ -70,8 +70,8 @@ No experiment directories were created before the Ubuntu environment and availab
 
 The inspection is complete. The later normative specification defined and the
 rule-and-monitor milestone created the limited source, test, configuration,
-script, fixture, and evidence directories. Wrapper and training surfaces remain
-deferred to the next work package.
+script, fixture, and evidence directories. The OmniSafe wrapper and integration
+smoke were subsequently completed in D21; matched training remains unfinished.
 
 ### D11. Stage I distance uses the public hazard pseudo-lidar
 
@@ -190,8 +190,9 @@ eligible primary-grid rate closest to 50%.
 
 The online monitor, independent direct oracle, stable environment fixtures, and
 RTAMT completed-window checks passed with zero event-step, Boolean, cost, or
-robustness mismatches. The next work package may implement the OmniSafe wrapper,
-but this result is not an RL result or safety guarantee.
+robustness mismatches. At this gate, the wrapper was still the next work package;
+D21 records its subsequent completion. This monitor result alone is not an RL
+result or safety guarantee.
 
 ### D21. The OmniSafe wrapper and integration-smoke gate passed
 
@@ -214,6 +215,105 @@ wrapper tests passed. A real positive-cost probe and a 64-transition,
 single-epoch PPO-Lagrangian CPU update passed on 2026-08-10. This closes the
 interface milestone but is not a main training result or safety guarantee.
 
+### D22. Stage I is not claimed as a novel STL-to-Safe-RL algorithm
+
+A literature refresh through 2026-08-10 found direct prior work on:
+
+- augmented state for STL-guided RL;
+- STL-constrained Lagrangian DRL;
+- online STL values used as RL observations or rewards;
+- temporal-logic monitor violations converted into PPO-Lagrangian costs;
+- full-STL multi-constrained RL.
+
+Therefore, monitor state, logic-to-cost conversion, and Lagrangian Safe RL are
+not standalone novelty claims. Stage I is the verified gold-STL downstream
+baseline and an error-isolation experiment for the broader language-grounded
+project.
+
+### D23. The current project-level research question compares representations
+
+The provisional research question is:
+
+> Under the same online Safe RL backend and environment, does an explicit
+> NL-to-STL intermediate representation provide better semantic fidelity,
+> trace-level diagnosability, and downstream temporal-safety behavior than a
+> direct natural-language-to-cost predictor?
+
+The two paths must share the same task reward, Safe RL algorithm, policy
+architecture, cost budget, seeds, and gold offline evaluation oracle. Their
+train/test specification split and evaluation trajectories must be matched.
+Different supervision types, annotation counts, model capacities, and
+pretrained resources must be disclosed.
+
+### D24. Stage I provides the gold-STL reference condition for Stage II
+
+Stage I remains unchanged at the implementation level. Its result will establish
+whether the downstream path works when translation and language grounding errors
+are removed. This is a semantic reference and feasibility baseline, not a
+mathematical upper bound on policy performance. Stage II must include at least:
+
+- human-verified gold STL;
+- explicit NL-to-STL followed by the verified monitor;
+- direct language-conditioned cost prediction.
+
+The expensive RL comparison must be preceded by formula-level and trace-level
+cost-label evaluation.
+
+### D25. Novelty language remains provisional
+
+The targeted review found no exact controlled comparison matching D23 as of
+2026-08-10. This is not proof of universal absence. The literature search must
+be refreshed before paper submission, and the project must not claim the first
+use of STL in RL, STL in Safe RL, temporal monitor state, or logic-to-cost PPO.
+
+The detailed evidence and revised experimental path are recorded in
+`docs/research_direction_novelty_feasibility.md`.
+
+### D26. The first project-level contribution is framed as a controlled benchmark
+
+The project will first build an evaluation protocol containing controlled
+language/formula pairs, semantic minimal pairs, saved trajectories, gold
+monitor labels, and matched downstream Safe RL settings. It will not promise a
+new translator, monitor, or optimizer in advance. A method contribution should
+be designed only after this comparison identifies a reproducible limitation in
+existing explicit-formal or direct-cost approaches.
+
+### D27. The end-to-end pipeline is the authoritative long-term execution map
+
+`docs/END_TO_END_RESEARCH_PIPELINE.md` defines the complete sequence from the
+current gold-STL control through controlled benchmark construction, baseline
+reproduction, offline semantic evaluation, matched online Safe RL comparison,
+predefined result branches, method refinement, and broader validation.
+
+Completing an immediate work package does not require redesigning the project
+from scratch. The next unfinished work package in that document becomes the
+default next objective unless a blocking open decision is explicitly listed
+here.
+
+### D28. Stage I controls are not representation-method baselines
+
+Task-only, native hazard cost, and gold-STL cost are downstream control
+conditions. They establish task learnability, an instantaneous geometric-cost
+reference, and the gold formal reference. They do not replace comparisons with
+published natural-language safety methods.
+
+The Stage II representation comparison must include an explicit NL-to-STL path,
+a published-style direct NL-to-cost baseline, and a history-aware direct-cost
+baseline capable of representing bounded temporal requirements.
+
+### D29. The project does not yet have a confirmed novel algorithm
+
+The explicit formal path is currently `our candidate formal pipeline`, not a
+confirmed novel method. Its hypothesized advantages are explicit temporal
+semantics, conditional monitor correctness, inspectable error decomposition,
+and violation-event cost construction. These advantages must be tested against
+strong baselines under matched information and compute reporting.
+
+If no new algorithmic component is added, the contribution must be framed as a
+controlled benchmark, evaluation protocol, and error analysis. A method claim
+requires a specific mechanism motivated by a measured failure mode, a closest
+prior-work comparison, and an ablation.
+
 ## Open decisions
 
 ### O6. Quantitative success criterion
@@ -224,7 +324,30 @@ Before the main training study, predeclare:
 - acceptable loss in goal success or return;
 - number of seeds;
 - evaluation episode count;
-- uncertainty reporting.
+- uncertainty reporting;
+- an explicit `lagrange_cfgs.cost_limit` for each cost condition;
+- how native step cost and STL missed-obligation event cost are normalized or
+  assigned semantically comparable budgets;
+- a positive-cost PPO-Lagrangian sanity requirement before full training;
+- one common gold-STL offline evaluation oracle for every learned policy.
+
+The default OmniSafe numerical cost limit must not be inherited silently. Native
+hazard cost and STL event cost use different units, so equal numeric limits do
+not automatically define a fair comparison.
+
+### O7. Stage II controlled language and direct-cost baseline
+
+Before Stage II implementation, fix:
+
+- the supported STL formula templates;
+- the semantic minimal-pair taxonomy;
+- the direct NL-to-cost baseline implementation;
+- which published implementation is reproduced exactly and which components
+  are adapted to this benchmark;
+- the causal-history representation for the strong direct-cost baseline;
+- the NL-to-STL translator implementation;
+- formula-equivalence and trace-label metrics;
+- whether a human formula-confirmation condition is included.
 
 ## Deferred to Stage II
 

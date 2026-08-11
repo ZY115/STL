@@ -2,7 +2,9 @@
 
 ## Project objective
 
-This repository records and will later implement Stage I of a staged study on language-grounded Signal Temporal Logic (STL) for Safe Reinforcement Learning.
+This repository records the complete staged study on language-grounded Signal
+Temporal Logic (STL) for Safe Reinforcement Learning and currently implements
+its Stage I gold-STL control.
 
 The long-term project translates natural-language safety requirements into STL and uses STL monitoring results during Safe RL training.
 
@@ -13,13 +15,17 @@ Stage I does not contain a language model. It tests the downstream chain with on
 Before proposing changes or running installation commands, read:
 
 1. `README.md`
-2. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-3. `PROJECT_CONTEXT.md`
-4. `DECISIONS.md`
-5. `docs/stage1_rule_monitor_spec.md`
-6. `docs/stage1_plan.md`
-7. `docs/omnisafe_integration_report.md`
-8. `references/REFERENCES.md`
+2. `docs/END_TO_END_RESEARCH_PIPELINE.md`
+3. `DECISIONS.md`
+4. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+5. `PROJECT_CONTEXT.md`
+6. `docs/research_direction_novelty_feasibility.md`
+7. `docs/theory_and_revised_experiment_8.10.md`
+8. `docs/minimum_research_delivery_8.10.md`
+9. `docs/stage1_rule_monitor_spec.md`
+10. `docs/stage1_plan.md`
+11. `docs/omnisafe_integration_report.md`
+12. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -28,7 +34,8 @@ Then summarize:
 - the exact Stage I research question;
 - fixed decisions;
 - open decisions;
-- the immediate next step.
+- the immediate next step;
+- the subsequent work packages and their gates.
 
 ## Fixed Stage I decisions
 
@@ -43,6 +50,17 @@ Then summarize:
 - Reference STL monitor: RTAMT.
 - Native hazard cost and STL-derived cost must remain separate.
 - The first experiment uses one STL rule only.
+
+## Research positioning
+
+- Do not claim novelty for STL state augmentation, STL monitoring, conversion
+  of temporal violations into cost, or Lagrangian Safe RL integration.
+- Stage I is the verified gold-STL downstream baseline.
+- The provisional project-level contribution is a controlled benchmark that
+  compares explicit `NL -> STL -> verified cost` with direct
+  `NL -> predicted cost` under the same online Safe RL backend.
+- Treat this novelty conclusion as time-bounded and refresh the search before
+  submission.
 
 Do not change these decisions silently. Record any proposed change in `DECISIONS.md` with its rationale and expected impact.
 
@@ -78,10 +96,16 @@ main training:
 5. freeze matched task-only, native-cost, and STL-cost configurations;
 6. align per-vector rollout length with complete episode horizons so an
    OmniSafe epoch reset cannot erase a pending obligation;
-7. distinguish proposed values from user-confirmed decisions.
+7. set and record condition-specific `lagrange_cfgs.cost_limit` values instead
+   of silently inheriting the OmniSafe default;
+8. require at least one nonzero STL event cost inside a PPO-Lagrangian rollout;
+9. distinguish proposed values from user-confirmed decisions.
 
 Do not run the main RL study until these choices are confirmed and recorded in
 `DECISIONS.md`. Do not add the Stage II language layer during this milestone.
+After completing the current gate, continue with the next unfinished work
+package in `docs/END_TO_END_RESEARCH_PIPELINE.md`; do not reduce the handoff to
+one isolated next-step instruction.
 
 ## Engineering expectations
 
@@ -101,6 +125,7 @@ Do not run the main RL study until these choices are confirmed and recorded in
 After each milestone:
 
 - update `README.md` current status;
+- update the status table in `docs/END_TO_END_RESEARCH_PIPELINE.md`;
 - update `DECISIONS.md` when a decision is made;
 - record commands and versions in a reproducible setup document;
 - record failures and unresolved questions;

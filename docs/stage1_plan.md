@@ -6,6 +6,15 @@
 > `docs/stage1_rule_monitor_spec.md`. That specification takes precedence over
 > older shorthand in this plan or the slides.
 
+> **Research-positioning update (2026-08-10):** augmented state for STL,
+> STL-constrained Lagrangian DRL, and monitor-to-cost Safe RL have already been
+> studied. Stage I is therefore a verified gold-STL baseline and downstream
+> integration experiment, not a claim of a new STL-to-Safe-RL algorithm. The
+> provisional project-level contribution is a later controlled comparison of
+> explicit `NL -> STL -> verified cost` against direct `NL -> predicted cost`
+> under the same online Safe RL backend. See
+> `docs/research_direction_novelty_feasibility.md`.
+
 ## 1. Purpose and Stage I Objective
 
 The long-term research goal is to accept a natural-language task containing both a task objective and a temporal safety requirement, translate the safety requirement into Signal Temporal Logic (STL), and use the resulting specification during Safe Reinforcement Learning (Safe RL) training.
@@ -13,6 +22,12 @@ The long-term research goal is to accept a natural-language task containing both
 Stage I deliberately removes the language component. It asks a narrower question:
 
 > If one correct STL safety rule is already available, can we monitor it correctly, convert its evaluation into a Safe RL cost, and reduce temporal safety failures without making the navigation task unusable?
+
+This question is an essential baseline and diagnostic gate. A positive result
+does not establish algorithmic novelty because prior work has already combined
+STL constraints, augmented state, and Lagrangian DRL. It establishes the
+gold-STL downstream condition needed to attribute later end-to-end failures to
+language translation, grounding, cost labeling, or policy optimization.
 
 The Stage I experiment will use one manually written, or gold, STL rule in one controlled navigation benchmark. Its purpose is to test the downstream chain:
 

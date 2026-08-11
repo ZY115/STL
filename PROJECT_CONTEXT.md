@@ -500,3 +500,96 @@ When future discussions produce a durable conclusion:
 - keep the experiment question stable unless a documented reason requires changing it.
 
 The repository documents, rather than any one Codex account's memory, are the authoritative project context.
+
+## 20. 2026-08-10 novelty correction
+
+A targeted literature refresh showed that the previously considered core idea
+is already covered by prior work. Existing papers have introduced compact state
+augmentation for STL objectives, STL-constrained Lagrangian DRL, online STL
+monitor values as RL inputs/rewards, temporal-logic monitor-to-cost PPO, and
+full-STL multi-constrained RL.
+
+The project must therefore not claim that the following pipeline is itself new:
+
+```text
+given STL -> monitor state/violation cost -> Lagrangian Safe RL
+```
+
+Stage I remains technically valid and necessary, but it is now explicitly the
+verified gold-STL downstream baseline rather than the final research
+contribution.
+
+## 21. Revised project-level research question
+
+The provisional research question is:
+
+> Under the same online Safe RL backend and environment, does an explicit
+> NL-to-STL intermediate representation provide better semantic fidelity,
+> trace-level diagnosability, and downstream temporal-safety behavior than a
+> direct natural-language-to-cost predictor?
+
+This comparison connects three neighboring lines that have largely been studied
+separately:
+
+- direct free-form natural-language cost prediction for Safe RL;
+- natural-language-to-temporal-logic translation;
+- STL-constrained RL with a formula supplied in advance.
+
+The targeted review found no exact controlled study that compares the first and
+second paths under the same online Safe RL backend while also measuring
+formula-level, trace-label, and policy-level errors. This is provisional rather
+than absolute novelty and must be rechecked before submission.
+
+## 22. Consequence for the staged plan
+
+Stage I is unchanged at the implementation level:
+
+```text
+gold STL -> verified monitor -> OmniSafe wrapper -> matched Safe RL evaluation
+```
+
+Its result supplies the gold semantic reference and downstream feasibility
+baseline for Stage II. It is not a mathematical upper bound on policy return or
+violation rate.
+
+Stage II is revised to compare:
+
+```text
+gold STL -> verified monitor -> fixed Safe RL backend
+NL -> STL -> verified monitor -> fixed Safe RL backend
+NL -> learned cost predictor -> fixed Safe RL backend
+```
+
+Before any expensive RL run, each cost generator is evaluated on the same saved
+trajectory corpus against the gold monitor. The language set must include
+minimal semantic pairs involving negation, temporal scope, persistence,
+deadline changes, conjunction, and disjunction. This makes small but
+meaning-changing language edits measurable rather than anecdotal.
+
+The complete novelty evidence, mathematical error decomposition, implementation
+resources, and claim limitations are in
+`docs/research_direction_novelty_feasibility.md`.
+
+## 23. Current contribution type
+
+The revised direction is initially a benchmark and evaluation problem. Its
+artifact will pair controlled temporal-safety language with gold STL, semantic
+minimal pairs, trajectory-level oracle labels, and matched Safe RL experiments.
+It does not assume in advance that a new learning algorithm is required. If the
+comparison reveals a stable failure mode, that evidence will define the later
+method contribution.
+
+## 24. Long-term execution continuity
+
+The complete execution route is now recorded in
+`docs/END_TO_END_RESEARCH_PIPELINE.md`. It separates the three research stages
+from seven executable work packages and defines each package's required inputs,
+outputs, acceptance gate, and predefined result branches.
+
+This resolves an earlier handoff weakness: the repository must not tell a new
+computer only the immediate next command. After the current gold-STL control is
+complete, the documented route continues through controlled benchmark
+construction, published and strong-baseline implementation, offline semantic
+evaluation, matched online Safe RL comparison, contribution selection, and
+external-validity expansion. Only blocking decisions listed in `DECISIONS.md`
+require implementation to pause for confirmation.
