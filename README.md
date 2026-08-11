@@ -146,8 +146,9 @@ seed 数、evaluation episode 数和不确定性报告方法。当前仍不开�
 5. `docs/CURRENT_STAGE1_STATUS.md`
 6. `docs/stage1_rule_monitor_spec.md`
 7. `docs/stage1_plan.md`
-8. `docs/slides/stage1_experiment_plan_slides.pdf`
-9. `references/REFERENCES.md`
+8. `docs/slides/stage1_current_progress_slides.pdf`
+9. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
+10. `references/REFERENCES.md`
 
 ## 文件夹说明
 

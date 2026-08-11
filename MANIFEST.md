@@ -43,6 +43,8 @@ wrapper and training code do not yet exist.
 
 | File | Purpose |
 |---|---|
+| `docs/slides/stage1_current_progress_slides.pptx` | Editable 9-page overview of the three-stage research path, current Stage I evidence, and immediate next milestone |
+| `docs/slides/stage1_current_progress_slides.pdf` | Distribution copy of the current Stage I progress overview |
 | `docs/slides/stage1_experiment_plan_slides.pdf` | Final 9-page staged experiment plan |
 | `docs/slides/stage1_experiment_plan_slides.tex` | TeX source for the Stage I plan slides |
 | `docs/slides/literature_review_three_papers_slides_6p.pdf` | Condensed 6-page literature-to-problem narrative |
