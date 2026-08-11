@@ -405,6 +405,31 @@ to require substantial GPU time and create the first behavioral dataset. After
 that launch is approved, all 15 runs, 1,500 paired evaluations, analysis, WP1
 report, O8 proposal, and the non-compute WP2/O7 proposal proceed continuously.
 
+### D34. The full-pilot launch-preparation gate passed
+
+On 2026-08-11 the complete package authorized by D33 passed:
+
+- a deterministic, job-resumable 15-cell condition/seed runner;
+- immutable attempt evidence and hash-verified successful-job skipping;
+- fixed-final-checkpoint immediate evaluation for each job;
+- the frozen D31 paired hierarchical analysis and 11 focused tests;
+- one excluded 100k exact-scale `gold_stl_cost` CUDA preflight using seed
+  `20260811` and ten excluded evaluation seeds;
+- a launch-readiness report with measured resources and recovery procedure.
+
+The preflight measured 335.68 transitions/second, 297.90 seconds for 100k
+training transitions, 17.21 seconds for ten evaluations, and 90 MiB PyTorch
+peak reserved VRAM. A linear projection gives approximately 13.13 hours for
+the 15 full training jobs plus 1,500 evaluations. All routing, fixed-checkpoint,
+direct-oracle and RTAMT checks passed. Two earlier attempts failed before Agent
+construction or rollout and executed zero transitions; their device-index and
+explicit-environment-registration causes were fixed and retained.
+
+This decision closes implementation/preflight readiness only. No frozen seed
+has run, and it does not approve the full 15M-transition compute package,
+change D31/D32, establish convergence, or provide behavioral evidence. The
+single owner launch authorization remains required.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

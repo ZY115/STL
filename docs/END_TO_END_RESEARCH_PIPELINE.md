@@ -467,7 +467,7 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | D31/D32 and three-condition sanity passed; full runner/analysis and behavior pilot incomplete | 执行 `CURRENT_EXECUTION_DIRECTIVE.md`：runner + analysis + tests + 100k preflight；readiness 审核后一次性完成 15 runs、1,500 evaluations 和 report |
+| WP1 Gold-STL control | D31/D32、三条件 sanity、runner、analysis、54 tests 和 excluded 100k exact-scale preflight 已通过；behavior pilot 未开始 | 审阅 `stage1_pilot_launch_readiness.md` 并进行一次 compute authorization；批准后连续完成 15 runs、1,500 evaluations、analysis 和 report |
 | WP2 Controlled benchmark | not started | O7 后定义 schema 和 pilot set |
 | WP3 Offline methods | not started | 选择 translator、published direct 和 history-aware direct baselines |
 | WP4 Online comparison | not started | 等 WP3 trace gate |

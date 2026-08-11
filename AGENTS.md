@@ -96,15 +96,16 @@ under `configs/stage1_pilot/`. The three-condition 10,000-transition-per-
 condition sanity gate passed on 2026-08-11 with exact cost routing and common
 gold-oracle evaluation. The complete 1M runs have not started.
 
-The immediate work package is the complete authorized scope in
-`docs/CURRENT_EXECUTION_DIRECTIVE.md`: implement a resumable 15-job matrix
-runner, the frozen paired hierarchical analysis, focused tests, one excluded
-100k exact-scale throughput preflight, and a launch-readiness report. Complete
-that package continuously; do not stop after each script or test to request the
-next instruction.
+The complete authorized preparation package in
+`docs/CURRENT_EXECUTION_DIRECTIVE.md` passed on 2026-08-11: the resumable
+15-job runner, frozen paired hierarchical analysis, focused tests, excluded
+100k exact-scale throughput preflight, and launch-readiness report are complete.
+The preflight measured 335.68 transitions/second and projected approximately
+13.13 hours for training plus 1,500 evaluations. No frozen pilot job started.
 
-The 15M-transition full pilot remains one explicit compute-authorization gate.
-Do not launch it manually before the readiness report is reviewed. After launch
+The immediate task is now the one explicit compute-authorization gate for the
+15M-transition full pilot. Do not launch it before the owner reviews
+`docs/stage1_pilot_launch_readiness.md` and explicitly approves. After launch
 approval, training, final-checkpoint evaluation, analysis, WP1 reporting, O8
 proposal, and the non-compute WP2/O7 proposal form one continuous package.
 

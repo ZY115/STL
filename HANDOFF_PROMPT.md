@@ -36,13 +36,14 @@ After confirming the summary, use:
 ```text
 The Stage I environment-inspection, rule-and-monitor, visualization,
 OmniSafe wrapper/integration-smoke, on-policy positive-cost sanity, common
-checkpoint evaluator, pilot-protocol freeze, and three-condition small-budget
-sanity milestones are complete.
+checkpoint evaluator, pilot-protocol freeze, three-condition small-budget
+sanity, resumable runner, frozen analysis, tests, excluded 100k exact-scale
+preflight, and launch-readiness milestones are complete.
 The calibrated rule is d_warn=0.45, d_safe=0.55, K=79 environment steps.
 
-Continue with the entire authorized package in
-docs/CURRENT_EXECUTION_DIRECTIVE.md. Do not launch the full 15M-transition pilot
-manually and do not add the Stage II language model.
+Read docs/stage1_pilot_launch_readiness.md. Do not launch the full
+15M-transition pilot until the owner gives the one explicit compute
+authorization, and do not add the Stage II language model.
 
 Read docs/omnisafe_integration_report.md and its tracked smoke summary. Preserve
 the fixed rule, three cost-routing conditions, identical temporal observation,
@@ -56,20 +57,17 @@ evaluation episodes, 10,000 hierarchical bootstrap replicates, fixed final
 checkpoints, and the different cost units. Treat 1M transitions as a pilot
 budget and inspect learning curves before any convergence claim.
 
-The 10k-per-condition sanity gate passed. Full 1M runs have not started. The
-repository still needs a resumable 15-job runner, frozen hierarchical analysis,
-focused tests, one excluded 100k exact-scale preflight, and a launch-readiness
-report. Complete all of those items continuously; do not stop after each script
-or test to ask for another instruction. Keep O8 open for the final main-study
-standard.
+The 10k-per-condition sanity and 100k exact-scale preflight gates passed. Full
+1M runs have not started. The measured projection is approximately 13.13 hours
+for all training and evaluation. Keep O8 open for the final main-study standard.
 
 D32 enabled and validated RTX 4090 CUDA training with torch 2.4.1+cu124. The
 frozen backend is cuda:0 for every condition, and deterministic launchers must
 set CUBLAS_WORKSPACE_CONFIG=:4096:8. Read docs/cuda_enablement_report.md and do
 not mix historical CPU sanity artifacts with the CUDA pilot.
 
-Stop once at the explicit full-pilot compute gate with the measured readiness
-report. After launch approval, run all 15 jobs, evaluate 1,500 paired episodes,
+The work is currently stopped at the explicit full-pilot compute gate. After
+launch approval, run all 15 jobs, evaluate 1,500 paired episodes,
 analyze, report WP1, prepare O8, and begin the non-compute WP2/O7 proposal as one
 continuous package. If a different listed blocking decision lacks confirmation,
 prepare a decision proposal and continue every other unblocked item; do not end

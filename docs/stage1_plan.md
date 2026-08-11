@@ -405,8 +405,9 @@ independence are covered by wrapper tests.
 **Goal:** connect the wrapped environment to OmniSafe without changing unrelated components.
 
 **Status:** bounded integration smoke completed on 2026-08-10. D31 pilot
-configs were frozen and the three-condition small-budget sanity passed on
-2026-08-11; full matched-seed pilot training has not run.
+configs, three-condition small-budget sanity, resumable matrix runner, frozen
+analysis, 54 tests and excluded 100k exact-scale preflight passed by
+2026-08-11; full matched-seed pilot training awaits one compute authorization.
 
 The main conditions should share:
 
@@ -418,11 +419,11 @@ The main conditions should share:
 
 The primary change between conditions should be the safety cost supplied to the constrained learner.
 
-**Current output:** a reproducible three-condition interface configuration, one
-real positive STL-cost routing probe, a 64-transition PPO-Lagrangian CPU smoke,
-frozen pilot settings, and a 10k-transitions-per-condition sanity with final
-checkpoint gold evaluation. These are engineering results, not the full pilot
-behavioral comparison.
+**Current output:** a reproducible three-condition interface configuration,
+positive-cost probes, frozen pilot settings, 10k-per-condition sanity,
+hash-verified runner, paired analysis, and a 100k exact-scale preflight with
+final-checkpoint gold evaluation. These are engineering results, not the full
+pilot behavioral comparison.
 
 ### Work Package 6: Evaluation and Logging
 

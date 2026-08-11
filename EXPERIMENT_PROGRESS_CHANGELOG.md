@@ -42,7 +42,10 @@
 13. 完整 episode 对齐的 PPOLag on-policy positive-cost sanity；
 14. 统一 checkpoint evaluator、independent oracle 与 RTAMT gate；
 15. O6 Stage I pilot protocol 确认与冻结；
-16. 三条件 10k transitions/condition matched engineering sanity。
+16. 三条件 10k transitions/condition matched engineering sanity；
+17. 可恢复 15-job matrix runner 和冻结 paired hierarchical analysis；
+18. 54 项完整测试；
+19. excluded 100k exact-scale CUDA preflight 与 launch-readiness report。
 
 当前尚未开始 matched-seed 主训练，也没有形成 STL-cost condition 能改善安全行为的
 实验结论。
@@ -61,7 +64,8 @@
 | 2026-08-11 | Pre-main engineering gate | 完成 | on-policy event cost、checkpoint evaluator、oracle/RTAMT evidence |
 | 2026-08-11 | Stage I pilot protocol | 已确认 | D31；仅限 pilot，不是最终 main-study 标准 |
 | 2026-08-11 | Three-condition pilot sanity | 完成 | frozen composition、cost routing、final checkpoints、paired gold evaluation |
-| 待定 | Full matched pilot training | 未开始 | 5 seeds × 3 conditions × 1M transitions 和正式 paired evaluation |
+| 2026-08-11 | Full-pilot launch preparation | 完成 | runner、analysis、tests、100k preflight、readiness report |
+| 待定 | Full matched pilot training | 等待一次授权 | 5 seeds × 3 conditions × 1M transitions 和正式 paired evaluation |
 
 ## 4. 已冻结且未被本次修改改变的研究定义
 
@@ -244,9 +248,10 @@ O6 已由 D31 确认为 pilot protocol。O8 仍需在 pilot learning curves 和 
 
 ## 10. 下一步
 
-下一里程碑是使用 frozen D31 configs 运行五 seed、三 condition 的 full pilot，随后
-进行 paired gold evaluation、10,000 次 hierarchical bootstrap 和 learning-curve
-review。RTX 4090 CUDA 路径已于同日恢复并通过 D32 gate。
+runner、analysis、tests 和 exact-scale preflight 已完成。下一 gate 是负责人审阅
+`docs/stage1_pilot_launch_readiness.md` 并明确授权或拒绝完整 15M-transition pilot。
+只有获得授权后，才使用 frozen D31 configs 连续运行五 seed、三 condition、paired
+gold evaluation、10,000 次 hierarchical bootstrap 和 learning-curve review。
 
 ## 11. 维护规则
 
@@ -406,3 +411,46 @@ CUDA 功能已经解决。由于小网络和模拟器开销，当前 sanity 不�
 
 该修改不改变 D31 scientific protocol、D32 CUDA backend 或 STL semantics，只修正
 项目执行和 handoff 粒度。
+
+## 17. 2026-08-11 Full-pilot execution preparation 与 exact-scale preflight
+
+### 17.1 Runner 与 manifest contract
+
+- 新增 `src/safety_stl/pilot_runner.py` 和 `scripts/run_stage1_pilot.py/.sh`；
+- 固定 3 conditions × 5 seeds 的 condition-major 顺序；
+- 支持 dry-run、condition/seed selection、resume、train-only 和 evaluate-only；
+- 每个 attempt 独立保存，不覆盖成功结果；
+- 只有 Git/source/config/checkpoint/progress/evaluation hashes 全部匹配时，resume 才
+  跳过成功 job；
+- 每个 job 使用 fixed final checkpoint 并立即完成 100 paired evaluation；
+- 未提供 `--authorized-full-pilot` 时，runner 拒绝启动正式 pilot。
+
+### 17.2 冻结统计分析
+
+- 新增 `src/safety_stl/pilot_analysis.py` 和 `scripts/analyze_stage1_pilot.py`；
+- 要求完整 15-job matrix，保留 per-seed 与 per-episode records；
+- 实现 pooled missed obligations per trigger、task-zero fallback、absolute/relative
+  reduction、deadline/terminal 分项和 goal non-inferiority；
+- 实现固定 RNG seed 的 10,000 次 paired hierarchical percentile bootstrap；
+- N/A 不替换为 0；learning curves 只做 descriptive review，不声称收敛。
+
+### 17.3 测试与 preflight
+
+新增 11 项 runner/analysis 聚焦测试，完整 suite 从 43 增至 54 项并全部通过。
+`pip check`、YAML parsing、Python compile、shell syntax 和 dry-run 15-job count 通过。
+
+excluded preflight 使用 seed `20260811`、`gold_stl_cost`、10 vector envs、10,000
+steps/epoch、100,000 transitions 和 10 条 excluded evaluations。成功 attempt 的训练
+时长为 297.90 秒，吞吐为 335.68 transitions/s，PyTorch peak reserved VRAM 为
+90 MiB；gold-oracle 全部一致，RTAMT 最大 difference 为 0。线性估计完整 package
+约 13.13 小时和 14.24 MB。
+
+前两个 attempt 因 memory-stat device 参数和 custom environment 未显式注册而在
+rollout 前失败，执行 transition 数为 0；问题修复后 attempt 3 完成。随后
+`--resume` 返回 `skipped_verified_success`。
+
+### 17.4 当前 gate
+
+新增 `docs/stage1_pilot_launch_readiness.md` 和 compact
+`results/pilot_preflight/` evidence。完整 15M pilot 没有启动。当前只等待一次明确的
+compute authorization；本次工作不改变冻结协议，也不构成行为或收敛结论。

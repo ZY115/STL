@@ -16,8 +16,9 @@ current directive 说明“本轮连续做到哪里”。
 
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
 STL monitor/oracle、OmniSafe wrapper、integration smoke、冻结的 Stage I pilot
-protocol、三条件 sanity 证据，以及一条命令启动的实时/录像可视化入口。完整 1M
-pilot 对照训练尚未开始。
+protocol、三条件 sanity、可恢复 15-job runner、冻结统计分析和 100k exact-scale
+preflight 证据，以及一条命令启动的实时/录像可视化入口。完整 1M pilot 对照训练
+尚未开始。
 
 ## 长期研究目标
 
@@ -159,6 +160,14 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 - sanity 使用非 pilot seed 和每条件 3 条评估轨迹，不构成行为比较或收敛证据；
 - 已在 RTX 4090 上启用 `torch 2.4.1+cu124`；Stage I wrapper tensor、完整 horizon
   positive-cost PPOLag update 和三条件 sanity 均在 `cuda:0` 通过；
+- 已实现可恢复的 15-job matrix runner；成功 job 只有在 commit/config/checkpoint/
+  progress/evaluation hashes 全部匹配时才会被 `--resume` 跳过；
+- 已实现冻结的 paired hierarchical analysis、zero-baseline、goal non-inferiority、
+  10,000-replicate bootstrap 和 learning-curve review；
+- 完整自动测试增至 54 项，runner/analysis 的 11 项聚焦测试全部通过；
+- 已完成 excluded 100k exact-scale CUDA preflight：335.68 transitions/s，PyTorch
+  peak reserved VRAM 90 MiB，gold oracle/RTAMT agreement 全部通过；
+- 预计 15 jobs 加 1,500 evaluations 约 13.13 小时、约 14.24 MB 产物；
 - 完整 1M×3×5 pilot training 未启动。
 
 ## 可视化快速启动
@@ -183,11 +192,11 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-O6 pilot protocol 已确认，冻结配置、CUDA 和三条件 small-budget sanity gate 已完成。
-当前先执行 `docs/CURRENT_EXECUTION_DIRECTIVE.md`：实现可恢复 15-job runner、冻结
-hierarchical analysis、测试和一个排除于 inference 的 100k exact-scale preflight，
-形成 launch-readiness report。Full pilot 的一次 compute authorization 通过后，15
-runs、1,500 paired evaluations、统计分析和 WP1 report 连续完成，不再逐文件询问。
+O6 pilot protocol、冻结配置、CUDA、三条件 small-budget sanity、可恢复 runner、
+统计 analysis、54 项测试和 excluded 100k exact-scale preflight 均已完成。当前唯一
+下一 gate 是审阅 `docs/stage1_pilot_launch_readiness.md` 并明确决定是否授权完整
+15M-transition pilot。获得授权后，15 runs、1,500 paired evaluations、统计分析和
+WP1 report 连续完成，不再逐文件询问。
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -217,6 +226,12 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 
 ```bash
 ./scripts/validate_cuda_stage1.sh
+```
+
+查看 15-job dry run：
+
+```bash
+./scripts/run_stage1_pilot.sh --dry-run
 ```
 
 冻结协议、gate 结果和解释边界见
@@ -264,6 +279,7 @@ safety-stl-stage1-handoff/
 │   ├── stage1_pre_main_proposal.yaml
 │   ├── cuda_validation.yaml
 │   ├── stage1_pilot_sanity.yaml
+│   ├── stage1_pilot_preflight.yaml
 │   └── stage1_pilot/
 ├── scripts/
 │   ├── collect_rule_calibration.py
@@ -278,6 +294,9 @@ safety-stl-stage1-handoff/
 │   ├── evaluate_stage1_checkpoint.sh
 │   ├── run_stage1_pilot_sanity.py
 │   ├── run_stage1_pilot_sanity.sh
+│   ├── run_stage1_pilot.py
+│   ├── run_stage1_pilot.sh
+│   ├── analyze_stage1_pilot.py
 │   ├── validate_cuda_stage1.py
 │   ├── validate_cuda_stage1.sh
 │   └── visualize_stage1.sh
@@ -288,6 +307,8 @@ safety-stl-stage1-handoff/
 │   ├── omnisafe_env.py
 │   ├── evaluation.py
 │   ├── pilot_protocol.py
+│   ├── pilot_runner.py
+│   ├── pilot_analysis.py
 │   └── visualization.py
 ├── tests/
 │   ├── test_distance_signal.py
@@ -295,6 +316,8 @@ safety-stl-stage1-handoff/
 │   ├── test_oracle_agreement.py
 │   ├── test_omnisafe_wrapper.py
 │   ├── test_evaluation.py
+│   ├── test_pilot_runner.py
+│   ├── test_pilot_analysis.py
 │   ├── test_visualization.py
 │   └── fixtures/
 ├── docs/
@@ -312,6 +335,7 @@ safety-stl-stage1-handoff/
 │   ├── omnisafe_integration_report.md
 │   ├── stage1_pre_main_study_proposal.md
 │   ├── pre_main_engineering_gate_report.md
+│   ├── stage1_pilot_launch_readiness.md
 │   ├── visualization.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/

@@ -102,12 +102,12 @@ the CUDA evidence.
 
 ## Gate boundary and next action
 
-The engineering sanity gate is closed. No full 1M run was started. The next
-authorized package is defined by `docs/CURRENT_EXECUTION_DIRECTIVE.md`: build a
-resumable 15-job runner, frozen hierarchical analysis, tests, and one excluded
-100k exact-scale preflight before requesting the single full-pilot compute
-decision. After that launch is approved, the five-seed, three-condition pilot,
-paired final-checkpoint evaluation, bootstrap report and WP1 closure proceed
-continuously. Before treating its result as converged or converting the pilot
-protocol into a final main-study standard, inspect learning curves and record a
-new decision under O8.
+The engineering sanity gate is closed. No full 1M run was started. The complete
+follow-up package defined by `docs/CURRENT_EXECUTION_DIRECTIVE.md` subsequently
+passed: resumable runner, frozen analysis, focused tests, and excluded 100k
+exact-scale preflight. The project is now at the single compute decision in
+`docs/stage1_pilot_launch_readiness.md`. After launch approval, the five-seed,
+three-condition pilot, paired final-checkpoint evaluation, bootstrap report and
+WP1 closure proceed continuously. Before treating its result as converged or
+converting the pilot protocol into a final main-study standard, inspect
+learning curves and record a new decision under O8.

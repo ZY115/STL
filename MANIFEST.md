@@ -48,6 +48,7 @@ full pilot training has not started.
 | `docs/pre_main_engineering_gate_report.md` | On-policy positive-cost and common checkpoint-evaluator evidence |
 | `docs/stage1_pilot_sanity_report.md` | Frozen pilot protocol and three-condition engineering-sanity evidence |
 | `docs/cuda_enablement_report.md` | RTX 4090/PyTorch CUDA enablement, deterministic launch requirement, and PPOLag evidence |
+| `docs/stage1_pilot_launch_readiness.md` | Completed runner/analysis/tests/preflight gate, exact launch/resume commands, resource projection, risks, and compute decision request |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -101,6 +102,7 @@ These are reference snapshots, not project implementation code.
 | `configs/stage1_pilot/*.yaml` | Frozen task-only, native-cost, and gold-STL condition overlays |
 | `configs/stage1_pilot_sanity.yaml` | Engineering-only three-condition sanity overrides and acceptance gate |
 | `configs/cuda_validation.yaml` | Fixed CUDA device/runtime/wrapper/full-horizon validation contract |
+| `configs/stage1_pilot_preflight.yaml` | Excluded 100k exact-vector/epoch-scale throughput preflight contract |
 | `scripts/collect_rule_calibration.py` | Formal controlled/random data collection and parameter selection |
 | `scripts/generate_monitor_fixtures.py` | Stable environment fixture generation |
 | `scripts/run_monitor_agreement.py` | Machine-readable agreement evaluation and report generation |
@@ -116,6 +118,9 @@ These are reference snapshots, not project implementation code.
 | `scripts/run_stage1_pilot_sanity.sh` | Conda-aware three-condition sanity launcher |
 | `scripts/validate_cuda_stage1.py` | CUDA device, wrapper tensor, dependency, and positive-cost PPOLag validation |
 | `scripts/validate_cuda_stage1.sh` | Deterministic cuBLAS CUDA validation launcher |
+| `scripts/run_stage1_pilot.py` | 15-job dry-run/selection/resume/train/evaluate orchestration and compute gate |
+| `scripts/run_stage1_pilot.sh` | Deterministic CUDA launcher for pilot runner and preflight |
+| `scripts/analyze_stage1_pilot.py` | Complete-matrix frozen analysis CLI |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
@@ -123,6 +128,8 @@ These are reference snapshots, not project implementation code.
 | `src/safety_stl/omnisafe_env.py` | Three cost modes, shared temporal observation, vector monitor lifecycle, and OmniSafe registration |
 | `src/safety_stl/evaluation.py` | Checkpoint loading, gold oracle/RTAMT verification, and policy metrics |
 | `src/safety_stl/pilot_protocol.py` | D31 validation and OmniSafe config composition |
+| `src/safety_stl/pilot_runner.py` | Immutable attempts, hash verification, fixed checkpoint selection, training/evaluation execution |
+| `src/safety_stl/pilot_analysis.py` | Pooled metrics, paired hierarchical bootstrap, non-inferiority and curve review |
 | `tests/` | Signal, monitor/oracle, visualization, wrapper, vector lifecycle, and stable-fixture tests |
 
 ## Excluded files
@@ -177,11 +184,13 @@ The CUDA gate tracks `results/cuda_validation/summary.json` and README. Bulk
 validation checkpoints/logs remain ignored. The environment lock now includes
 PyTorch 2.4.1+cu124 and its exact CUDA 12.4 runtime dependencies.
 
+The launch-preparation gate tracks `results/pilot_preflight/README.md`, compact
+`summary.json`, and the 15-job dry-run manifest. Raw attempts, checkpoints,
+progress logs and excluded evaluation CSV remain local and ignored.
+
 ## Future additions
 
-The D31 pilot protocol is frozen and the three-condition small-budget sanity has
-passed. The next bounded additions are the resumable matrix runner, frozen
-analysis, tests and excluded 100k preflight in
-`docs/CURRENT_EXECUTION_DIRECTIVE.md`. Full five-seed, three-condition training
-remains one compute gate; the 1M budget is pilot-only and O8 remains open for
-the final main-study standard.
+The D31 protocol, three-condition sanity, resumable matrix runner, frozen
+analysis, 54 tests and excluded 100k preflight have passed. Full five-seed,
+three-condition training remains one explicit compute gate; the 1M budget is
+pilot-only and O8 remains open for the final main-study standard.

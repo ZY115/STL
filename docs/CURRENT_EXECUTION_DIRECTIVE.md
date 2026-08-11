@@ -2,7 +2,7 @@
 
 - **Directive ID:** `WP1-PILOT-EXECUTION-PREP-2026-08-11`
 - **Current WP:** WP1 Gold-STL downstream control
-- **Status:** implementation and exact-scale preflight authorized; full 15M-transition pilot not yet authorized
+- **Status:** preparation package completed; full 15M-transition pilot awaits explicit authorization
 - **Long-term map:** `docs/END_TO_END_RESEARCH_PIPELINE.md`
 - **Scientific protocol:** D31 and `configs/stage1_pilot/`
 
@@ -36,6 +36,13 @@ The 10k sanity is engineering evidence only. Its three evaluation episodes per
 condition are not evidence for or against the Stage I hypothesis.
 
 No full 1M condition/seed run has started.
+
+The complete Sections 4.1--4.5 package passed on 2026-08-11. The runner,
+analysis module and 11 focused tests are present; the complete suite has 54
+passing tests; the excluded 100k exact-scale preflight and ten-episode gold
+evaluation passed; and `docs/stage1_pilot_launch_readiness.md` records the
+resource projection and recovery procedure. The full compute gate remains
+closed.
 
 ## 3. Why the full pilot should not be launched manually yet
 
@@ -231,3 +238,16 @@ already defined:
   method, a cost-learning fix or a benchmark expansion.
 
 The authoritative details remain in `docs/END_TO_END_RESEARCH_PIPELINE.md`.
+
+## 8. Completion record
+
+This directive's authorized preparation package completed on 2026-08-11.
+Measured exact-scale throughput was 335.68 transitions/second. PyTorch peak
+reserved CUDA memory was 90 MiB. Linear projection for fifteen 1M jobs and
+1,500 evaluations is approximately 13.13 hours and 14.24 MB. All cost routing,
+fixed-checkpoint, direct-oracle and RTAMT checks passed. The successful
+preflight resume returned `skipped_verified_success` without retraining.
+
+No full pilot job has started. Section 5 is now the active boundary: wait for
+one explicit owner authorization, then execute the already defined continuous
+post-approval package.

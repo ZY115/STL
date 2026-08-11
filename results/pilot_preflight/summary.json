@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "milestone": "stage1_exact_scale_throughput_preflight",
+  "status": "passed",
+  "scope": "excluded engineering evidence only; not part of pilot inference",
+  "full_15m_pilot_started": false,
+  "job": {
+    "condition": "gold_stl_cost",
+    "training_seed": 20260811,
+    "seed_excluded_from_pilot_analysis": true,
+    "transitions": 100000,
+    "vector_env_nums": 10,
+    "steps_per_epoch": 10000,
+    "epochs": 10,
+    "training_device": "cuda:0",
+    "fixed_final_checkpoint": "epoch-10.pt",
+    "checkpoint_sha256": "5eb76317ee3409bfeb5bb88207872b2e54179a1fe4488ad665c3ee93debdc679",
+    "progress_sha256": "6cfb826fc7ec34b193958c69a23a7acf27ee391125de7f7235e8e8bb92c8be37"
+  },
+  "measured_resources": {
+    "training_wall_clock_seconds": 297.9015517020598,
+    "transitions_per_second": 335.68136664159766,
+    "evaluation_10_episodes_wall_clock_seconds": 17.208216,
+    "peak_gpu_memory_allocated_bytes": 92382208,
+    "peak_gpu_memory_reserved_bytes": 94371840,
+    "training_bytes_at_completion": 90279,
+    "evaluation_bytes": 4662,
+    "successful_attempt_total_bytes": 103193
+  },
+  "projected_full_matrix": {
+    "method": "linear projection from one exact-vector/epoch-scale 100k job and 10 evaluations",
+    "training_jobs": 15,
+    "transitions_per_job": 1000000,
+    "evaluation_episodes_total": 1500,
+    "projected_training_hours": 12.412564654252492,
+    "projected_evaluation_hours": 0.717009,
+    "projected_total_hours": 13.129573654252493,
+    "projected_training_bytes_per_job": 902790,
+    "projected_evaluation_bytes_per_job": 46620,
+    "projected_total_bytes_all_jobs": 14241150,
+    "interpretation": "planning estimate, not a runtime guarantee; reserve operational margin"
+  },
+  "evaluation": {
+    "episode_seeds": [14000, 14001, 14002, 14003, 14004, 14005, 14006, 14007, 14008, 14009],
+    "seeds_excluded_from_pilot_analysis": true,
+    "episode_count": 10,
+    "goal_success_rate_diagnostic_only": 0.8,
+    "trigger_count": 39,
+    "deadline_violation_count": 20,
+    "terminal_unresolved_count": 2,
+    "missed_obligation_rate_per_trigger_diagnostic_only": 0.5641025641025641,
+    "all_online_direct_oracle_agree": true,
+    "rtamt_max_robustness_difference": 0.0
+  },
+  "checks": {
+    "dry_run_contains_exactly_15_jobs": true,
+    "declared_transition_count": true,
+    "ten_progress_rows": true,
+    "full_episode_rollout_alignment": true,
+    "augmented_observation_dimension_63": true,
+    "all_training_metrics_finite": true,
+    "selected_cost_equals_stl_cost_every_epoch": true,
+    "fixed_final_checkpoint_only": true,
+    "ten_excluded_evaluation_episodes": true,
+    "gold_oracle_agreement": true,
+    "rtamt_within_1e_9": true,
+    "resume_verified_success_without_rerun": true,
+    "synthetic_interrupted_resume_test_passed": true
+  },
+  "failure_history": [
+    {
+      "attempt": 1,
+      "status": "failed_before_agent_construction_or_rollout",
+      "cause": "PyTorch 2.4.1 rejected torch.device in reset_peak_memory_stats",
+      "fix": "set cuda device 0 explicitly and use integer device index for memory statistics",
+      "transitions_executed": 0
+    },
+    {
+      "attempt": 2,
+      "status": "failed_before_agent_construction_or_rollout",
+      "cause": "custom OmniSafe environment registration depended on an incidental import",
+      "fix": "make safety_stl.omnisafe_env an explicit runner dependency before Agent construction",
+      "transitions_executed": 0
+    },
+    {
+      "attempt": 3,
+      "status": "success"
+    }
+  ],
+  "repository": {
+    "git_commit_at_run": "84da0dbb40404203864093893585cb4b81beb4c9",
+    "worktree_was_clean": false,
+    "dry_run_manifest_sha256": "3c0e34003414ffc2d30bb10b2182167bf7c72c3ddc1452d1ad531ef299ebda78",
+    "local_success_manifest_sha256": "6b9f2fefed528b648872ee6fc040c70cce709d0ec944e74b995398b830f3710a"
+  },
+  "interpretation_guards": [
+    "do_not_pool_with_training_seeds_1101_2202_3303_4404_5505",
+    "not_behavioral_evidence_for_or_against_the_stage1_hypothesis",
+    "not_a_convergence_claim",
+    "not_a_formal_safety_guarantee"
+  ]
+}

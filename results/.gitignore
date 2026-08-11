@@ -52,3 +52,8 @@ pilot_sanity/evaluation/gold_stl_cost/*
 cuda_validation/*
 !cuda_validation/README.md
 !cuda_validation/summary.json
+!pilot_preflight/
+pilot_preflight/*
+!pilot_preflight/README.md
+!pilot_preflight/summary.json
+!pilot_preflight/dry_run_15_job_manifest.json

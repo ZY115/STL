@@ -44,7 +44,8 @@ Safe RL 学习产生的错误。
 
 目前已经完成环境、信号、规则、参数、monitor、reference agreement、可视化、
 STL-cost wrapper、on-policy positive-cost sanity、统一 checkpoint evaluator、O6
-pilot protocol 冻结和三条件 small-budget sanity；尚未完成 1M×3×5 matched pilot
+pilot protocol 冻结、三条件 small-budget sanity、resumable runner、frozen analysis、
+54 tests 和 excluded 100k exact-scale preflight；尚未完成 1M×3×5 matched pilot
 训练和正式 evaluation。因此目前仍没有 RL 安全改进结论。
 
 ### 2.1 2026-08-10 研究定位修正
@@ -454,10 +455,10 @@ remaining deadline = 154 - 130 = 24 steps
 | Three-condition interface config | 已完成 | cost source 和共享 observation contract 已冻结 |
 | Pilot matched configs | 已完成 | protocol 加三个 condition overlays 已冻结 |
 | Three-condition small-budget sanity | 已完成 | 10k/condition，cost routing/checkpoint/gold evaluator gate 通过 |
-| Resumable full-pilot runner | 未开始 | 15-job matrix、manifest、hash、resume、immediate evaluation |
-| Frozen pilot analysis | 未开始 | hierarchical bootstrap、zero-baseline、goal non-inferiority |
-| Exact-scale throughput preflight | 未开始 | excluded 100k run、wall time、VRAM、disk、readiness report |
-| Full pilot RL training | 未开始 | 5 seeds × 3 conditions × 1M transitions |
+| Resumable full-pilot runner | 已完成 | 15-job matrix、immutable attempts、hash、resume、immediate evaluation |
+| Frozen pilot analysis | 已完成 | hierarchical bootstrap、zero-baseline、goal non-inferiority、curve review |
+| Exact-scale throughput preflight | 已完成 | excluded 100k，335.68 transitions/s，90 MiB reserved VRAM |
+| Full pilot RL training | 等待一次授权 | 5 seeds × 3 conditions × 1M transitions |
 | Evaluation and statistical report | 未开始 | violation、recovery、goal、return、cost、uncertainty |
 | GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
 | Checkpoint visualization | 未开始 | 当前入口还不能加载训练后的 OmniSafe policy |
@@ -556,7 +557,7 @@ improvement。
 
 ## 10. Sanity gate 之后的顺序
 
-O6 pilot protocol、frozen configs 和三条件 sanity 均已完成。接下来按以下顺序：
+O6 pilot protocol、frozen configs、三条件 sanity 和以下前四项均已完成：
 
 1. 按 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 实现可恢复的 15-job matrix runner；
 2. 实现冻结的 paired hierarchical analysis 和自动测试；
@@ -567,9 +568,14 @@ O6 pilot protocol、frozen configs 和三条件 sanity 均已完成。接下来�
 7. 完成 10,000 次 bootstrap、goal non-inferiority、learning-curve 检查和 WP1 report；
 8. 准备 O8，并同步开始不需要 GPU 的 WP2/O7 benchmark-design proposal。
 
+preflight 的 100k training 用时 297.90 秒，吞吐 335.68 transitions/s；10 条
+evaluation 用时 17.21 秒；PyTorch peak reserved VRAM 为 90 MiB。完整 15 jobs 加
+1,500 evaluations 线性估计约 13.13 小时、14.24 MB。54 项测试全部通过，所有 routing、
+gold oracle 和 RTAMT checks 通过。详细证据见
+[`stage1_pilot_launch_readiness.md`](stage1_pilot_launch_readiness.md)。
+
 当前 CPU 历史路径和 RTX 4090 CUDA 路径都已验证；frozen pilot training device 为
-`cuda:0`。当前连续授权范围包括 runner、analysis、tests 和 100k preflight；完整
-15M-transition pilot 只保留一次明确 compute gate，而不是每完成一个脚本都暂停。
+`cuda:0`。完整 15M-transition pilot 没有启动，当前只保留一次明确 compute gate。
 
 ## 11. 当前可直接运行的命令
 
@@ -628,6 +634,19 @@ env PYTHONNOUSERSITE=1 PYTHONPATH= \
 
 ```bash
 ./scripts/validate_cuda_stage1.sh
+```
+
+查看完整 15-job dry run：
+
+```bash
+./scripts/run_stage1_pilot.sh --dry-run
+```
+
+获得明确 compute authorization 后启动或恢复：
+
+```bash
+./scripts/run_stage1_pilot.sh --authorized-full-pilot
+./scripts/run_stage1_pilot.sh --authorized-full-pilot --resume
 ```
 
 统一评估 checkpoint：

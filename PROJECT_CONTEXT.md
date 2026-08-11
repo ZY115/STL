@@ -620,3 +620,18 @@ excluded 100k preflight proceed continuously. The 15M-transition pilot remains
 one compute gate. Once approved, all training, paired evaluation, analysis, WP1
 reporting, O8 preparation and the non-compute WP2/O7 proposal continue as one
 package.
+
+## 26. Launch-preparation completion
+
+On 2026-08-11 the complete pre-launch package passed. The repository now has a
+15-job condition/seed runner with immutable attempts, hash-verified resume and
+immediate fixed-final-checkpoint evaluation; the D31 paired hierarchical
+analysis; and 54 passing tests. An excluded 100k exact-scale CUDA preflight
+measured 335.68 transitions/second and projected about 13.13 hours for the full
+training/evaluation matrix. Oracle and RTAMT agreement remained exact.
+
+No frozen pilot seed has started. The current boundary is therefore no longer
+an implementation task: it is the single owner compute authorization documented
+in `docs/stage1_pilot_launch_readiness.md`. This preflight is engineering
+evidence only and does not change the research question, D31/D32, or the absence
+of a behavioral safety conclusion.

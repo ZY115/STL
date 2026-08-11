@@ -1,0 +1,30 @@
+schema_version: 1
+milestone: stage1_exact_scale_throughput_preflight
+status: excluded_engineering_preflight_not_for_inference
+protocol_config: configs/stage1_pilot/protocol.yaml
+condition: gold_stl_cost
+seed: 20260811
+seed_is_excluded_from_pilot_analysis: true
+
+training_overrides:
+  total_steps: 100000
+  vector_env_nums: 10
+  steps_per_epoch: 10000
+  update_iters: 40
+  batch_size: 64
+  save_model_freq: 10
+
+evaluation:
+  checkpoint: fixed_final_checkpoint
+  policy_mode: deterministic
+  evaluator: common_gold_stl_evaluator
+  episode_seed_start: 14000
+  paired_episode_count: 10
+  episode_horizon: 1000
+  seeds_are_excluded_from_pilot_analysis: true
+
+interpretation_guards:
+  - exact_vector_and_epoch_scale_but_only_one_tenth_training_budget
+  - engineering_throughput_and_artifact_check_only
+  - never_pool_with_frozen_training_seeds
+  - no_behavioral_or_convergence_claim
