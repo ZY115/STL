@@ -486,9 +486,22 @@ value to the learner-cost surface. OmniSafe PPO-Lagrangian then completed a
 vector environments. This proves interface compatibility only, not learned
 safety behavior.
 
-No matched-seed main RL result exists yet. The next work package must resolve
-the quantitative success and evaluation decisions before freezing the three
-main experiment configurations. Language translation remains outside Stage I.
+On 2026-08-11, a full-horizon PPOLag rollout produced a real nonzero STL event
+cost, and a common checkpoint evaluator passed direct-oracle and RTAMT checks.
+The project owner then approved D31 as the Stage I pilot protocol only. The
+protocol and three condition overlays were frozen, and a 10,000-transition-per-
+condition sanity passed exact cost-routing, final-checkpoint, paired-evaluation,
+direct-oracle, and RTAMT checks. No full matched-seed pilot result exists yet.
+The next work is the 5-seed, 3-condition, 1M-transition pilot and learning-curve
+review. Language translation remains outside Stage I, and O8 keeps the final
+main-study standard open.
+
+Later on 2026-08-11, the host RTX 4090 and driver 560.35.03 were confirmed
+healthy. The earlier GPU limitation was only the installed CPU Torch wheel.
+PyTorch was replaced with 2.4.1+cu124, the full-horizon positive-cost PPOLag
+path passed on CUDA, and the three-condition sanity was rerun successfully on
+`cuda:0`. D32 fixes this matched backend and its deterministic cuBLAS workspace
+setting for the pilot.
 
 ## 19. Continuity rule
 

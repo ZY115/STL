@@ -314,26 +314,93 @@ controlled benchmark, evaluation protocol, and error analysis. A method claim
 requires a specific mechanism motivated by a measured failure mode, a closest
 prior-work comparison, and an ablation.
 
+### D30. The pre-main engineering gate passed
+
+On 2026-08-11, a 2000-transition PPOLag sanity used two complete 1000-step
+episodes and an explicit `lagrange_cfgs.cost_limit=0.1`. At least one actor-
+sampled episode produced a deadline violation and `stl_cost=1`; the mean STL
+and selected episode costs were both 0.5, and the Lagrange multiplier responded.
+
+A common checkpoint evaluator now evaluates every policy with the same gold
+STL wrapper, rechecks every trajectory with the independent direct oracle, and
+uses RTAMT on completed windows. Its three-episode smoke had zero event/cost
+mismatches and zero robustness difference. These are engineering facts, not
+behavioral comparison results.
+
+At the time of D30 the numerical protocol was still a proposal. D31 records its
+subsequent approval as a Stage I pilot protocol.
+
+### D31. O6 is approved as the Stage I pilot protocol only
+
+On 2026-08-11 the project owner approved the following predeclared pilot
+protocol. It is **not** the final main-study standard.
+
+- The primary safety metric is missed recovery obligations divided by triggered
+  recovery obligations. A missed obligation is a deadline violation or a
+  terminal-unresolved pending obligation; the two components remain separately
+  reported.
+- The primary comparison is gold-STL cost versus task-only. The pilot target is
+  at least a 30% relative reduction, with the absolute difference also reported.
+  If the task-only rate is zero, relative reduction is undefined and the
+  absolute difference is used.
+- Goal success has a 10-percentage-point non-inferiority margin.
+- Training uses five matched seeds: `1101, 2202, 3303, 4404, 5505`.
+- Each final checkpoint is evaluated on the same 100 seeds per training seed and
+  condition, using the same deterministic policy mode and gold-STL evaluator.
+- Uncertainty uses 10,000 paired hierarchical bootstrap replicates, resampling
+  training seeds and matched evaluation episodes within seed.
+- Candidate PPOLag cost limits are task/native/STL = `0.0/25.0/0.1`.
+  Native cost is measured in hazard-cost steps per episode; STL cost is measured
+  in missed-obligation events per episode. These are different units.
+- `STL cost_limit=0.1` means 0.1 missed-obligation events per episode. It is not
+  automatically a 10% obligation-violation rate because episodes may trigger
+  zero, one, or more obligations.
+- One million transitions per condition and seed is a pilot budget only. The
+  learning curves must be inspected before any convergence claim.
+
+The exact frozen protocol and condition overlays are under
+`configs/stage1_pilot/`. Before any full 1M run, the three-condition
+small-budget sanity gate must pass. Approval of D31 does not authorize silently
+changing the fixed Stage I semantics, selecting a best checkpoint after seeing
+evaluation results, or claiming a final main-study standard.
+
+### D32. Stage I pilot training uses the verified RTX 4090 CUDA backend
+
+On 2026-08-11 the project owner explicitly requested CUDA enablement and stated
+that CUDA is available on this machine. Inspection and validation confirmed:
+
+- NVIDIA GeForce RTX 4090 with 24,564 MiB VRAM;
+- NVIDIA driver `560.35.03`, reporting CUDA compatibility `12.6`;
+- PyTorch `2.4.1+cu124` with CUDA runtime `12.4` and cuDNN `9.1.0`;
+- compute capability `8.9`;
+- CUDA tensors through the Stage I wrapper;
+- a real full-horizon PPOLag CUDA rollout/update with positive STL event cost,
+  exact selected-cost routing, multiplier update, and checkpoint output.
+
+Therefore the frozen pilot training device is `cuda:0`. This changes the
+computational backend, not the D31 scientific metric, seeds, budgets, cost
+semantics, or evaluation protocol. All three conditions must use the same GPU
+backend. Final checkpoints continue to use the same deterministic gold-STL
+evaluation path. CPU-only historical sanity runs remain engineering history and
+must not be mixed with the CUDA pilot results.
+
 ## Open decisions
 
-### O6. Quantitative success criterion
+### O6. Quantitative Stage I pilot protocol — resolved by D31
 
-Before the main training study, predeclare:
+**Current status (2026-08-11):** resolved for the pilot only. D31 and
+`configs/stage1_pilot/` are authoritative. The three-condition gate passed on
+the D32 CUDA backend; the full 1M pilot remains unrun.
 
-- required reduction in bounded-recovery violation rate;
-- acceptable loss in goal success or return;
-- number of seeds;
-- evaluation episode count;
-- uncertainty reporting;
-- an explicit `lagrange_cfgs.cost_limit` for each cost condition;
-- how native step cost and STL missed-obligation event cost are normalized or
-  assigned semantically comparable budgets;
-- a positive-cost PPO-Lagrangian sanity requirement before full training;
-- one common gold-STL offline evaluation oracle for every learned policy.
+### O8. Final main-study quantitative standard
 
-The default OmniSafe numerical cost limit must not be inherited silently. Native
-hazard cost and STL event cost use different units, so equal numeric limits do
-not automatically define a fair comparison.
+The Stage I pilot protocol is not automatically the final main-study standard.
+After the sanity gate and pilot, decide prospectively whether the final study
+requires a larger training budget, more training seeds, more evaluation
+episodes, a different uncertainty interval, or a predeclared cost-budget sweep.
+This decision must use the pilot's learning-curve stability and feasibility
+evidence without relabeling pilot-selected settings as independently confirmed
+main-study hypotheses.
 
 ### O7. Stage II controlled language and direct-cost baseline
 

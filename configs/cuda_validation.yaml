@@ -1,0 +1,27 @@
+schema_version: 1
+milestone: stage1_cuda_training_enablement
+status: fixed_environment_validation_not_pilot_training
+device: cuda:0
+cublas_workspace_config: ":4096:8"
+expected:
+  torch_version: 2.4.1+cu124
+  torch_cuda_runtime: "12.4"
+  device_name_contains: NVIDIA GeForce RTX 4090
+  compute_capability: [8, 9]
+  minimum_total_memory_bytes: 24000000000
+matrix_check:
+  seed: 20260811
+  shape: [1024, 1024]
+  maximum_cpu_gpu_absolute_difference: 0.001
+wrapper_check:
+  environment_id: Stage1SafetyPointGoal1STLCost-v0
+  vector_env_nums: 2
+  max_episode_steps: 16
+  seed: 20260811
+positive_cost_training_check:
+  source_config: configs/on_policy_positive_cost_sanity.yaml
+  device_override: cuda:0
+scope_note: >-
+  This validates the installed CUDA runtime, Stage I wrapper tensor devices,
+  and one full-horizon positive-cost PPOLag update. It does not start the
+  three-condition full pilot or establish a safety result.

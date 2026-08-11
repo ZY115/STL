@@ -1,0 +1,161 @@
+{
+  "checks": {
+    "cuda_available": true,
+    "deterministic_cublas_workspace": true,
+    "expected_compute_capability": true,
+    "expected_device_name": true,
+    "matrix_within_tolerance": true,
+    "minimum_total_memory": true,
+    "pip_check": true,
+    "positive_cost_training_gate": true,
+    "torch_cuda_runtime": true,
+    "torch_version": true,
+    "wrapper_tensors_on_cuda": true
+  },
+  "completed_at_utc": "2026-08-11T22:01:44.653390+00:00",
+  "full_pilot_started": false,
+  "gate_passed": true,
+  "matrix_check": {
+    "declared_tolerance": 0.001,
+    "maximum_cpu_gpu_absolute_difference": 0.00023651123046875,
+    "shape": [
+      1024,
+      1024
+    ],
+    "within_tolerance": true
+  },
+  "milestone": "stage1_cuda_training_enablement",
+  "pip_check_output": "No broken requirements found.",
+  "platform": {
+    "compute_capability": [
+      8,
+      9
+    ],
+    "cublas_workspace_config": ":4096:8",
+    "cudnn": 90100,
+    "device_count": 1,
+    "device_name": "NVIDIA GeForce RTX 4090",
+    "driver": {
+      "compute_mode": "Default",
+      "driver_version": "560.35.03",
+      "memory_free_mib": "23082",
+      "memory_total_mib": "24564",
+      "name": "NVIDIA GeForce RTX 4090",
+      "temperature_c": "46",
+      "uuid": "GPU-c7bc1714-538c-3d5c-0062-01537ba3a589"
+    },
+    "omnisafe": "0.5.0",
+    "python": "3.8.20",
+    "safety_gymnasium": "1.0.0",
+    "system": "Linux-6.8.0-124-generic-x86_64-with-glibc2.17",
+    "torch": "2.4.1+cu124",
+    "torch_cuda_runtime": "12.4",
+    "total_memory_bytes": 25246957568
+  },
+  "positive_cost_checks": {
+    "explicit_cost_limit": true,
+    "positive_mean_stl_cost": true,
+    "positive_terminal_event_count": true,
+    "positive_trigger_count": true,
+    "rollout_episode_alignment": true,
+    "selected_cost_equals_stl_cost": true
+  },
+  "positive_cost_training": {
+    "algorithm": "PPOLag",
+    "checkpoint_count": 2,
+    "checks": {
+      "all_progress_values_finite": true,
+      "augmented_observation_dimension": true,
+      "checkpoint_written": true,
+      "declared_steps_collected": true,
+      "one_epoch_written": true,
+      "one_or_more_update_iterations": true,
+      "separate_cost_metrics_present": true
+    },
+    "declared_lagrange_cost_limit": 0.1,
+    "environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+    "log_dir": "/home/jerry/Desktop/STL/results/cuda_validation/on_policy_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260811-2026-08-11-15-01-41",
+    "observation_shape": [
+      63
+    ],
+    "progress": {
+      "Loss/Loss_cost_critic": 0.02216840535402298,
+      "Loss/Loss_cost_critic/Delta": 0.02216840535402298,
+      "Loss/Loss_pi": -0.0006997743621468544,
+      "Loss/Loss_pi/Delta": -0.0006997743621468544,
+      "Loss/Loss_reward_critic": 0.017147809267044067,
+      "Loss/Loss_reward_critic/Delta": 0.017147809267044067,
+      "Metrics/EpCost": 0.5,
+      "Metrics/EpLen": 1000.0,
+      "Metrics/EpRet": -1.9019417762756348,
+      "Metrics/LagrangeMultiplier": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Max": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Min": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Std": 0.0,
+      "Metrics/NativeCost": 55.0,
+      "Metrics/STLCost": 0.5,
+      "Metrics/STLDeadlineViolations": 0.5,
+      "Metrics/STLLateRecoveries": 0.5,
+      "Metrics/STLRecoveries": 0.0,
+      "Metrics/STLTerminalUnresolved": 0.0,
+      "Metrics/STLTriggers": 0.5,
+      "Metrics/SelectedAlgorithmCost": 0.5,
+      "Time/Epoch": 3.2861063480377197,
+      "Time/FPS": 608.623046875,
+      "Time/Rollout": 3.1481571197509766,
+      "Time/Total": 3.2862329483032227,
+      "Time/Update": 0.13792967796325684,
+      "TotalEnvSteps": 2000.0,
+      "Train/Entropy": 1.4194443225860596,
+      "Train/Epoch": 0.0,
+      "Train/KL": 0.0016749771311879158,
+      "Train/LR": 0.0,
+      "Train/PolicyRatio": 0.99876469373703,
+      "Train/PolicyRatio/Max": 0.99876469373703,
+      "Train/PolicyRatio/Min": 0.99876469373703,
+      "Train/PolicyRatio/Std": 0.00310957501642406,
+      "Train/PolicyStd": 1.0005061626434326,
+      "Train/StopIter": 1.0,
+      "Value/Adv": -0.09089244902133942,
+      "Value/cost": -0.2166357785463333,
+      "Value/reward": 0.07933598011732101
+    },
+    "progress_sha256": "1f8dd8c7df7b69eae55577879e32e3be2bb1fe26d5958f1d13d67b88899728d5",
+    "result": {
+      "mean_episode_length": 1000.0,
+      "mean_episode_return": -1.9019417762756348,
+      "mean_selected_episode_cost": 0.5
+    },
+    "rollout_alignment": {
+      "complete_horizons_per_vector_env": 1,
+      "episode_horizon": 1000,
+      "steps_per_vector_env": 1000
+    }
+  },
+  "repository": {
+    "config_path": "configs/cuda_validation.yaml",
+    "config_sha256": "4dd177b21c5d22fa8298bb3d4215a5cec6500b453d5f56c42de196d561e2d653",
+    "environment_lock": "environment.stage1.yml",
+    "environment_lock_sha256": "6c09a3a8637a24720403bc065264d269bbc63f3f3ef05c1a13037995972b7a5f",
+    "git_head_before_milestone_commit": "c58769334d449485995fe55d4781994e8693dee9",
+    "source_positive_cost_config": "configs/on_policy_positive_cost_sanity.yaml",
+    "source_positive_cost_config_sha256": "6f49e168dd23a13263ccc9fe19ffe5e445d45a6f774736bb2a365fe90b1b99ae"
+  },
+  "schema_version": 1,
+  "scope": "This validates the installed CUDA runtime, Stage I wrapper tensor devices, and one full-horizon positive-cost PPOLag update. It does not start the three-condition full pilot or establish a safety result.",
+  "wrapper_check": {
+    "all_tensors_on_declared_cuda_device": true,
+    "observation_shape": [
+      2,
+      63
+    ],
+    "tensor_devices": {
+      "native_cost": "cuda:0",
+      "next_observation": "cuda:0",
+      "observation": "cuda:0",
+      "reward": "cuda:0",
+      "selected_cost": "cuda:0",
+      "stl_cost": "cuda:0"
+    }
+  }
+}

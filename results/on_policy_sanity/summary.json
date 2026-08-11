@@ -1,0 +1,100 @@
+{
+  "checks": {
+    "explicit_cost_limit": true,
+    "positive_mean_stl_cost": true,
+    "positive_terminal_event_count": true,
+    "positive_trigger_count": true,
+    "rollout_episode_alignment": true,
+    "selected_cost_equals_stl_cost": true
+  },
+  "completed_at_utc": "2026-08-11T20:46:30.593357+00:00",
+  "gate_passed": true,
+  "milestone": "ppo_lagrangian_on_policy_positive_stl_cost_sanity",
+  "platform": {
+    "cuda_available": false,
+    "omnisafe": "0.5.0",
+    "python": "3.8.20",
+    "safety_gymnasium": "1.0.0",
+    "torch": "2.4.1+cpu",
+    "torch_cuda_build": null
+  },
+  "ppo_lagrangian_rollout": {
+    "algorithm": "PPOLag",
+    "checkpoint_count": 2,
+    "checks": {
+      "all_progress_values_finite": true,
+      "augmented_observation_dimension": true,
+      "checkpoint_written": true,
+      "declared_steps_collected": true,
+      "one_epoch_written": true,
+      "one_or_more_update_iterations": true,
+      "separate_cost_metrics_present": true
+    },
+    "declared_lagrange_cost_limit": 0.1,
+    "environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+    "log_dir": "/home/jerry/Desktop/STL/results/on_policy_sanity/omnisafe_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260811-2026-08-11-13-46-28",
+    "observation_shape": [
+      63
+    ],
+    "progress": {
+      "Loss/Loss_cost_critic": 0.02223317325115204,
+      "Loss/Loss_cost_critic/Delta": 0.02223317325115204,
+      "Loss/Loss_pi": -0.003634869586676359,
+      "Loss/Loss_pi/Delta": -0.003634869586676359,
+      "Loss/Loss_reward_critic": 0.017019761726260185,
+      "Loss/Loss_reward_critic/Delta": 0.017019761726260185,
+      "Metrics/EpCost": 0.5,
+      "Metrics/EpLen": 1000.0,
+      "Metrics/EpRet": -2.1013550758361816,
+      "Metrics/LagrangeMultiplier": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Max": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Min": 0.03599999472498894,
+      "Metrics/LagrangeMultiplier/Std": 0.0,
+      "Metrics/NativeCost": 26.0,
+      "Metrics/STLCost": 0.5,
+      "Metrics/STLDeadlineViolations": 0.5,
+      "Metrics/STLLateRecoveries": 0.5,
+      "Metrics/STLRecoveries": 0.0,
+      "Metrics/STLTerminalUnresolved": 0.0,
+      "Metrics/STLTriggers": 0.5,
+      "Metrics/SelectedAlgorithmCost": 0.5,
+      "Time/Epoch": 2.0541746616363525,
+      "Time/FPS": 973.6271362304688,
+      "Time/Rollout": 2.0241963863372803,
+      "Time/Total": 2.054304838180542,
+      "Time/Update": 0.029961585998535156,
+      "TotalEnvSteps": 2000.0,
+      "Train/Entropy": 1.418367624282837,
+      "Train/Epoch": 0.0,
+      "Train/KL": 0.0018695613835006952,
+      "Train/LR": 0.0,
+      "Train/PolicyRatio": 0.9997003078460693,
+      "Train/PolicyRatio/Max": 0.9997003078460693,
+      "Train/PolicyRatio/Min": 0.9997003078460693,
+      "Train/PolicyRatio/Std": 0.002304383320733905,
+      "Train/PolicyStd": 0.99942946434021,
+      "Train/StopIter": 1.0,
+      "Value/Adv": 0.07657349854707718,
+      "Value/cost": -0.20933541655540466,
+      "Value/reward": 0.0777597725391388
+    },
+    "progress_sha256": "66253f4476ce76380597d283b858d6304acc6594392a51137ea0d5e7a7f6e076",
+    "result": {
+      "mean_episode_length": 1000.0,
+      "mean_episode_return": -2.1013550758361816,
+      "mean_selected_episode_cost": 0.5
+    },
+    "rollout_alignment": {
+      "complete_horizons_per_vector_env": 1,
+      "episode_horizon": 1000,
+      "steps_per_vector_env": 1000
+    }
+  },
+  "repository": {
+    "config_path": "configs/on_policy_positive_cost_sanity.yaml",
+    "config_sha256": "9888d6e0d3fb0026a62c5523b9648b193d7ee3104d78725817b6f07ec3397c22",
+    "git_head_before_milestone_commit": "c58769334d449485995fe55d4781994e8693dee9"
+  },
+  "schema_version": 1,
+  "scope": "This one-epoch run verifies that an STL event cost occurs inside data sampled by the PPOLag actor and reaches the learner update. It is not a behavioral comparison, a trained policy result, or a safety claim."
+}

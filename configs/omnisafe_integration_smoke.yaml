@@ -57,6 +57,13 @@ ppo_lagrangian_smoke:
       hidden_sizes: [16, 16]
     critic:
       hidden_sizes: [16, 16]
+  lagrange_cfgs:
+    # Explicitly retained for this legacy interface smoke. This is not the
+    # proposed main-study STL event budget.
+    cost_limit: 25.0
+    lagrangian_multiplier_init: 0.001
+    lambda_lr: 0.035
+    lambda_optimizer: Adam
   env_cfgs:
     max_episode_steps: 16
 

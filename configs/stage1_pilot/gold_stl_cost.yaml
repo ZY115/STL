@@ -1,0 +1,10 @@
+schema_version: 1
+protocol_id: stage1_gold_stl_pilot_v1
+status: frozen_condition_overlay
+condition: gold_stl_cost
+environment_id: Stage1SafetyPointGoal1STLCost-v0
+selected_algorithm_cost: stl_cost
+lagrange_cost_limit: 0.1
+cost_semantic_unit: missed_recovery_obligation_events_per_1000_step_episode
+interpretation_guard: not_automatically_a_10_percent_violation_rate
+protocol_config: configs/stage1_pilot/protocol.yaml

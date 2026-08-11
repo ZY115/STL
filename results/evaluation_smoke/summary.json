@@ -1,0 +1,101 @@
+{
+  "aggregate": {
+    "all_online_oracle_agree": true,
+    "episode_count": 3,
+    "goal_success_rate": 0.0,
+    "metrics": {
+      "deadline_violation_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "sample_std": 0.0
+      },
+      "episode_length": {
+        "max": 1000.0,
+        "mean": 1000.0,
+        "min": 1000.0,
+        "sample_std": 0.0
+      },
+      "episode_return": {
+        "max": -26.532167936733458,
+        "mean": -26.914095603683865,
+        "min": -27.434375984033977,
+        "sample_std": 0.46674505367732505
+      },
+      "goal_events": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "sample_std": 0.0
+      },
+      "gold_stl_cost_total": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "sample_std": 0.0
+      },
+      "minimum_distance": {
+        "max": 0.3331557512283325,
+        "mean": 0.2536727786064148,
+        "min": 0.1312190294265747,
+        "sample_std": 0.1076079719700325
+      },
+      "native_cost_total": {
+        "max": 11.0,
+        "mean": 3.6666666666666665,
+        "min": 0.0,
+        "sample_std": 6.3508529610858835
+      },
+      "recovery_count": {
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "sample_std": 0.0
+      },
+      "terminal_unresolved_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "sample_std": 0.0
+      },
+      "trigger_count": {
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "sample_std": 0.0
+      }
+    },
+    "pooled_counts": {
+      "deadline_violations": 0,
+      "on_time_recoveries": 3,
+      "terminal_unresolved": 0,
+      "triggers": 3
+    },
+    "pooled_rates_per_trigger": {
+      "adverse_outcome": 0.0,
+      "deadline_violation": 0.0,
+      "on_time_recovery": 1.0
+    },
+    "rtamt_completed_window_count": 3,
+    "rtamt_max_robustness_difference": 0.0,
+    "triggered_episode_rate": 1.0
+  },
+  "checkpoint": "/home/jerry/Desktop/STL/results/on_policy_sanity/omnisafe_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260811-2026-08-11-13-46-28/torch_save/epoch-1.pt",
+  "checkpoint_sha256": "cfd00f5e4f26241f915a82643bb97b16e96c90205a39e8506e0e821dccebc960",
+  "deterministic_policy": true,
+  "episode_seeds": [
+    12000,
+    12001,
+    12002
+  ],
+  "evaluation_environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+  "max_episode_steps": 1000,
+  "policy_training_environment_id": "Stage1SafetyPointGoal1STLCost-v0",
+  "rule": {
+    "d_safe": 0.55,
+    "d_warn": 0.45,
+    "deadline_steps": 79
+  },
+  "schema_version": 1,
+  "scope": "checkpoint evaluation only; no comparison or safety claim"
+}

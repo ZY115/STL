@@ -190,7 +190,7 @@ This milestone establishes only that:
 It does not establish that the STL condition reduces violations, maintains goal
 performance, outperforms native cost, or provides a formal safety guarantee.
 
-## Next gate
+## Next gate at the time of this report
 
 Before any main training, the project must resolve open decision O6 and
 predeclare:
@@ -210,3 +210,16 @@ units. The same numeric budget must not be treated as automatically comparable.
 
 Only after those choices are recorded in `DECISIONS.md` should the three matched
 training configurations and small-budget sanity runs be frozen.
+
+## 2026-08-11 follow-up
+
+The engineering requirements named above are now complete: a full-horizon
+PPOLag actor rollout produced a nonzero deadline-event cost; PPOLag runners now
+require an explicit `lagrange_cfgs.cost_limit`; and the common checkpoint
+evaluator passed independent-oracle and RTAMT checks. See
+`pre_main_engineering_gate_report.md`.
+
+O6 was subsequently closed for the pilot only by D31. Frozen configs and the
+passed three-condition sanity are documented in
+`stage1_pilot_sanity_report.md`. Full 1M pilot training remains unrun, and O8
+keeps the final main-study standard open.

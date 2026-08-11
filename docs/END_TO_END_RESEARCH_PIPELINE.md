@@ -188,25 +188,25 @@ rollout 中，并测量它是否改变 temporal violation 与 goal-reaching beha
 - `d_warn=0.45`、`d_safe=0.55`、`K=79`；
 - online monitor、offline oracle、RTAMT agreement；
 - task-only/native/STL wrapper；
-- 38 tests 和一次 minimal PPO-Lagrangian update。
+- 43 tests、一次 minimal PPO-Lagrangian update、一次 full-horizon on-policy
+  positive-cost sanity、统一 checkpoint evaluator、D31 frozen pilot protocol 和
+  三条件 small-budget sanity。
 
-### 阻塞决定
+### 决定状态
 
-`DECISIONS.md` 中 O6 必须先确认：
-
-- primary safety metric 和最低改善门槛；
-- task-performance tolerance；
-- seeds、evaluation episodes 和 uncertainty reporting；
-- native step cost 与 STL event cost 各自的 `cost_limit` 和预算语义；
-- rollout length 与完整 episode horizon 对齐方式。
+O6 已由 D31 确认为 Stage I pilot protocol，但不是最终 main-study 标准。primary
+metric、pilot target、goal tolerance、matched seeds、evaluation episodes、bootstrap、
+cost-limit 语义和 full-horizon alignment 已冻结在 `configs/stage1_pilot/`。O8 保留
+pilot 后的最终标准决定。
 
 ### 实施内容
 
-1. 实现统一 checkpoint evaluation runner；
-2. 完成 positive-cost on-policy sanity；
-3. 冻结 matched configs；
-4. 运行 task-only、native-cost、gold-STL-cost pilot/main comparison；
-5. 所有 policy 都使用 gold STL oracle 评价。
+1. 统一 checkpoint evaluation runner（已完成）；
+2. positive-cost on-policy sanity（已完成）；
+3. 冻结 matched pilot configs（已完成）；
+4. 三条件 small-budget sanity（已完成）；
+5. 运行 task-only、native-cost、gold-STL-cost full pilot comparison；
+6. 所有 policy 都使用 gold STL oracle 评价。
 
 ### 输出
 
@@ -458,11 +458,11 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 ## 15. 当前状态与下一动作
 
-截至 2026-08-10：
+截至 2026-08-11：
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | infrastructure gate passed; behavior study incomplete | 确认 O6，完成 on-policy positive-cost sanity 和 evaluation runner |
+| WP1 Gold-STL control | D31 protocol frozen; D32 RTX 4090 CUDA backend and three-condition sanity passed; full behavior pilot incomplete | 先记录 representative throughput，再运行 5 seeds × 3 conditions × 1M pilot、paired gold evaluation，并检查 learning curves |
 | WP2 Controlled benchmark | not started | O7 后定义 schema 和 pilot set |
 | WP3 Offline methods | not started | 选择 translator、published direct 和 history-aware direct baselines |
 | WP4 Online comparison | not started | 等 WP3 trace gate |

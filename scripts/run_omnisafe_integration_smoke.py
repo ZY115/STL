@@ -170,6 +170,17 @@ def read_progress(progress_path: Path) -> Dict[str, float]:
 
 
 def run_ppo_update(config: Mapping[str, Any], runs_dir: Path) -> Dict[str, Any]:
+    if "lagrange_cfgs" not in config:
+        raise ValueError(
+            "PPO-Lagrangian runs must declare lagrange_cfgs explicitly; "
+            "the OmniSafe default cost_limit must not be inherited silently",
+        )
+    lagrange_cfgs = dict(config["lagrange_cfgs"])
+    if "cost_limit" not in lagrange_cfgs:
+        raise ValueError("lagrange_cfgs.cost_limit must be declared explicitly")
+    cost_limit = float(lagrange_cfgs["cost_limit"])
+    if not math.isfinite(cost_limit) or cost_limit < 0.0:
+        raise ValueError("lagrange_cfgs.cost_limit must be a finite non-negative number")
     vector_env_nums = int(config["train_cfgs"]["vector_env_nums"])
     steps_per_epoch = int(config["algo_cfgs"]["steps_per_epoch"])
     smoke_horizon = int(config["env_cfgs"]["max_episode_steps"])
@@ -187,6 +198,7 @@ def run_ppo_update(config: Mapping[str, Any], runs_dir: Path) -> Dict[str, Any]:
         "algo_cfgs": dict(config["algo_cfgs"]),
         "logger_cfgs": {**dict(config["logger_cfgs"]), "log_dir": str(runs_dir)},
         "model_cfgs": dict(config["model_cfgs"]),
+        "lagrange_cfgs": lagrange_cfgs,
         "env_cfgs": dict(config["env_cfgs"]),
     }
     agent = omnisafe.Agent(
@@ -236,6 +248,7 @@ def run_ppo_update(config: Mapping[str, Any], runs_dir: Path) -> Dict[str, Any]:
         "log_dir": str(log_dir),
         "progress_sha256": sha256_file(progress_path),
         "checkpoint_count": len(checkpoint_paths),
+        "declared_lagrange_cost_limit": cost_limit,
         "checks": checks,
         "rollout_alignment": {
             "steps_per_vector_env": steps_per_vector_env,

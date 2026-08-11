@@ -1,0 +1,51 @@
+schema_version: 1
+milestone: stage1_three_condition_small_budget_sanity
+status: engineering_only_not_pilot_result
+protocol_config: configs/stage1_pilot/protocol.yaml
+condition_configs:
+  - configs/stage1_pilot/task_only.yaml
+  - configs/stage1_pilot/native_cost.yaml
+  - configs/stage1_pilot/gold_stl_cost.yaml
+
+sanity_training_overrides:
+  seed: 20260811
+  seed_is_excluded_from_pilot_analysis: true
+  total_steps: 10000
+  vector_env_nums: 2
+  steps_per_epoch: 2000
+  per_vector_steps_per_epoch: 1000
+  update_iters: 40
+  batch_size: 64
+  save_model_freq: 1
+
+sanity_evaluation:
+  checkpoint: fixed_final_checkpoint
+  policy_mode: deterministic
+  episode_seed_start: 13000
+  paired_episode_count: 3
+  episode_horizon: 1000
+  evaluator: common_gold_stl_evaluator
+
+acceptance:
+  exact_condition_order: [task_only, native_cost, gold_stl_cost]
+  require_frozen_protocol_validation: true
+  require_all_training_metrics_finite: true
+  require_declared_transition_count: true
+  require_full_episode_rollout_alignment: true
+  require_all_final_checkpoints: true
+  require_task_selected_cost_equals_zero_every_epoch: true
+  require_native_selected_cost_equals_native_cost_every_epoch: true
+  require_stl_selected_cost_equals_stl_cost_every_epoch: true
+  require_positive_native_cost_in_native_condition: true
+  require_positive_stl_cost_in_stl_condition: true
+  require_same_paired_evaluation_seeds: true
+  require_same_deterministic_policy_mode: true
+  require_all_training_runs_use_cuda0: true
+  require_online_direct_oracle_agreement: true
+  require_rtamt_max_difference_at_most: 1.0e-9
+
+scope_note: >-
+  This 10,000-transition-per-condition run is an engineering sanity gate for
+  frozen config composition, cost routing, checkpoint loading, and paired gold
+  evaluation. It is not a pilot behavioral result, a convergence test, or a
+  safety claim. Passing this gate must not automatically start the full 1M runs.

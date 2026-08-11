@@ -1,0 +1,4 @@
+episode_index,evaluation_seed,episode_length,episode_return,native_cost_total,gold_stl_cost_total,goal_events,goal_success,minimum_distance,trigger_count,recovery_count,late_recovery_count,deadline_violation_count,terminal_unresolved_count,completed_window_count,trace_robustness,online_oracle_agreement,rtamt_max_robustness_difference
+0,13000,1000,-6.525969242982683,0.0,0,0,False,0.24659889936447144,1,1,0,0,0,1,0.8141741275787353,True,0.0
+1,13001,1000,-0.5258839181769872,14.0,0,0,False,0.008584856986999512,1,1,0,0,0,1,0.5120241165161132,True,0.0
+2,13002,1000,0.4387893243886689,0.0,0,0,False,0.38916081190109253,1,1,0,0,0,1,0.27543319463729854,True,0.0

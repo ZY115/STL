@@ -25,7 +25,7 @@
 
 ## 2. 当前总体状态
 
-截至 2026-08-10，Stage I 已经完成：
+截至 2026-08-11，Stage I 已经完成：
 
 1. 研究问题定义与三阶段拆分；
 2. Ubuntu/Conda 软件环境建立和复核；
@@ -38,7 +38,11 @@
 9. OmniSafe-compatible wrapper；
 10. task-only、native-cost、STL-cost 三种 cost-routing 条件；
 11. vectorized monitor 生命周期与 terminal/final-observation 处理；
-12. 最小 PPO-Lagrangian integration smoke。
+12. 最小 PPO-Lagrangian integration smoke；
+13. 完整 episode 对齐的 PPOLag on-policy positive-cost sanity；
+14. 统一 checkpoint evaluator、independent oracle 与 RTAMT gate；
+15. O6 Stage I pilot protocol 确认与冻结；
+16. 三条件 10k transitions/condition matched engineering sanity。
 
 当前尚未开始 matched-seed 主训练，也没有形成 STL-cost condition 能改善安全行为的
 实验结论。
@@ -54,8 +58,10 @@
 | 2026-08-10 | 仓库更新审计 | 完成 | 新增进度 slides 已读取；固定 Stage I 研究范围未改变 |
 | 2026-08-10 | OmniSafe wrapper | 完成 | 三个注册环境、统一 temporal observation、独立 cost routing |
 | 2026-08-10 | Integration smoke gate | 完成 | 一键 smoke runner、wrapper tests、机器可读 completion summary |
-| 待定 | 主实验预声明 | 未完成 | 成功门槛、seeds、evaluation episodes、uncertainty 方法 |
-| 待定 | Matched sanity/main training | 未开始 | 三条件训练配置、checkpoint、统一 evaluation |
+| 2026-08-11 | Pre-main engineering gate | 完成 | on-policy event cost、checkpoint evaluator、oracle/RTAMT evidence |
+| 2026-08-11 | Stage I pilot protocol | 已确认 | D31；仅限 pilot，不是最终 main-study 标准 |
+| 2026-08-11 | Three-condition pilot sanity | 完成 | frozen composition、cost routing、final checkpoints、paired gold evaluation |
+| 待定 | Full matched pilot training | 未开始 | 5 seeds × 3 conditions × 1M transitions 和正式 paired evaluation |
 
 ## 4. 已冻结且未被本次修改改变的研究定义
 
@@ -222,42 +228,25 @@ results/integration_smoke/summary.json
 
 ## 9. 当前未完成事项
 
-### 9.1 必须在主训练前决定
+### 9.1 Pilot 后仍需决定
 
-Open decision O6 仍未关闭：
-
-- temporal violation reduction 的成功门槛；
-- goal success 或 episode return 的允许下降范围；
-- matched training seeds；
-- 每个 checkpoint/condition 的 evaluation episode 数；
-- uncertainty interval 和统计汇报方法；
-- native step cost 与 STL event cost 各自的 `cost_limit` 和预算语义；
-- PPO-Lagrangian rollout 内的 positive-cost sanity；
-- 所有 policy 共用的 gold-STL offline evaluation oracle。
-
-这些选择会直接改变正式实验的规模和结论，不应由实现过程静默决定。
+O6 已由 D31 确认为 pilot protocol。O8 仍需在 pilot learning curves 和 feasibility
+证据之后决定最终 main-study training budget、seed 数、evaluation 数、uncertainty
+方案和是否需要预声明 budget sweep。不能把 pilot 设置自动称为最终标准。
 
 ### 9.2 尚未实施
 
-- main-study task-only/native-cost/STL-cost matched configs；
-- 小预算 sanity training；
-- 正式 matched-seed training；
-- 统一 checkpoint evaluation runner；
+- full pilot matched-seed training；
+- 100 paired episodes/seed/condition 的正式 evaluation 和 bootstrap report；
 - 训练后 policy 可视化；
 - GPU/CUDA 训练环境恢复；
 - Stage II controlled-language layer。
 
 ## 10. 下一步
 
-下一里程碑是主实验预声明，而不是直接启动长时间训练：
-
-1. 提出 O6 的明确候选值；
-2. 将“建议值”和“已确认值”分开记录；
-3. 获得确认后更新 `DECISIONS.md`；
-4. 冻结三个 matched configs；
-5. 检查 rollout/horizon alignment；
-6. 先运行小预算 sanity training；
-7. sanity gate 通过后，再决定 CPU 或修复后的 GPU 主训练路径。
+下一里程碑是使用 frozen D31 configs 运行五 seed、三 condition 的 full pilot，随后
+进行 paired gold evaluation、10,000 次 hierarchical bootstrap 和 learning-curve
+review。RTX 4090 CUDA 路径已于同日恢复并通过 D32 gate。
 
 ## 11. 维护规则
 
@@ -289,3 +278,114 @@ milestone、完成后仍需重新询问研究方向的问题。新文档现已�
 同时更新 `AGENTS.md`、`README.md`、`HANDOFF_PROMPT.md`、`DECISIONS.md`、
 `PROJECT_CONTEXT.md` 和 `MANIFEST.md`，使新的 Codex session 必须先读取长期路线，
 并在完成当前 gate 后继续下一个未完成 work package。
+
+## 13. 2026-08-11 Pre-main engineering gate
+
+### 13.1 修改目的
+
+根据更新后的 handoff，先补齐 O6 预声明提案、真实 PPOLag rollout 内的 nonzero STL
+event cost 和统一 gold-oracle checkpoint evaluator；不启动 matched main training。
+
+### 13.2 研究决定状态
+
+新增 `docs/stage1_pre_main_study_proposal.md` 和
+`configs/stage1_pre_main_proposal.yaml`。其中 30% safety reduction、10 percentage-
+point goal margin、5 个 training seeds、每 seed 100 个 evaluation episodes、paired
+hierarchical bootstrap、condition-specific budgets 和 1M-transition budget 均明确标为
+`proposed_not_confirmed`。O6 仍为 blocking open decision。
+
+### 13.3 工程修改
+
+- PPOLag runner 现在强制显式提供 `lagrange_cfgs.cost_limit`；
+- 新增 `configs/on_policy_positive_cost_sanity.yaml` 和一键运行脚本；
+- 新增 `src/safety_stl/evaluation.py` 和 checkpoint evaluator；
+- evaluator 保存 return、goal、native cost、gold STL events，并逐轨迹调用 independent
+  oracle，对 completed windows 调用 RTAMT；
+- 新增两项 evaluation tests；
+- 新增 pre-main engineering report 和两个 tracked result summaries。
+
+### 13.4 验证结果
+
+2000-transition PPOLag sanity 使用两个完整 1000-step episodes。至少一条真实 actor
+rollout 产生 deadline violation；mean `STLCost=0.5`，mean selected cost 同为 0.5，
+Lagrange multiplier 更新到约 0.036。三条 checkpoint-evaluation smoke trajectories 的
+online/direct-oracle mismatch 为 0，三个 RTAMT completed windows 的最大 robustness
+difference 为 0。
+
+这些结果只完成工程 gate，不表示 policy 已学会安全恢复。随后 D31 已确认 pilot
+protocol，三条件 configs 和 small-budget sanity 的完成情况见第 14 节。
+
+## 14. 2026-08-11 Pilot protocol freeze 与三条件 sanity
+
+### 14.1 决定与统计口径
+
+负责人批准 O6 为 Stage I pilot protocol，但不是最终 main-study 标准。D31 固定：
+
+- primary safety metric = missed recovery obligations / triggered obligations；
+- primary comparison = gold-STL cost vs task-only；
+- 至少 30% relative reduction pilot target，同时报告 absolute difference；
+- task-only baseline rate 为 0 时 relative reduction 无定义，只用 absolute difference；
+- 10 percentage-point goal-success non-inferiority margin；
+- 5 matched training seeds、每 seed/condition 100 paired evaluation episodes；
+- 10,000 paired hierarchical bootstrap replicates；
+- task/native/STL cost limits = `0.0/25.0/0.1`，且 native/STL 单位不同；
+- 1M transitions/condition/seed 仅是 pilot budget，必须检查 learning curves。
+
+### 14.2 新增工程内容
+
+- 新增 `configs/stage1_pilot/protocol.yaml` 和三个 frozen condition overlays；
+- 新增 `src/safety_stl/pilot_protocol.py`，对 D31 数值和解释边界做机器校验；
+- 新增 `configs/stage1_pilot_sanity.yaml` 和一键 runner；
+- 新增三个 protocol tests；完整自动测试为 43 项；
+- evaluator 新增 canonical `missed_recovery_obligation` rate，同时保留旧 diagnostic alias；
+- 新增 `docs/stage1_pilot_sanity_report.md` 和 compact tracked evidence。
+
+### 14.3 Sanity 验证结果
+
+使用明确排除于 pilot inference 的 seed `20260811`，三个条件各运行 10,000
+transitions。每个 epoch 的每个 vector slot 恰好 1000 steps；三个条件均生成 final
+`epoch-5.pt`。task-only selected cost 恒为 0，native selected cost 与 native cost
+逐 epoch 相等，STL selected cost 与 STL event cost 逐 epoch 相等。positive native
+cost 和 positive STL event cost 均实际出现。
+
+三个 final checkpoint 使用相同 deterministic mode 和 seeds `13000--13002`。所有
+轨迹的 online/direct-oracle agreement 为 true，RTAMT 最大 robustness difference 为
+0。gate 通过，完整 1M runs 没有启动。
+
+该 run 只验证工程链路。10k transitions 和 3 个 evaluation episodes 不能检验 30%
+target、goal non-inferiority 或收敛。下一步是冻结协议下的 full Stage I pilot，随后
+检查 learning curves，并通过 O8 决定最终 main-study 标准。
+
+## 15. 2026-08-11 CUDA enablement
+
+### 15.1 根因与环境修改
+
+机器的 RTX 4090 和 NVIDIA driver 560.35.03 正常；此前不能使用 GPU 的直接原因是
+`stl-stage1` 安装了 `torch 2.4.1+cpu`。现已用官方 CUDA 12.4 wheel 替换为
+`torch 2.4.1+cu124`，并在 lock file 中加入精确 NVIDIA runtime/cuDNN/Triton 依赖。
+安装器临时选择的 `typing-extensions 4.12.2` 与 `cryptography` 冲突，已恢复原锁定的
+4.13.2；最终 `pip check` 无 broken requirements。
+
+### 15.2 新增验证与决定
+
+- D32 固定 Stage I pilot training backend 为 `cuda:0`；
+- 新增 `configs/cuda_validation.yaml`；
+- 新增 `scripts/validate_cuda_stage1.py/.sh`；
+- 新增 `docs/cuda_enablement_report.md`；
+- 新增 `results/cuda_validation/summary.json` compact evidence；
+- CUDA launcher 固定 `CUBLAS_WORKSPACE_CONFIG=:4096:8`，满足 OmniSafe/PyTorch
+  deterministic algorithm 要求。
+
+### 15.3 验证结果
+
+- Torch 识别 RTX 4090、24,564 MiB、compute capability 8.9；
+- PyTorch CUDA runtime 12.4、cuDNN 9.1.0；
+- 1024×1024 CPU/GPU matrix max absolute difference `0.0002365 < 0.001`；
+- Stage I observation/reward/native/STL/selected-cost tensors 全部位于 `cuda:0`；
+- 2000-transition full-horizon PPOLag CUDA update 产生 mean STL/selected cost 0.5，
+  multiplier 更新并保存 checkpoint；
+- 三条件 10k sanity 在 `cuda:0` 重跑，全部 gate 通过；
+- full 1M pilot 未启动。
+
+CUDA 功能已经解决。由于小网络和模拟器开销，当前 sanity 不能证明 GPU 比 CPU 更快；
+完整 pilot 前应单独记录 representative throughput。

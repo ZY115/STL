@@ -38,12 +38,12 @@
 
 令：
 
-- (x) 为自然语言时序安全要求；
-- (arphi^*) 为人工确认的 gold STL；
-- (	au_{0:t}) 为截至时刻 (t) 的轨迹前缀；
-- (g^*(	au_{0:t})) 为正确 grounding 后的距离等 STL 信号；
-- (c_t^*) 为 gold STL monitor 产生的正确 cost；
-- (mathcal A) 为固定的 online Safe RL backend。
+- \(x\) 为自然语言时序安全要求；
+- \(\varphi^*\) 为人工确认的 gold STL；
+- \(\tau_{0:t}\) 为截至时刻 \(t\) 的轨迹前缀；
+- \(g^*(\tau_{0:t})\) 为正确 grounding 后的距离等 STL 信号；
+- \(c_t^*\) 为 gold STL monitor 产生的正确 cost；
+- \(\mathcal A\) 为固定的 online Safe RL backend。
 
 ### 2.1 显式形式化中间表示路线
 
@@ -82,7 +82,7 @@ natural-language requirement x + trajectory history
 =C_\theta(x,\tau_{0:t}).
 \]
 
-这里必须写成 (	au_{0:t})，而不能默认只使用当前观测 (o_t)。对于带 deadline、
+这里必须写成 \(\tau_{0:t}\)，而不能默认只使用当前观测 \(o_t\)。对于带 deadline、
 顺序或持续时间的规则，当前状态通常不足以确定正确 cost。
 
 ## 3. 可进行的理论分析
@@ -151,7 +151,7 @@ verified monitor 的输出是机械计算结果，不再是学习模型对违反
 1. translation error：
    (T(x)\not\equiv\varphi^*)；
 2. grounding error：
-   (widehat g\neq g^*)；
+   \(\widehat g\neq g^*\)；
 3. monitor implementation error；
 4. downstream Safe RL optimization failure。
 
@@ -175,7 +175,7 @@ grounding。
 
 ### 3.3 命题三：cost 漏报会直接扩大真实安全违反
 
-设 episode horizon 为 (H)，gold cost 和预测 cost 都在 ([0,1]) 内。定义：
+设 episode horizon 为 \(H\)，gold cost 和预测 cost 都在 \([0,1]\) 内。定义：
 
 \[
 J^*(\pi)
@@ -186,9 +186,9 @@ J^*(\pi)
 \]
 
 其中 (J^*(\pi)) 是 gold monitor 判断的真实期望安全代价，
-(widehat J(\pi)) 是训练时 cost generator 提供的期望代价。
+\(\widehat J(\pi)\) 是训练时 cost generator 提供的期望代价。
 
-定义策略 (pi) 的平均 cost 漏报误差：
+定义策略 \(\pi\) 的平均 cost 漏报误差：
 
 \[
 \epsilon_\pi^-
@@ -206,7 +206,7 @@ J^*(\pi)
 \widehat J(\pi)+H\epsilon_\pi^-.
 \]
 
-如果 Safe RL 只保证预测 cost 不超过预算 (B)：
+如果 Safe RL 只保证预测 cost 不超过预算 \(B\)：
 
 \[
 \widehat J(\pi)\leq B,

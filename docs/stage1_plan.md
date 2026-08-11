@@ -232,7 +232,7 @@ The core package versions are:
 | Component | Version |
 |---|---:|
 | Python | 3.8.20 |
-| PyTorch | 2.4.1+cpu |
+| PyTorch | 2.4.1+cu124; RTX 4090 backend fixed by D32 |
 | Safety-Gymnasium | 1.0.0 |
 | Gymnasium | 0.28.1 |
 | MuJoCo | 2.3.3 |
@@ -404,8 +404,9 @@ independence are covered by wrapper tests.
 
 **Goal:** connect the wrapped environment to OmniSafe without changing unrelated components.
 
-**Status:** bounded integration smoke completed on 2026-08-10; main matched-seed
-training configurations are intentionally not frozen or run.
+**Status:** bounded integration smoke completed on 2026-08-10. D31 pilot
+configs were frozen and the three-condition small-budget sanity passed on
+2026-08-11; full matched-seed pilot training has not run.
 
 The main conditions should share:
 
@@ -418,10 +419,10 @@ The main conditions should share:
 The primary change between conditions should be the safety cost supplied to the constrained learner.
 
 **Current output:** a reproducible three-condition interface configuration, one
-real positive STL-cost routing probe, and a 64-transition PPO-Lagrangian CPU
-smoke run that completed one epoch and at least one update. This is not a
-training result. Main configurations wait for the open quantitative-success
-decision.
+real positive STL-cost routing probe, a 64-transition PPO-Lagrangian CPU smoke,
+frozen pilot settings, and a 10k-transitions-per-condition sanity with final
+checkpoint gold evaluation. These are engineering results, not the full pilot
+behavioral comparison.
 
 ### Work Package 6: Evaluation and Logging
 
@@ -462,7 +463,7 @@ Stage I should proceed to Stage II only if:
 | Rule parameterization | Our work | Calibrated and fixed |
 | Stateful bounded-recovery monitor | Our work | Implemented and tested |
 | STL-to-cost conversion | Our work | Binary mapping and three-mode wrapper implemented/tested |
-| Safe RL wrapper integration | Our work | Integration smoke passed; main training pending |
+| Safe RL wrapper integration | Our work | Pilot configs/sanity passed; full matched pilot pending |
 | Temporal evaluation metrics | Our work | Wrapper episode logs implemented; main evaluation pending |
 
 The central engineering contribution of Stage I is therefore not a new simulator, STL parser, or Safe RL algorithm. It is the carefully tested connection between existing components, together with the temporal monitor, cost definition, and evaluation needed for the selected safety rule.
@@ -490,5 +491,9 @@ The rule-and-monitor milestone was completed on 2026-08-05 with
 $d_{\mathrm{warn}}=0.45$, $d_{\mathrm{safe}}=0.55$, and $K=79$. The OmniSafe
 wrapper and bounded integration smoke passed on 2026-08-10: 11 wrapper tests,
 one real positive-cost routing probe, and a 64-transition PPO-Lagrangian update
-all completed. Main training still waits for predeclared quantitative success
-and evaluation criteria.
+all completed. On 2026-08-11, a full-horizon actor-sampled PPOLag rollout
+produced a nonzero STL deadline-event cost, and the common checkpoint evaluator
+passed direct-oracle and RTAMT checks. D31 then approved the quantitative
+protocol for the Stage I pilot only; three frozen condition overlays and the
+small-budget sanity passed. The full five-seed, three-condition 1M pilot remains
+unrun, and O8 retains the final main-study-standard decision.

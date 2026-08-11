@@ -2,11 +2,11 @@
 
 ## Status
 
-The Stage I environment was installed and verified on 2026-07-29.
+The Stage I environment was installed and verified on 2026-07-29. Its CUDA
+training backend was enabled and verified on 2026-08-11.
 
-The environment is named `stl-stage1`. It is isolated from existing ROS and Isaac
-Python paths and uses CPU-only PyTorch because a GPU is not required for the
-environment-inspection milestone.
+The environment is named `stl-stage1`. It is isolated from existing ROS and
+Isaac Python paths and now uses the official PyTorch CUDA 12.4 wheel.
 
 ## Host
 
@@ -17,11 +17,12 @@ environment-inspection milestone.
 - GCC: 12.3.0
 - CMake: 3.22.1
 - FFmpeg: 4.4.2
-- NVIDIA status: the installed driver was not usable by `nvidia-smi` during setup
+- GPU: NVIDIA GeForce RTX 4090, 24,564 MiB VRAM, compute capability 8.9
+- NVIDIA driver: 560.35.03, reporting CUDA compatibility 12.6
 
-The CPU setup is sufficient for the smoke test, trajectory collection, RTAMT
-reference evaluation, and initial diagnosable tests. GPU setup is deferred until
-training performance makes it necessary.
+The original environment inspection used CPU PyTorch. CUDA is now verified for
+Stage I wrapper tensors and full-horizon PPOLag rollout/update; no system driver
+change or standalone `nvcc` installation was required.
 
 ## Pre-existing and newly installed components
 
@@ -46,7 +47,10 @@ not modified.
 | Component | Installed version | Source |
 |---|---:|---|
 | Python | 3.8.20 | Conda defaults |
-| PyTorch | 2.4.1+cpu | Official PyTorch CPU wheel index |
+| PyTorch | 2.4.1+cu124 | Official PyTorch CUDA 12.4 wheel index |
+| CUDA runtime bundled with PyTorch | 12.4 | PyTorch wheel dependencies |
+| cuDNN | 9.1.0 | PyTorch wheel dependency |
+| NVIDIA driver | 560.35.03 | Host installation |
 | NumPy | 1.23.5 | PyPI |
 | Gymnasium | 0.28.1 | Required by Safety-Gymnasium 1.0.0 |
 | Gymnasium-Robotics | 1.2.2 | Required by Safety-Gymnasium 1.0.0 |
@@ -59,7 +63,7 @@ No editable source checkout is used by this environment. Package versions, rathe
 than mutable repository working trees, identify the installed code. The complete
 resolved environment is stored in `environment.stage1.yml`.
 
-## Commands used on the successful installation
+## Commands used on the successful installation and CUDA enablement
 
 The successful installation sequence was:
 
@@ -73,8 +77,8 @@ The successful installation sequence was:
   -y
 
 /home/jerry/anaconda3/envs/stl-stage1/bin/python -m pip install \
-  --index-url https://download.pytorch.org/whl/cpu \
-  torch==2.4.1+cpu
+  --index-url https://download.pytorch.org/whl/cu124 \
+  torch==2.4.1
 
 PYTHONNOUSERSITE=1 \
 /home/jerry/anaconda3/envs/stl-stage1/bin/python -m pip install \
@@ -85,12 +89,13 @@ PYTHONNOUSERSITE=1 \
 
 /home/jerry/anaconda3/bin/conda env config vars set \
   -n stl-stage1 \
+  CUBLAS_WORKSPACE_CONFIG=:4096:8 \
   PYTHONNOUSERSITE=1 \
   PYTHONPATH= \
   MUJOCO_GL=egl
 ```
 
-The lock file contains 91 exact pip distributions plus the exact Conda package
+The lock file contains 104 exact pip distributions plus the exact Conda package
 versions resolved on the successful host.
 
 ## Create or activate
@@ -172,17 +177,42 @@ Resolution: the documented discrete-time dictionary form was used:
 The corrected reference calculation passed. This was a test-script input error,
 not an RTAMT installation failure.
 
-### NVIDIA driver
+### NVIDIA driver during the initial 2026-07-29 inspection
 
 `nvidia-smi` could not communicate with the installed NVIDIA driver. No attempt
 was made to alter the host driver because the current environment inspection
 and diagnosable CPU tests do not require a GPU.
+
+This was a historical host state, not a permanent hardware limitation. On
+2026-08-11, `nvidia-smi` succeeded with driver 560.35.03 and the RTX 4090; D32
+records the subsequent CUDA enablement.
 
 ## Known non-blocking warning
 
 Importing Safety-Gymnasium emits a Gymnasium-Robotics warning about reward changes
 in three Adroit Hand environments. Stage I uses `SafetyPointGoal1-v0`, so the
 warning does not affect the selected benchmark.
+
+## 2026-08-11 pre-main engineering verification
+
+No new package was installed. The same locked CPU environment ran the
+full-horizon on-policy event-cost gate and checkpoint evaluator:
+
+```bash
+./scripts/run_on_policy_sanity.sh
+
+./scripts/evaluate_stage1_checkpoint.sh \
+  --run-dir PATH_TO_OMNISAFE_RUN \
+  --checkpoint epoch-1.pt \
+  --episodes 3 --seed-start 12000 \
+  --max-episode-steps 1000 \
+  --output-dir results/evaluation_smoke
+```
+
+The PPOLag run used Python 3.8.20, PyTorch 2.4.1+cpu, OmniSafe 0.5.0,
+Safety-Gymnasium 1.0.0, and an explicit `cost_limit=0.1`. CUDA remained
+unavailable and was not required. The common evaluator used RTAMT 0.3.5 for
+completed-window checks.
 
 ## 2026-08-05 reproducibility recheck
 
@@ -202,8 +232,8 @@ python -m pip install --no-deps --no-build-isolation -e .
 ```
 
 The benchmark/public-distance smoke test and the original 23 signal, monitor,
-oracle, fixture, and RTAMT agreement tests passed. The locked PyTorch build
-remains CPU-only; GPU training was not part of this milestone.
+oracle, fixture, and RTAMT agreement tests passed. At that 2026-08-05 milestone
+the locked PyTorch build was CPU-only; D32 records the later CUDA replacement.
 
 ## 2026-08-05 visualization-runner verification
 
@@ -248,9 +278,68 @@ the complete suite to 38 tests. Exact evidence and limitations are recorded in
 `docs/omnisafe_integration_report.md` and
 `results/integration_smoke/summary.json`.
 
-The environment remains CPU-only (`torch 2.4.1+cpu`, no CUDA build). This was
-sufficient for the bounded interface smoke and does not establish GPU training
+At the 2026-08-10 wrapper milestone the environment was CPU-only
+(`torch 2.4.1+cpu`). D32 later replaced this wheel and established GPU training
 readiness.
+
+## 2026-08-11 three-condition pilot-sanity verification
+
+The sanity first passed on CPU. After D32, it was rerun on the frozen `cuda:0`
+backend with deterministic cuBLAS configuration:
+
+```bash
+./scripts/run_stage1_pilot_sanity.sh
+```
+
+Recorded runtime versions are Python 3.8.20, PyTorch 2.4.1+cu124, OmniSafe
+0.5.0, Safety-Gymnasium 1.0.0, and RTAMT 0.3.5.
+Task-only, native-cost, and gold-STL-cost PPOLag each completed 10,000
+transitions and wrote a final checkpoint. Paired deterministic evaluation used
+the common gold evaluator and passed direct-oracle/RTAMT checks. Exact config,
+checkpoint, and progress hashes are in `results/pilot_sanity/summary.json`.
+
+The full 1M pilot was not run. Reproducing this sanity creates bulk logs and
+checkpoints under `results/pilot_sanity/omnisafe_runs/`; Git ignores those files
+while retaining compact summaries and episode records.
+
+## 2026-08-11 CUDA enablement and validation
+
+The CPU Torch wheel was replaced without changing the Torch major/minor/patch:
+
+```bash
+env PYTHONNOUSERSITE=1 PYTHONPATH= \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python -m pip install \
+  --no-cache-dir --force-reinstall torch==2.4.1 \
+  --index-url https://download.pytorch.org/whl/cu124
+
+env PYTHONNOUSERSITE=1 PYTHONPATH= \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python -m pip install \
+  --no-cache-dir typing-extensions==4.13.2
+```
+
+The second command restores the existing locked `typing-extensions` version;
+the PyTorch index otherwise selected 4.12.2, which conflicts with the installed
+`cryptography` package. `pip check` then reported no broken requirements.
+
+Reproducible validation command:
+
+```bash
+./scripts/validate_cuda_stage1.sh
+```
+
+Verified facts include CUDA availability, RTX 4090 identity and 8.9 compute
+capability, a 1024×1024 GPU matrix operation, all Stage I wrapper tensors on
+`cuda:0`, and a 2000-transition full-horizon PPOLag update with positive STL
+event cost and checkpoint output. OmniSafe enables deterministic PyTorch
+algorithms, so CUDA launchers set:
+
+```text
+CUBLAS_WORKSPACE_CONFIG=:4096:8
+```
+
+Evidence is in `results/cuda_validation/summary.json`. CUDA is functional, but
+the tiny sanity workload is simulator/launch-overhead dominated; this gate does
+not claim a speedup over CPU.
 
 ## Removal
 

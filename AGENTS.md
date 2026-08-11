@@ -84,25 +84,37 @@ Do not add any of the following during Stage I unless the user explicitly change
 
 Environment inspection, calibration, monitor/oracle agreement, visualization,
 the OmniSafe wrapper, vectorized lifecycle tests, positive-cost routing probe,
-and a minimal PPO-Lagrangian update passed their gates by 2026-08-10.
+and a minimal PPO-Lagrangian update passed their gates by 2026-08-10. On
+2026-08-11, a real PPOLag rollout produced a nonzero deadline-event cost, the
+explicit-cost-limit check passed, and the common checkpoint evaluator achieved
+zero online/direct-oracle/RTAMT mismatches.
 
-The next milestone is the pre-main-study experimental declaration. Before any
-main training:
+O6 is confirmed by D31 as a Stage I pilot protocol only, not as the final
+main-study standard. The exact protocol and three condition overlays are frozen
+under `configs/stage1_pilot/`. The three-condition 10,000-transition-per-
+condition sanity gate passed on 2026-08-11 with exact cost routing and common
+gold-oracle evaluation. The complete 1M runs have not started.
 
-1. propose and explicitly record the required violation-rate reduction;
-2. define acceptable goal-success or return degradation;
-3. fix matched training seeds and evaluation episode count;
-4. fix the uncertainty reporting method;
-5. freeze matched task-only, native-cost, and STL-cost configurations;
-6. align per-vector rollout length with complete episode horizons so an
-   OmniSafe epoch reset cannot erase a pending obligation;
-7. set and record condition-specific `lagrange_cfgs.cost_limit` values instead
-   of silently inheriting the OmniSafe default;
-8. require at least one nonzero STL event cost inside a PPO-Lagrangian rollout;
-9. distinguish proposed values from user-confirmed decisions.
+The next work package is the frozen Stage I pilot:
 
-Do not run the main RL study until these choices are confirmed and recorded in
-`DECISIONS.md`. Do not add the Stage II language layer during this milestone.
+1. keep task/native/STL cost units and limits `0.0/25.0/0.1` explicit;
+2. use five matched training seeds and 1M transitions per condition/seed;
+3. preserve full-episode rollout alignment;
+4. evaluate fixed final checkpoints deterministically on the same 100 seeds;
+5. use missed obligations / triggered obligations as the primary safety metric;
+6. report both relative and absolute STL-vs-task-only differences, using only
+   the absolute difference when the task-only baseline is zero;
+7. apply the 10-percentage-point goal-success non-inferiority margin and 10,000
+   paired hierarchical bootstrap replicates;
+8. inspect learning curves before any convergence claim;
+9. treat 1M as a pilot budget and keep the final main-study standard open as O8.
+
+D32 fixes the matched training backend to the verified RTX 4090 `cuda:0` device
+with PyTorch 2.4.1+cu124. Launch deterministic CUDA training with
+`CUBLAS_WORKSPACE_CONFIG=:4096:8`. Do not mix historical CPU sanity outputs with
+CUDA pilot results.
+
+Do not add the Stage II language layer during this milestone.
 After completing the current gate, continue with the next unfinished work
 package in `docs/END_TO_END_RESEARCH_PIPELINE.md`; do not reduce the handoff to
 one isolated next-step instruction.

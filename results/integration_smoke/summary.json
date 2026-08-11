@@ -1,5 +1,5 @@
 {
-  "completed_at_utc": "2026-08-11T00:33:00.507568+00:00",
+  "completed_at_utc": "2026-08-11T20:52:03.623180+00:00",
   "gate_passed": true,
   "milestone": "omnisafe_wrapper_integration_smoke",
   "platform": {
@@ -58,8 +58,9 @@
       "one_or_more_update_iterations": true,
       "separate_cost_metrics_present": true
     },
+    "declared_lagrange_cost_limit": 25.0,
     "environment_id": "Stage1SafetyPointGoal1STLCost-v0",
-    "log_dir": "/home/jerry/Desktop/STL/results/integration_smoke/omnisafe_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260810-2026-08-10-17-32-58",
+    "log_dir": "/home/jerry/Desktop/STL/results/integration_smoke/omnisafe_runs/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-20260810-2026-08-11-13-52-01",
     "observation_shape": [
       63
     ],
@@ -85,11 +86,11 @@
       "Metrics/STLTerminalUnresolved": 0.0,
       "Metrics/STLTriggers": 0.0,
       "Metrics/SelectedAlgorithmCost": 0.0,
-      "Time/Epoch": 1.8135297298431396,
-      "Time/FPS": 35.29029846191406,
-      "Time/Rollout": 1.806746482849121,
-      "Time/Total": 1.8136751651763916,
-      "Time/Update": 0.006767749786376953,
+      "Time/Epoch": 1.820796012878418,
+      "Time/FPS": 35.14946746826172,
+      "Time/Rollout": 1.8140480518341064,
+      "Time/Total": 1.8209364414215088,
+      "Time/Update": 0.006731748580932617,
       "TotalEnvSteps": 64.0,
       "Train/Entropy": 1.41908860206604,
       "Train/Epoch": 0.0,
@@ -105,7 +106,7 @@
       "Value/cost": -0.1710813045501709,
       "Value/reward": -0.03450049087405205
     },
-    "progress_sha256": "e7e7bde5e535d61156fdc113f7edbdea3f363802e2fba62a17d7f3b7a10dd575",
+    "progress_sha256": "4137334d75b1c7b320c114c6320798f9b7df0257ea12a24e108f7195d71fc8ae",
     "result": {
       "mean_episode_length": 16.0,
       "mean_episode_return": 0.005078616086393595,
@@ -124,8 +125,8 @@
   ],
   "repository": {
     "config_path": "configs/omnisafe_integration_smoke.yaml",
-    "config_sha256": "216fab3ab92d0a75c0dccc9142f140306120e466742baf4f456489a9581a1908",
-    "git_head_before_milestone_commit": "3cfc99489b2c3cf09042ed31bbe6bd6589e6e0f9"
+    "config_sha256": "a6989a2f7f936af18d8814accfceeb74c64169166e23970274df31e0916066d4",
+    "git_head_before_milestone_commit": "c58769334d449485995fe55d4781994e8693dee9"
   },
   "schema_version": 1,
   "scope": "interface smoke only; not a training result or safety claim"

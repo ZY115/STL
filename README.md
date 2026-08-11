@@ -11,8 +11,9 @@
 后，应按该文档继续进入下一个未完成 work package。
 
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
-STL monitor/oracle、OmniSafe wrapper、integration smoke 证据，以及一条命令启动的
-实时/录像可视化入口。主 RL 对照训练尚未开始。
+STL monitor/oracle、OmniSafe wrapper、integration smoke、冻结的 Stage I pilot
+protocol、三条件 sanity 证据，以及一条命令启动的实时/录像可视化入口。完整 1M
+pilot 对照训练尚未开始。
 
 ## 长期研究目标
 
@@ -103,7 +104,7 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 
 ## 当前进度
 
-截至 2026-08-10：
+截至 2026-08-11：
 
 - 已完成原始问题定义；
 - 已完成核心文献梳理；
@@ -136,12 +137,25 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 - 三个条件共享相同的 60+3 维 policy observation，且 native reward、native
   cost、STL cost 和 selected algorithm cost 保持独立；
 - 已验证 terminal/final-observation 顺序和每个 vector slot 的独立 monitor reset；
-- wrapper 新增 11 项测试，完整 38 项测试全部通过；
+- wrapper 新增 11 项测试；pre-main evaluator 和 pilot protocol 新增 5 项测试，当前
+  完整 43 项测试；
 - 真实 positive-cost probe 产生 1 次 terminal-unresolved，`stl_cost=1` 且送入
   learner 的 selected cost 为 1；
 - PPO-Lagrangian 已在 CPU 上完成 64-transition、单 epoch、至少一次 update 的
   integration smoke，并写出独立 cost 指标和 checkpoint；
-- 尚未预声明主实验定量成功标准，也尚未开始 matched-seed 主 RL training。
+- O6 已由负责人批准为 Stage I pilot protocol，但不是最终 main-study 标准；
+- 已完成 2000-transition、完整 episode 对齐的 PPOLag on-policy sanity，真实 actor
+  rollout 中产生 deadline violation，STL/selected mean episode cost 均为 `0.5`；
+- 已实现统一 checkpoint evaluator；3 条 smoke 轨迹的 online monitor、independent
+  oracle 和 RTAMT 完全一致；
+- 已冻结 pilot protocol 和 task-only/native-cost/gold-STL 三个 condition overlays；
+- 已完成每条件 10,000 transitions 的三条件 matched engineering sanity；三个 cost
+  routing contract、final checkpoint、paired deterministic evaluation 和 gold
+  oracle/RTAMT gate 全部通过；
+- sanity 使用非 pilot seed 和每条件 3 条评估轨迹，不构成行为比较或收敛证据；
+- 已在 RTX 4090 上启用 `torch 2.4.1+cu124`；Stage I wrapper tensor、完整 horizon
+  positive-cost PPOLag update 和三条件 sanity 均在 `cuda:0` 通过；
+- 完整 1M×3×5 pilot training 未启动。
 
 ## 可视化快速启动
 
@@ -165,12 +179,12 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-OmniSafe wrapper 与 integration smoke gate 已通过。下一里程碑不是直接扩大训练，
-而是解决 open decision O6：预声明 violation reduction、goal-performance
-tolerance、matched seed 数、evaluation episode 数和不确定性报告方法；同时明确
-native step cost 与 STL event cost 的预算语义和 `cost_limit`，完成真实 on-policy
-非零 STL cost sanity，并据此冻结三个条件的 matched configs。当前仍不开始主 RL
-training 或自然语言层。
+O6 pilot protocol 已确认，冻结配置和三条件 small-budget sanity gate 已完成。下一
+scientific milestone 是按 `configs/stage1_pilot/` 运行五个 matched seeds、每
+condition/seed 1M transitions 的 Stage I pilot，并用固定 final checkpoint、相同
+deterministic policy mode、100 个 paired episodes 和 gold evaluator 统一评估。1M
+只是 pilot budget；必须检查 learning curves 后才能讨论收敛。当前本轮没有启动这些
+完整 runs，也不加入自然语言层。
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -180,6 +194,30 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 ```bash
 ./scripts/run_omnisafe_smoke.sh
 ```
+
+复现 on-policy positive-cost gate：
+
+```bash
+./scripts/run_on_policy_sanity.sh
+```
+
+统一 checkpoint 评估入口和完整参数见
+`docs/pre_main_engineering_gate_report.md`。
+
+复现三条件 pilot sanity：
+
+```bash
+./scripts/run_stage1_pilot_sanity.sh
+```
+
+复现 CUDA 环境与 full-horizon PPOLag gate：
+
+```bash
+./scripts/validate_cuda_stage1.sh
+```
+
+冻结协议、gate 结果和解释边界见
+`docs/stage1_pilot_sanity_report.md`。
 
 ## 推荐阅读顺序
 
@@ -217,7 +255,12 @@ safety-stl-stage1-handoff/
 ├── pyproject.toml
 ├── configs/
 │   ├── stage1_rule.yaml
-│   └── omnisafe_integration_smoke.yaml
+│   ├── omnisafe_integration_smoke.yaml
+│   ├── on_policy_positive_cost_sanity.yaml
+│   ├── stage1_pre_main_proposal.yaml
+│   ├── cuda_validation.yaml
+│   ├── stage1_pilot_sanity.yaml
+│   └── stage1_pilot/
 ├── scripts/
 │   ├── collect_rule_calibration.py
 │   ├── generate_monitor_fixtures.py
@@ -225,18 +268,29 @@ safety-stl-stage1-handoff/
 │   ├── run_stage1_demo.py
 │   ├── run_omnisafe_integration_smoke.py
 │   ├── run_omnisafe_smoke.sh
+│   ├── run_on_policy_positive_cost_sanity.py
+│   ├── run_on_policy_sanity.sh
+│   ├── evaluate_stage1_checkpoint.py
+│   ├── evaluate_stage1_checkpoint.sh
+│   ├── run_stage1_pilot_sanity.py
+│   ├── run_stage1_pilot_sanity.sh
+│   ├── validate_cuda_stage1.py
+│   ├── validate_cuda_stage1.sh
 │   └── visualize_stage1.sh
 ├── src/safety_stl/
 │   ├── signals.py
 │   ├── monitor.py
 │   ├── oracle.py
 │   ├── omnisafe_env.py
+│   ├── evaluation.py
+│   ├── pilot_protocol.py
 │   └── visualization.py
 ├── tests/
 │   ├── test_distance_signal.py
 │   ├── test_monitor_boundaries.py
 │   ├── test_oracle_agreement.py
 │   ├── test_omnisafe_wrapper.py
+│   ├── test_evaluation.py
 │   ├── test_visualization.py
 │   └── fixtures/
 ├── docs/
@@ -251,6 +305,8 @@ safety-stl-stage1-handoff/
 │   ├── rule_calibration_report.md
 │   ├── monitor_agreement_report.md
 │   ├── omnisafe_integration_report.md
+│   ├── stage1_pre_main_study_proposal.md
+│   ├── pre_main_engineering_gate_report.md
 │   ├── visualization.md
 │   ├── stage1_plan.md
 │   ├── problem-definition/
@@ -271,8 +327,15 @@ safety-stl-stage1-handoff/
 │   │   ├── README.md
 │   │   ├── summary.json
 │   │   └── stage1_demo.mp4
-│   └── integration_smoke/
+│   ├── integration_smoke/
+│   │   ├── README.md
+│   │   └── summary.json
+│   ├── on_policy_sanity/
+│   │   ├── README.md
+│   │   └── summary.json
+│   └── evaluation_smoke/
 │       ├── README.md
+│       ├── episodes.csv
 │       └── summary.json
 └── references/
     ├── REFERENCES.md

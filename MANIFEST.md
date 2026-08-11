@@ -7,8 +7,8 @@ This handoff package contains the durable research context required to continue 
 It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
 environment-inspection, rule-and-monitor, visualization, and OmniSafe-wrapper
 integration milestones are complete. Tested monitor/wrapper code, runnable
-visualization, and stable smoke evidence are tracked; main training has not
-started.
+visualization, frozen pilot configs, and stable sanity evidence are tracked;
+full pilot training has not started.
 
 ## Root documents
 
@@ -43,6 +43,10 @@ started.
 | `docs/monitor_agreement_report.md` | Online/oracle/RTAMT agreement result |
 | `docs/visualization.md` | One-command live/video runner, outputs, verification, and limitations |
 | `docs/omnisafe_integration_report.md` | Wrapper architecture, vector terminal order, tests, positive-cost probe, and PPO-Lagrangian smoke evidence |
+| `docs/stage1_pre_main_study_proposal.md` | D31 pilot-only criteria, seeds, uncertainty, budgets, and training scale |
+| `docs/pre_main_engineering_gate_report.md` | On-policy positive-cost and common checkpoint-evaluator evidence |
+| `docs/stage1_pilot_sanity_report.md` | Frozen pilot protocol and three-condition engineering-sanity evidence |
+| `docs/cuda_enablement_report.md` | RTX 4090/PyTorch CUDA enablement, deterministic launch requirement, and PPOLag evidence |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -90,6 +94,12 @@ These are reference snapshots, not project implementation code.
 |---|---|
 | `configs/stage1_rule.yaml` | Fixed machine-readable calibrated rule |
 | `configs/omnisafe_integration_smoke.yaml` | Three condition IDs and bounded PPO-Lagrangian smoke configuration |
+| `configs/on_policy_positive_cost_sanity.yaml` | Full-horizon actor-sampled positive STL-cost sanity |
+| `configs/stage1_pre_main_proposal.yaml` | Machine-readable D31 pilot summary; not a final main-study standard |
+| `configs/stage1_pilot/protocol.yaml` | Frozen shared Stage I pilot protocol and exact OmniSafe settings |
+| `configs/stage1_pilot/*.yaml` | Frozen task-only, native-cost, and gold-STL condition overlays |
+| `configs/stage1_pilot_sanity.yaml` | Engineering-only three-condition sanity overrides and acceptance gate |
+| `configs/cuda_validation.yaml` | Fixed CUDA device/runtime/wrapper/full-horizon validation contract |
 | `scripts/collect_rule_calibration.py` | Formal controlled/random data collection and parameter selection |
 | `scripts/generate_monitor_fixtures.py` | Stable environment fixture generation |
 | `scripts/run_monitor_agreement.py` | Machine-readable agreement evaluation and report generation |
@@ -97,11 +107,21 @@ These are reference snapshots, not project implementation code.
 | `scripts/visualize_stage1.sh` | One-command Conda-aware launcher |
 | `scripts/run_omnisafe_integration_smoke.py` | Positive-cost routing probe and minimal PPO-Lagrangian rollout/update runner |
 | `scripts/run_omnisafe_smoke.sh` | Conda-aware one-command integration-smoke launcher |
+| `scripts/run_on_policy_positive_cost_sanity.py` | Explicit-budget full-horizon PPOLag event-cost gate |
+| `scripts/run_on_policy_sanity.sh` | Conda-aware on-policy sanity launcher |
+| `scripts/evaluate_stage1_checkpoint.py` | Common checkpoint evaluation CLI |
+| `scripts/evaluate_stage1_checkpoint.sh` | Conda-aware checkpoint evaluation launcher |
+| `scripts/run_stage1_pilot_sanity.py` | Frozen-config composition, three-condition training, and paired evaluator gate |
+| `scripts/run_stage1_pilot_sanity.sh` | Conda-aware three-condition sanity launcher |
+| `scripts/validate_cuda_stage1.py` | CUDA device, wrapper tensor, dependency, and positive-cost PPOLag validation |
+| `scripts/validate_cuda_stage1.sh` | Deterministic cuBLAS CUDA validation launcher |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
 | `src/safety_stl/visualization.py` | Live viewer, annotated video, controller, and independent logs |
 | `src/safety_stl/omnisafe_env.py` | Three cost modes, shared temporal observation, vector monitor lifecycle, and OmniSafe registration |
+| `src/safety_stl/evaluation.py` | Checkpoint loading, gold oracle/RTAMT verification, and policy metrics |
+| `src/safety_stl/pilot_protocol.py` | D31 validation and OmniSafe config composition |
 | `tests/` | Signal, monitor/oracle, visualization, wrapper, vector lifecycle, and stable-fixture tests |
 
 ## Excluded files
@@ -119,8 +139,9 @@ The package excludes:
 - `.DS_Store`;
 - unrelated slide templates;
 - raw generated CSV files below `results/`;
-- bulk OmniSafe run directories and checkpoints below `results/integration_smoke/`;
-- main matched-seed training outputs, which do not exist yet.
+- bulk OmniSafe run directories and checkpoints below `results/integration_smoke/`
+  `results/on_policy_sanity/`, and `results/pilot_sanity/`;
+- full matched-seed pilot outputs, which do not exist yet.
 
 ## Generated outputs
 
@@ -142,10 +163,22 @@ The wrapper milestone tracks `results/integration_smoke/summary.json` and its
 README. Bulk OmniSafe `progress.csv`, copied config, and checkpoint files remain
 ignored; the summary records the relevant values and progress hash.
 
+The pre-main engineering gate tracks `results/on_policy_sanity/summary.json`
+and the compact `results/evaluation_smoke/summary.json`/`episodes.csv`. Raw
+on-policy checkpoints and future large evaluation trajectory files remain
+ignored.
+
+The pilot sanity gate tracks `results/pilot_sanity/summary.json` and compact
+paired evaluation summaries/episode CSVs. Bulk OmniSafe logs and checkpoints
+remain ignored; the top-level summary records their paths and SHA-256 hashes.
+
+The CUDA gate tracks `results/cuda_validation/summary.json` and README. Bulk
+validation checkpoints/logs remain ignored. The environment lock now includes
+PyTorch 2.4.1+cu124 and its exact CUDA 12.4 runtime dependencies.
+
 ## Future additions
 
-The OmniSafe wrapper/integration gate has passed. The next bounded additions are
-the pre-main-study declaration, explicit condition-specific cost limits, one
-positive-cost on-policy sanity run, and the small representation-comparison
-artifact described in `docs/minimum_research_delivery_8.10.md`. Large matched
-training must wait for those recorded decisions.
+The D31 pilot protocol is frozen and the three-condition small-budget sanity has
+passed. The next bounded addition is full five-seed, three-condition Stage I
+pilot training/evaluation. The 1M budget is pilot-only and O8 remains open for
+the final main-study standard.

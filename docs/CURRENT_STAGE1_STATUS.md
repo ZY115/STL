@@ -2,7 +2,7 @@
 
 ## 1. 文档目的
 
-本文档记录截至 2026-08-10 的 Stage I 完整状态，集中回答四个问题：
+本文档记录截至 2026-08-11 的 Stage I 完整状态，集中回答四个问题：
 
 1. 已经完成了哪些研究和工程步骤；
 2. 当前可视化具体展示了什么；
@@ -43,8 +43,9 @@ Safe RL 学习产生的错误。
 > 不造成不可接受的目标完成能力下降？
 
 目前已经完成环境、信号、规则、参数、monitor、reference agreement、可视化、
-STL-cost wrapper 和一次最小 OmniSafe update；尚未完成 matched-seed 对照训练和
-正式 evaluation。因此目前仍没有 RL 安全改进结论。
+STL-cost wrapper、on-policy positive-cost sanity、统一 checkpoint evaluator、O6
+pilot protocol 冻结和三条件 small-budget sanity；尚未完成 1M×3×5 matched pilot
+训练和正式 evaluation。因此目前仍没有 RL 安全改进结论。
 
 ### 2.1 2026-08-10 研究定位修正
 
@@ -132,7 +133,10 @@ episode。episode 在 `d_t >= 0.55` 时关闭；在中间 hysteresis 区间内�
 | MuJoCo | 2.3.3 |
 | OmniSafe | 0.5.0 |
 | RTAMT | 0.3.5 |
-| PyTorch | 2.4.1+cpu |
+| PyTorch | 2.4.1+cu124 |
+| GPU | NVIDIA GeForce RTX 4090, 24,564 MiB |
+| NVIDIA driver | 560.35.03 |
+| PyTorch CUDA / cuDNN | 12.4 / 9.1.0 |
 | NumPy | 1.23.5 |
 | Pillow | 10.4.0 |
 | ImageIO | 2.35.1 |
@@ -143,7 +147,7 @@ episode。episode 在 `d_t >= 0.55` 时关闭；在中间 hysteresis 区间内�
 - 隔离环境下 `pip check` 无 broken requirement；
 - Safety-Gymnasium、MuJoCo、OmniSafe、RTAMT 和 PyTorch 可导入；
 - `SafetyPointGoal1-v0` 可运行完整 1000-step horizon；
-- PPO-Lagrangian 对象可以在 CPU 上构造；
+- PPO-Lagrangian 可以在 CPU 和 `cuda:0` 上构造并更新；
 - EGL 离屏渲染、H.264 视频和 GLFW 实时窗口均可运行；
 - ROS/Isaac 的全局 Python 路径不会污染 Python 3.8 实验环境。
 
@@ -257,6 +261,38 @@ selected cost 为 1。随后 PPO-Lagrangian 使用两个 vector env 完成 64 tr
 ```
 
 完整结果见 [`omnisafe_integration_report.md`](omnisafe_integration_report.md)。
+
+### 4.8 Pre-main engineering gate
+
+2026-08-11 已完成：
+
+- 2000-transition PPOLag rollout，每个 vector slot 恰好一个完整 1000-step episode；
+- 真实 actor rollout 中至少一次 deadline violation，mean STL/selected cost 均为 0.5；
+- 强制 PPOLag config 显式声明 `lagrange_cfgs.cost_limit`；
+- 统一 checkpoint evaluator，逐 episode 保存 task/native/STL 指标；
+- 每条轨迹由 independent direct oracle 重新计算；
+- completed windows 由 RTAMT 复核，3-episode smoke 最大 robustness difference 为 0；
+- 新增 2 项 evaluator 测试。
+
+该工程 gate 的完整证据见
+[`pre_main_engineering_gate_report.md`](pre_main_engineering_gate_report.md)。
+
+### 4.9 Pilot protocol freeze 和三条件 sanity
+
+2026-08-11 负责人将 O6 批准为 Stage I pilot protocol，而不是最终 main-study
+标准。已固定：主要 safety metric、30% 相对降低 pilot target、绝对差、baseline=0
+处理、10 percentage-point goal margin、5 个 matched training seeds、每 seed/condition
+100 个 paired evaluation episodes、10,000 次 paired hierarchical bootstrap、三个
+不同单位的 cost limits，以及每 condition/seed 1M transitions 的 pilot budget。
+
+随后完成每条件 10,000 transitions 的 task-only/native-cost/gold-STL engineering
+sanity。三个条件的 cost routing 每个 epoch 都精确一致，positive native/STL cost
+均实际出现，三个 final checkpoints 在同一组三条 deterministic evaluation 轨迹上
+与 direct oracle 和 RTAMT 完全一致。完整测试总数现为 43。
+
+该 sanity seed 不属于五个 pilot seeds，三条 evaluation 也远少于正式 100 条，不能
+用于检验 30% target 或 goal non-inferiority。详细说明见
+[`stage1_pilot_sanity_report.md`](stage1_pilot_sanity_report.md)。
 
 ## 5. 当前可视化的实际架构
 
@@ -411,13 +447,16 @@ remaining deadline = 154 - 130 = 24 steps
 | Vectorized monitor integration | 已完成 | final observation、独立 reset/state/terminal 已测试 |
 | OmniSafe registration | 已完成 | 三个 condition ID，统一 `(63,)` float32 observation |
 | PPO-Lagrangian integration smoke | 已完成 | 64 transitions、1 epoch、至少 1 update、checkpoint |
-| Quantitative success criteria | 未决定 | violation reduction、goal tolerance、seeds、episodes、uncertainty |
-| Condition-specific cost budgets | 未决定 | native step cost 与 STL event cost 不能静默共用默认 numeric limit |
+| PPOLag on-policy positive-cost sanity | 已完成 | 完整 episode rollout 中出现一次 deadline-event cost |
+| Common checkpoint evaluator | 已完成 | direct oracle 与 RTAMT 检查、episode/aggregate 输出 |
+| Quantitative pilot criteria | 已确认并冻结 | 仅限 Stage I pilot，不是最终 main-study 标准 |
+| Condition-specific cost budgets | 已确认并冻结 | task/native/STL=`0/25/0.1`，单位不同 |
 | Three-condition interface config | 已完成 | cost source 和共享 observation contract 已冻结 |
-| Main-study matched configs | 未开始 | 等待 quantitative success/evaluation 决策 |
-| Main RL training | 未开始 | matched seeds 的正式训练 |
+| Pilot matched configs | 已完成 | protocol 加三个 condition overlays 已冻结 |
+| Three-condition small-budget sanity | 已完成 | 10k/condition，cost routing/checkpoint/gold evaluator gate 通过 |
+| Full pilot RL training | 未开始 | 5 seeds × 3 conditions × 1M transitions |
 | Evaluation and statistical report | 未开始 | violation、recovery、goal、return、cost、uncertainty |
-| GPU training environment | 未完成 | 当前 PyTorch 为 CPU build，NVIDIA driver/CUDA 尚未验证 |
+| GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
 | Checkpoint visualization | 未开始 | 当前入口还不能加载训练后的 OmniSafe policy |
 | Stage II language layer | 延后 | controlled NL-to-STL translation 与 grounding |
 
@@ -512,20 +551,21 @@ update，记录均为有限值并写出 checkpoint。该 policy rollout 自身�
 所以其中三个 episode cost 指标均为 0；它只证明接口可运行，不用于报告 safety
 improvement。
 
-## 10. Integration gate 通过后的顺序
+## 10. Sanity gate 之后的顺序
 
-只有 wrapper/integration gate 通过后，才按以下顺序继续：
+O6 pilot protocol、frozen configs 和三条件 sanity 均已完成。接下来按以下顺序：
 
-1. 在 `DECISIONS.md` 预声明 quantitative success criterion；
-2. 固定 violation reduction threshold；
-3. 固定允许的 goal-success/return degradation；
-4. 固定训练 seeds、evaluation episodes 和 uncertainty 方法；
-5. 建立 task-only、native-cost、STL-cost 三个 matched configs；
-6. 先做小预算 sanity run；
-7. 再决定是否重建 CUDA PyTorch/GPU 训练环境；
-8. 运行正式 matched-seed training；
-9. 使用统一 evaluation runner 比较 temporal violations 和 goal performance；
-10. 只有 Stage I 下游链路得到可解释结果后，才进入 Stage II language layer。
+1. 按冻结配置运行 5 matched seeds × 3 conditions × 1M transitions；
+2. 保留完整 learning curves、每个 fixed final checkpoint 和 config/hash；
+3. 每个 final checkpoint 使用相同 deterministic mode 和 100 个 paired seeds；
+4. gold evaluator 计算 missed obligations / triggers，并同时报告绝对差；
+5. 运行 10,000 次 paired hierarchical bootstrap 和 goal-success non-inferiority；
+6. 检查 learning curves 后再判断 1M 是否近似收敛；
+7. 根据 pilot 结果在 O8 中决定最终 main-study 标准；
+8. 只有 Stage I 下游链路得到可解释结果后，才进入 Stage II language layer。
+
+当前 CPU 历史路径和 RTX 4090 CUDA 路径都已验证；frozen pilot training device 为
+`cuda:0`。完整 pilot 不在本轮自动启动。
 
 ## 11. 当前可直接运行的命令
 
@@ -566,6 +606,33 @@ env PYTHONNOUSERSITE=1 PYTHONPATH= \
 
 ```bash
 ./scripts/run_omnisafe_smoke.sh
+```
+
+复现真实 on-policy positive-cost sanity：
+
+```bash
+./scripts/run_on_policy_sanity.sh
+```
+
+复现三条件 pilot sanity：
+
+```bash
+./scripts/run_stage1_pilot_sanity.sh
+```
+
+复现 CUDA gate：
+
+```bash
+./scripts/validate_cuda_stage1.sh
+```
+
+统一评估 checkpoint：
+
+```bash
+./scripts/evaluate_stage1_checkpoint.sh \
+  --run-dir PATH_TO_RUN --checkpoint epoch-N.pt \
+  --episodes 100 --seed-start 10000 --max-episode-steps 1000 \
+  --output-dir PATH_TO_OUTPUT
 ```
 
 ## 12. Git 状态和上传说明
