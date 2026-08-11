@@ -10,6 +10,10 @@
 `docs/END_TO_END_RESEARCH_PIPELINE.md`。新电脑不能只读取“下一步”；完成当前 gate
 后，应按该文档继续进入下一个未完成 work package。
 
+当前被授权连续完成的工程范围、唯一需要暂停的 compute gate 和 gate 之后的自动
+续接顺序见 `docs/CURRENT_EXECUTION_DIRECTIVE.md`。长期 pipeline 说明“去哪里”，
+current directive 说明“本轮连续做到哪里”。
+
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
 STL monitor/oracle、OmniSafe wrapper、integration smoke、冻结的 Stage I pilot
 protocol、三条件 sanity 证据，以及一条命令启动的实时/录像可视化入口。完整 1M
@@ -179,12 +183,11 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-O6 pilot protocol 已确认，冻结配置和三条件 small-budget sanity gate 已完成。下一
-scientific milestone 是按 `configs/stage1_pilot/` 运行五个 matched seeds、每
-condition/seed 1M transitions 的 Stage I pilot，并用固定 final checkpoint、相同
-deterministic policy mode、100 个 paired episodes 和 gold evaluator 统一评估。1M
-只是 pilot budget；必须检查 learning curves 后才能讨论收敛。当前本轮没有启动这些
-完整 runs，也不加入自然语言层。
+O6 pilot protocol 已确认，冻结配置、CUDA 和三条件 small-budget sanity gate 已完成。
+当前先执行 `docs/CURRENT_EXECUTION_DIRECTIVE.md`：实现可恢复 15-job runner、冻结
+hierarchical analysis、测试和一个排除于 inference 的 100k exact-scale preflight，
+形成 launch-readiness report。Full pilot 的一次 compute authorization 通过后，15
+runs、1,500 paired evaluations、统计分析和 WP1 report 连续完成，不再逐文件询问。
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -226,19 +229,20 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 1. `AGENTS.md`
 2. `README.md`
 3. `docs/END_TO_END_RESEARCH_PIPELINE.md`
-4. `DECISIONS.md`
-5. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-6. `PROJECT_CONTEXT.md`
-7. `docs/research_direction_novelty_feasibility.md`
-8. `docs/theory_and_revised_experiment_8.10.md`
-9. `docs/minimum_research_delivery_8.10.md`
-10. `docs/CURRENT_STAGE1_STATUS.md`
-11. `docs/stage1_rule_monitor_spec.md`
-12. `docs/stage1_plan.md`
-13. `docs/omnisafe_integration_report.md`
-14. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
-15. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
-16. `references/REFERENCES.md`
+4. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
+5. `DECISIONS.md`
+6. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+7. `PROJECT_CONTEXT.md`
+8. `docs/research_direction_novelty_feasibility.md`
+9. `docs/theory_and_revised_experiment_8.10.md`
+10. `docs/minimum_research_delivery_8.10.md`
+11. `docs/CURRENT_STAGE1_STATUS.md`
+12. `docs/stage1_rule_monitor_spec.md`
+13. `docs/stage1_plan.md`
+14. `docs/omnisafe_integration_report.md`
+15. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
+16. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
+17. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -295,6 +299,7 @@ safety-stl-stage1-handoff/
 │   └── fixtures/
 ├── docs/
 │   ├── END_TO_END_RESEARCH_PIPELINE.md
+│   ├── CURRENT_EXECUTION_DIRECTIVE.md
 │   ├── PROJECT_INTRODUCTION.md
 │   ├── CURRENT_STAGE1_STATUS.md
 │   ├── research_direction_novelty_feasibility.md

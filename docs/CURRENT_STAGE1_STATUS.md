@@ -454,6 +454,9 @@ remaining deadline = 154 - 130 = 24 steps
 | Three-condition interface config | 已完成 | cost source 和共享 observation contract 已冻结 |
 | Pilot matched configs | 已完成 | protocol 加三个 condition overlays 已冻结 |
 | Three-condition small-budget sanity | 已完成 | 10k/condition，cost routing/checkpoint/gold evaluator gate 通过 |
+| Resumable full-pilot runner | 未开始 | 15-job matrix、manifest、hash、resume、immediate evaluation |
+| Frozen pilot analysis | 未开始 | hierarchical bootstrap、zero-baseline、goal non-inferiority |
+| Exact-scale throughput preflight | 未开始 | excluded 100k run、wall time、VRAM、disk、readiness report |
 | Full pilot RL training | 未开始 | 5 seeds × 3 conditions × 1M transitions |
 | Evaluation and statistical report | 未开始 | violation、recovery、goal、return、cost、uncertainty |
 | GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
@@ -555,17 +558,18 @@ improvement。
 
 O6 pilot protocol、frozen configs 和三条件 sanity 均已完成。接下来按以下顺序：
 
-1. 按冻结配置运行 5 matched seeds × 3 conditions × 1M transitions；
-2. 保留完整 learning curves、每个 fixed final checkpoint 和 config/hash；
-3. 每个 final checkpoint 使用相同 deterministic mode 和 100 个 paired seeds；
-4. gold evaluator 计算 missed obligations / triggers，并同时报告绝对差；
-5. 运行 10,000 次 paired hierarchical bootstrap 和 goal-success non-inferiority；
-6. 检查 learning curves 后再判断 1M 是否近似收敛；
-7. 根据 pilot 结果在 O8 中决定最终 main-study 标准；
-8. 只有 Stage I 下游链路得到可解释结果后，才进入 Stage II language layer。
+1. 按 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 实现可恢复的 15-job matrix runner；
+2. 实现冻结的 paired hierarchical analysis 和自动测试；
+3. 运行一个排除于 inference 的 100k exact-scale throughput preflight；
+4. 生成包含 wall time、VRAM、disk、resume 和完整命令的 readiness report；
+5. 在一次 full-pilot compute authorization 后连续运行 15 个训练 jobs；
+6. 每个 fixed final checkpoint 立即执行 100 个 paired gold evaluations；
+7. 完成 10,000 次 bootstrap、goal non-inferiority、learning-curve 检查和 WP1 report；
+8. 准备 O8，并同步开始不需要 GPU 的 WP2/O7 benchmark-design proposal。
 
 当前 CPU 历史路径和 RTX 4090 CUDA 路径都已验证；frozen pilot training device 为
-`cuda:0`。完整 pilot 不在本轮自动启动。
+`cuda:0`。当前连续授权范围包括 runner、analysis、tests 和 100k preflight；完整
+15M-transition pilot 只保留一次明确 compute gate，而不是每完成一个脚本都暂停。
 
 ## 11. 当前可直接运行的命令
 

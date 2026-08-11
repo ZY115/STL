@@ -389,3 +389,20 @@ target、goal non-inferiority 或收敛。下一步是冻结协议下的 full St
 
 CUDA 功能已经解决。由于小网络和模拟器开销，当前 sanity 不能证明 GPU 比 CPU 更快；
 完整 pilot 前应单独记录 representative throughput。
+
+## 16. 2026-08-11 连续执行指令与 handoff 修正
+
+审查发现，长期 pipeline 已经完整，但 `AGENTS.md` 和 D31 同时要求 sanity 之后不要
+自动启动 full pilot。工作电脑按较强的 stop gate 停止是合理行为；问题在于仓库没有
+把 stop gate 之前可以连续完成的工作定义成一个整体。
+
+新增 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 和 D33，现将本轮工作划分为：
+
+1. 无需再次确认、必须连续完成：resumable 15-job runner、frozen hierarchical
+   analysis、tests、一个 excluded 100k exact-scale preflight 和 readiness report；
+2. 只需一次明确批准：预计约 15M transitions 的 full pilot compute gate；
+3. 批准后连续完成：15 runs、1,500 paired evaluations、analysis、WP1 report、O8
+   proposal 和非 GPU 的 WP2/O7 benchmark-design proposal。
+
+该修改不改变 D31 scientific protocol、D32 CUDA backend 或 STL semantics，只修正
+项目执行和 handoff 粒度。

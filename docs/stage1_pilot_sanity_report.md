@@ -103,8 +103,11 @@ the CUDA evidence.
 ## Gate boundary and next action
 
 The engineering sanity gate is closed. No full 1M run was started. The next
-scientific work is the five-seed, three-condition Stage I pilot using the frozen
-configs, followed by paired final-checkpoint evaluation and hierarchical
-bootstrap reporting. Before treating its result as converged or converting the
-pilot protocol into a final main-study standard, inspect learning curves and
-record a new decision under O8.
+authorized package is defined by `docs/CURRENT_EXECUTION_DIRECTIVE.md`: build a
+resumable 15-job runner, frozen hierarchical analysis, tests, and one excluded
+100k exact-scale preflight before requesting the single full-pilot compute
+decision. After that launch is approved, the five-seed, three-condition pilot,
+paired final-checkpoint evaluation, bootstrap report and WP1 closure proceed
+continuously. Before treating its result as converged or converting the pilot
+protocol into a final main-study standard, inspect learning curves and record a
+new decision under O8.

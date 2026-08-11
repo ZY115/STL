@@ -384,6 +384,27 @@ backend. Final checkpoints continue to use the same deterministic gold-STL
 evaluation path. CPU-only historical sanity runs remain engineering history and
 must not be mixed with the CUDA pilot results.
 
+### D33. Current execution uses bounded autonomy instead of one-step handoffs
+
+The long-term research map and the current execution directive have different
+roles:
+
+- `docs/END_TO_END_RESEARCH_PIPELINE.md` defines WP1--WP7 and result branches;
+- `docs/CURRENT_EXECUTION_DIRECTIVE.md` defines the complete currently
+  authorized implementation package and its next explicit stop gate.
+
+An agent must complete all unblocked tasks in the current directive without
+requesting a new instruction after each file, test, or bounded preflight. It
+stops only for an explicitly listed scientific-scope decision, material compute
+authorization, protocol change, or unresolved technical blocker.
+
+The current authorized package is the resumable full-pilot runner, frozen
+analysis module, tests, and one excluded 100k exact-scale preflight. The full
+15M-transition pilot remains a single owner compute gate because it is expected
+to require substantial GPU time and create the first behavioral dataset. After
+that launch is approved, all 15 runs, 1,500 paired evaluations, analysis, WP1
+report, O8 proposal, and the non-compute WP2/O7 proposal proceed continuously.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

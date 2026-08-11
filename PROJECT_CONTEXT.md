@@ -606,3 +606,17 @@ construction, published and strong-baseline implementation, offline semantic
 evaluation, matched online Safe RL comparison, contribution selection, and
 external-validity expansion. Only blocking decisions listed in `DECISIONS.md`
 require implementation to pause for confirmation.
+
+## 25. Bounded-autonomy execution policy
+
+The long-term map alone did not prevent one-step handoffs because the active
+instructions also contained explicit stop gates around expensive training.
+`docs/CURRENT_EXECUTION_DIRECTIVE.md` now resolves that ambiguity. It defines
+all work that should continue without repeated questions and the single next
+gate that genuinely requires owner authorization.
+
+For the current WP1 state, runner/analysis implementation, tests and one
+excluded 100k preflight proceed continuously. The 15M-transition pilot remains
+one compute gate. Once approved, all training, paired evaluation, analysis, WP1
+reporting, O8 preparation and the non-compute WP2/O7 proposal continue as one
+package.

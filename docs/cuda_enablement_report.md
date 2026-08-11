@@ -55,5 +55,6 @@ frozen Stage I pilot backend is now `cuda:0` for all conditions.
 CUDA is fully usable for Stage I training. This validation does not establish a
 training-speed improvement: the tiny sanity uses a small 64×64 network and is
 dominated by simulator and kernel-launch overhead. A representative throughput
-measurement should be recorded before estimating the duration of all fifteen
-1M-transition runs.
+measurement must be recorded by the excluded 100k exact-scale preflight in
+`docs/CURRENT_EXECUTION_DIRECTIVE.md` before estimating the duration of all
+fifteen 1M-transition runs.

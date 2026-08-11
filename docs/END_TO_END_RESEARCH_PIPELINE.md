@@ -205,8 +205,13 @@ pilot 后的最终标准决定。
 2. positive-cost on-policy sanity（已完成）；
 3. 冻结 matched pilot configs（已完成）；
 4. 三条件 small-budget sanity（已完成）；
-5. 运行 task-only、native-cost、gold-STL-cost full pilot comparison；
-6. 所有 policy 都使用 gold STL oracle 评价。
+5. 按 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 实现可恢复的 15-job runner、冻结统计
+   analysis、自动测试和 100k exact-scale preflight；
+6. readiness gate 获得一次 compute authorization 后，运行 task-only、native-cost、
+   gold-STL-cost full pilot comparison；
+7. 每个 final checkpoint 立即使用相同 gold STL oracle 评价；
+8. 汇总 1,500 条 paired evaluations，完成 WP1 report 和 O8 proposal；
+9. 同时开始不需要 GPU 的 WP2/O7 benchmark-design proposal。
 
 ### 输出
 
@@ -462,7 +467,7 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | D31 protocol frozen; D32 RTX 4090 CUDA backend and three-condition sanity passed; full behavior pilot incomplete | 先记录 representative throughput，再运行 5 seeds × 3 conditions × 1M pilot、paired gold evaluation，并检查 learning curves |
+| WP1 Gold-STL control | D31/D32 and three-condition sanity passed; full runner/analysis and behavior pilot incomplete | 执行 `CURRENT_EXECUTION_DIRECTIVE.md`：runner + analysis + tests + 100k preflight；readiness 审核后一次性完成 15 runs、1,500 evaluations 和 report |
 | WP2 Controlled benchmark | not started | O7 后定义 schema 和 pilot set |
 | WP3 Offline methods | not started | 选择 translator、published direct 和 history-aware direct baselines |
 | WP4 Online comparison | not started | 等 WP3 trace gate |

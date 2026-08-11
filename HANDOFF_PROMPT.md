@@ -4,7 +4,8 @@ Run Codex from the root of this folder and use the following prompt before reque
 
 ```text
 Read AGENTS.md, README.md, docs/END_TO_END_RESEARCH_PIPELINE.md,
-DECISIONS.md, EXPERIMENT_PROGRESS_CHANGELOG.md, PROJECT_CONTEXT.md,
+docs/CURRENT_EXECUTION_DIRECTIVE.md, DECISIONS.md,
+EXPERIMENT_PROGRESS_CHANGELOG.md, PROJECT_CONTEXT.md,
 docs/research_direction_novelty_feasibility.md,
 docs/theory_and_revised_experiment_8.10.md,
 docs/minimum_research_delivery_8.10.md,
@@ -39,7 +40,9 @@ checkpoint evaluator, pilot-protocol freeze, and three-condition small-budget
 sanity milestones are complete.
 The calibrated rule is d_warn=0.45, d_safe=0.55, K=79 environment steps.
 
-Continue with the frozen Stage I pilot. Do not add the Stage II language layer.
+Continue with the entire authorized package in
+docs/CURRENT_EXECUTION_DIRECTIVE.md. Do not launch the full 15M-transition pilot
+manually and do not add the Stage II language model.
 
 Read docs/omnisafe_integration_report.md and its tracked smoke summary. Preserve
 the fixed rule, three cost-routing conditions, identical temporal observation,
@@ -53,18 +56,22 @@ evaluation episodes, 10,000 hierarchical bootstrap replicates, fixed final
 checkpoints, and the different cost units. Treat 1M transitions as a pilot
 budget and inspect learning curves before any convergence claim.
 
-The 10k-per-condition sanity gate passed. Full 1M runs have not started. Use the
-frozen configs for the next pilot work and record exact run/config/checkpoint
-hashes. Keep O8 open for the final main-study standard.
+The 10k-per-condition sanity gate passed. Full 1M runs have not started. The
+repository still needs a resumable 15-job runner, frozen hierarchical analysis,
+focused tests, one excluded 100k exact-scale preflight, and a launch-readiness
+report. Complete all of those items continuously; do not stop after each script
+or test to ask for another instruction. Keep O8 open for the final main-study
+standard.
 
 D32 enabled and validated RTX 4090 CUDA training with torch 2.4.1+cu124. The
 frozen backend is cuda:0 for every condition, and deterministic launchers must
 set CUBLAS_WORKSPACE_CONFIG=:4096:8. Read docs/cuda_enablement_report.md and do
 not mix historical CPU sanity artifacts with the CUDA pilot.
 
-After this gate is complete, return to docs/END_TO_END_RESEARCH_PIPELINE.md and
-continue with the next unfinished work package. Do not stop at the immediate
-milestone or redesign the downstream plan from memory. If a listed blocking
-decision lacks confirmation, prepare a decision proposal with candidate values,
-evidence, risks, and downstream impact; do not silently choose it.
+Stop once at the explicit full-pilot compute gate with the measured readiness
+report. After launch approval, run all 15 jobs, evaluate 1,500 paired episodes,
+analyze, report WP1, prepare O8, and begin the non-compute WP2/O7 proposal as one
+continuous package. If a different listed blocking decision lacks confirmation,
+prepare a decision proposal and continue every other unblocked item; do not end
+with only a request for the next step.
 ```

@@ -31,6 +31,7 @@ full pilot training has not started.
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
 | `docs/END_TO_END_RESEARCH_PIPELINE.md` | Authoritative long-term map: revised objective, benchmark role, method baselines, WP1--WP7 inputs/outputs/gates, result branches, references, and status |
+| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Current bounded-autonomy package: full-pilot runner, analysis, tests, 100k preflight, compute gate, and automatic continuation after approval |
 | `docs/research_direction_novelty_feasibility.md` | 2026-08-10 novelty correction, closest prior work, revised research question, theoretical feasibility, and staged experiment path |
 | `docs/theory_and_revised_experiment_8.10.md` | 8.10 Chinese theory analysis and revised matched experiment design for explicit NL-to-STL versus direct learned cost |
 | `docs/minimum_research_delivery_8.10.md` | Minimum teacher-facing research delivery: purpose, required artifacts, acceptance gates, and work-computer sequence |
@@ -179,6 +180,8 @@ PyTorch 2.4.1+cu124 and its exact CUDA 12.4 runtime dependencies.
 ## Future additions
 
 The D31 pilot protocol is frozen and the three-condition small-budget sanity has
-passed. The next bounded addition is full five-seed, three-condition Stage I
-pilot training/evaluation. The 1M budget is pilot-only and O8 remains open for
+passed. The next bounded additions are the resumable matrix runner, frozen
+analysis, tests and excluded 100k preflight in
+`docs/CURRENT_EXECUTION_DIRECTIVE.md`. Full five-seed, three-condition training
+remains one compute gate; the 1M budget is pilot-only and O8 remains open for
 the final main-study standard.
