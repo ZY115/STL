@@ -16,9 +16,8 @@ current directive 说明“本轮连续做到哪里”。
 
 该文件夹包含研究规划、参考资料、可复现环境记录、参数校准证据、已经验证的
 STL monitor/oracle、OmniSafe wrapper、integration smoke、冻结的 Stage I pilot
-protocol、三条件 sanity、可恢复 15-job runner、冻结统计分析和 100k exact-scale
-preflight 证据，以及一条命令启动的实时/录像可视化入口。完整 1M pilot 对照训练
-尚未开始。
+protocol、三条件 sanity、可恢复 15-job runner、完整 15M-transition pilot、冻结
+统计分析、四组结果图表和 WP1 正式报告，以及一条命令启动的实时/录像可视化入口。
 
 ## 长期研究目标
 
@@ -109,7 +108,7 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 
 ## 当前进度
 
-截至 2026-08-11：
+截至 2026-08-12：
 
 - 已完成原始问题定义；
 - 已完成核心文献梳理；
@@ -167,8 +166,19 @@ warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公�
 - 完整自动测试增至 54 项，runner/analysis 的 11 项聚焦测试全部通过；
 - 已完成 excluded 100k exact-scale CUDA preflight：335.68 transitions/s，PyTorch
   peak reserved VRAM 90 MiB，gold oracle/RTAMT agreement 全部通过；
-- 预计 15 jobs 加 1,500 evaluations 约 13.13 小时、约 14.24 MB 产物；
-- 完整 1M×3×5 pilot training 未启动。
+- 已在明确授权后完成 15 jobs、15M transitions 和 1,500 条 paired deterministic
+  final-checkpoint evaluations；全部 manifest/hash/oracle/RTAMT gate 通过；
+- 冻结统计分析已完成：task-only/gold-STL missed-per-trigger 为 25.85%/26.03%，
+  relative reduction 为 -0.71%（95% CI -24.92% 到 +21.88%），未达到 30% target；
+- task-only 与 gold-STL goal success 均为 100%，10 percentage-point
+  non-inferiority 通过；
+- gold-STL final-20-epoch cost 仍为 1.650 events/episode，高于 0.1 limit，multiplier
+  继续上升，因此 1M pilot 不作 convergence claim；
+- 已生成正式 result report、10,000-replicate machine-readable analysis、四组
+  PNG/SVG 图表、O8 final-standard proposal 和 O7 Stage II benchmark proposal。
+- 已完成 pilot 后代码级失败分析：确认 metric/learner-objective、稀疏延迟 credit、
+  budget/optimizer 时序及 OmniSafe runtime contract 风险，并形成分层修复建议；该
+  文档不修改 D31，也不授权追加 GPU training。
 
 ## 可视化快速启动
 
@@ -192,11 +202,19 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-O6 pilot protocol、冻结配置、CUDA、三条件 small-budget sanity、可恢复 runner、
-统计 analysis、54 项测试和 excluded 100k exact-scale preflight 均已完成。当前唯一
-下一 gate 是审阅 `docs/stage1_pilot_launch_readiness.md` 并明确决定是否授权完整
-15M-transition pilot。获得授权后，15 runs、1,500 paired evaluations、统计分析和
-WP1 report 连续完成，不再逐文件询问。
+Stage I full pilot、统计 analysis 和 WP1 report 已完成。当前不应直接启动更多 GPU
+训练。下一 gate 是 O8：在“以当前 negative pilot 关闭 Stage I”“扩大相同设置”与
+“先运行 bounded optimization/budget/credit-assignment diagnostic”之间做决定；当前
+报告推荐第三项，但仍需负责人确认。与此同时，O7 的非 compute Stage II controlled
+benchmark proposal 已准备，formula families、split、baseline 和 offline gates 仍需
+确认。
+
+- 正式结果：`docs/stage1_pilot_result_report.md`
+- 代码失败分析与修复建议：
+  `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+- O8 决策包：`docs/stage1_o8_main_study_decision_proposal.md`
+- O7 benchmark 提案：`docs/stage2_o7_benchmark_design_proposal.md`
+- 图表与机器可读结果：`results/stage1_pilot/analysis/`
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -234,6 +252,15 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 ./scripts/run_stage1_pilot.sh --dry-run
 ```
 
+复现冻结统计分析和图表：
+
+```bash
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/analyze_stage1_pilot.py
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/plot_stage1_pilot.py
+```
+
 冻结协议、gate 结果和解释边界见
 `docs/stage1_pilot_sanity_report.md`。
 
@@ -245,19 +272,23 @@ wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke
 2. `README.md`
 3. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 4. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
-5. `DECISIONS.md`
-6. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-7. `PROJECT_CONTEXT.md`
-8. `docs/research_direction_novelty_feasibility.md`
-9. `docs/theory_and_revised_experiment_8.10.md`
-10. `docs/minimum_research_delivery_8.10.md`
-11. `docs/CURRENT_STAGE1_STATUS.md`
-12. `docs/stage1_rule_monitor_spec.md`
-13. `docs/stage1_plan.md`
-14. `docs/omnisafe_integration_report.md`
-15. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
-16. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
-17. `references/REFERENCES.md`
+5. `docs/stage1_pilot_result_report.md`
+6. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+7. `docs/stage1_o8_main_study_decision_proposal.md`
+8. `docs/stage2_o7_benchmark_design_proposal.md`
+9. `DECISIONS.md`
+10. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+11. `PROJECT_CONTEXT.md`
+12. `docs/research_direction_novelty_feasibility.md`
+13. `docs/theory_and_revised_experiment_8.10.md`
+14. `docs/minimum_research_delivery_8.10.md`
+15. `docs/CURRENT_STAGE1_STATUS.md`
+16. `docs/stage1_rule_monitor_spec.md`
+17. `docs/stage1_plan.md`
+18. `docs/omnisafe_integration_report.md`
+19. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
+20. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
+21. `references/REFERENCES.md`
 
 ## 文件夹说明
 
@@ -297,6 +328,7 @@ safety-stl-stage1-handoff/
 │   ├── run_stage1_pilot.py
 │   ├── run_stage1_pilot.sh
 │   ├── analyze_stage1_pilot.py
+│   ├── plot_stage1_pilot.py
 │   ├── validate_cuda_stage1.py
 │   ├── validate_cuda_stage1.sh
 │   └── visualize_stage1.sh

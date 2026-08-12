@@ -213,6 +213,13 @@ pilot 后的最终标准决定。
 8. 汇总 1,500 条 paired evaluations，完成 WP1 report 和 O8 proposal；
 9. 同时开始不需要 GPU 的 WP2/O7 benchmark-design proposal。
 
+**2026-08-12 completion:** all nine items completed. The frozen primary target
+was not met: task/gold missed-per-trigger was 25.85%/26.03%, relative reduction
+was -0.71% (95% interval -24.92% to +21.88%), and both conditions had 100% goal
+success. Constraint costs and multipliers did not stabilize at their semantic
+budgets, so O8 remains the next compute decision. See
+`docs/stage1_pilot_result_report.md`.
+
 ### 输出
 
 - fixed configs；
@@ -467,8 +474,8 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | D31/D32、三条件 sanity、runner、analysis、54 tests 和 excluded 100k exact-scale preflight 已通过；behavior pilot 未开始 | 审阅 `stage1_pilot_launch_readiness.md` 并进行一次 compute authorization；批准后连续完成 15 runs、1,500 evaluations、analysis 和 report |
-| WP2 Controlled benchmark | not started | O7 后定义 schema 和 pilot set |
+| WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report 和 post-pilot code diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | 先完成建议的 P0 非 GPU adapter/runtime tests；O8 决定 close、longer same-method 或 bounded diagnostic；决定前不启动额外 GPU run |
+| WP2 Controlled benchmark | O7 non-compute proposal prepared | 负责人确认 formula fragment、40-item candidate composition、split、human review 和 offline gates 后实现 schema/examples |
 | WP3 Offline methods | not started | 选择 translator、published direct 和 history-aware direct baselines |
 | WP4 Online comparison | not started | 等 WP3 trace gate |
 | WP5 Contribution decision | not started | 按预定义 Branch A--E 处理 |

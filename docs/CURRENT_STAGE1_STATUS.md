@@ -2,7 +2,7 @@
 
 ## 1. 文档目的
 
-本文档记录截至 2026-08-11 的 Stage I 完整状态，集中回答四个问题：
+本文档记录截至 2026-08-12 的 Stage I 完整状态，集中回答四个问题：
 
 1. 已经完成了哪些研究和工程步骤；
 2. 当前可视化具体展示了什么；
@@ -44,9 +44,20 @@ Safe RL 学习产生的错误。
 
 目前已经完成环境、信号、规则、参数、monitor、reference agreement、可视化、
 STL-cost wrapper、on-policy positive-cost sanity、统一 checkpoint evaluator、O6
-pilot protocol 冻结、三条件 small-budget sanity、resumable runner、frozen analysis、
-54 tests 和 excluded 100k exact-scale preflight；尚未完成 1M×3×5 matched pilot
-训练和正式 evaluation。因此目前仍没有 RL 安全改进结论。
+pilot protocol 冻结、三条件 small-budget sanity、resumable runner、15M-transition
+full pilot、1,500 条 paired evaluation、10,000 次 bootstrap、四组结果图和 WP1
+正式报告。结果没有达到 30% safety target，但 goal-success non-inferiority 通过；
+学习曲线不支持 convergence claim。
+
+### 2.2 2026-08-12 full-pilot 结论
+
+- task-only/gold-STL missed obligations per trigger = `25.85%/26.03%`；
+- relative reduction = `-0.71%`，95% CI `[-24.92%, +21.88%]`；
+- task-only/gold-STL goal success 均为 `100%`；
+- gold-STL final-20 selected cost = `1.650` events/episode，高于 `0.1` limit；
+- multiplier 继续上升，因此 pilot 不等于 final main study 或已收敛解。
+
+完整解释和图表见 [`stage1_pilot_result_report.md`](stage1_pilot_result_report.md)。
 
 ### 2.1 2026-08-10 研究定位修正
 
@@ -458,11 +469,14 @@ remaining deadline = 154 - 130 = 24 steps
 | Resumable full-pilot runner | 已完成 | 15-job matrix、immutable attempts、hash、resume、immediate evaluation |
 | Frozen pilot analysis | 已完成 | hierarchical bootstrap、zero-baseline、goal non-inferiority、curve review |
 | Exact-scale throughput preflight | 已完成 | excluded 100k，335.68 transitions/s，90 MiB reserved VRAM |
-| Full pilot RL training | 等待一次授权 | 5 seeds × 3 conditions × 1M transitions |
-| Evaluation and statistical report | 未开始 | violation、recovery、goal、return、cost、uncertainty |
+| Full pilot RL training | 已完成 | 5 seeds × 3 conditions × 1M transitions；15/15 success |
+| Evaluation and statistical report | 已完成 | 1,500 episodes、10,000 bootstrap、WP1 report 和四组图表 |
+| Post-pilot code diagnosis | 已完成 | metric/objective、delayed credit、budget/optimizer 和 OmniSafe runtime 风险已分级记录 |
+| P0 adapter/runtime audit | 尚未实施 | cost truncation bootstrap regression、effective-runtime contract、gradient/value diagnostics |
 | GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
-| Checkpoint visualization | 未开始 | 当前入口还不能加载训练后的 OmniSafe policy |
-| Stage II language layer | 延后 | controlled NL-to-STL translation 与 grounding |
+| Checkpoint visualization | 部分完成 | 已有训练/评估图；MuJoCo checkpoint rollout video 仍未实现 |
+| O8 final standard | 等待负责人决定 | close/longer/diagnostic 三个选项，当前推荐 bounded diagnostic |
+| Stage II benchmark | 提案已完成 | O7 仍需确认 formula fragment、split、baselines 和 gates |
 
 ## 9. 已完成里程碑：OmniSafe wrapper 与 integration smoke test
 
@@ -555,9 +569,9 @@ update，记录均为有限值并写出 checkpoint。该 policy rollout 自身�
 所以其中三个 episode cost 指标均为 0；它只证明接口可运行，不用于报告 safety
 improvement。
 
-## 10. Sanity gate 之后的顺序
+## 10. Full pilot 之后的顺序
 
-O6 pilot protocol、frozen configs、三条件 sanity 和以下前四项均已完成：
+以下八项现在均已完成：
 
 1. 按 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 实现可恢复的 15-job matrix runner；
 2. 实现冻结的 paired hierarchical analysis 和自动测试；
@@ -571,11 +585,16 @@ O6 pilot protocol、frozen configs、三条件 sanity 和以下前四项均已�
 preflight 的 100k training 用时 297.90 秒，吞吐 335.68 transitions/s；10 条
 evaluation 用时 17.21 秒；PyTorch peak reserved VRAM 为 90 MiB。完整 15 jobs 加
 1,500 evaluations 线性估计约 13.13 小时、14.24 MB。54 项测试全部通过，所有 routing、
-gold oracle 和 RTAMT checks 通过。详细证据见
+gold oracle 和 RTAMT checks 通过。pre-launch 详细证据见
 [`stage1_pilot_launch_readiness.md`](stage1_pilot_launch_readiness.md)。
 
 当前 CPU 历史路径和 RTX 4090 CUDA 路径都已验证；frozen pilot training device 为
-`cuda:0`。完整 15M-transition pilot 没有启动，当前只保留一次明确 compute gate。
+`cuda:0`。完整 pilot 实际用时 8.97 小时；当前 GPU gate 是 O8，而不是重新启动
+D31 pilot。O8 决定前不启动额外训练，O7 非 compute proposal 可并行审阅。
+
+pilot 后的代码级证据、已排除根因、P0 无 GPU 修复顺序和 O8-C 候选诊断设计见
+[`stage1_code_failure_analysis_and_repair_recommendations.md`](stage1_code_failure_analysis_and_repair_recommendations.md)。
+该文档是建议，不修改 D31，也不构成新增训练授权。
 
 ## 11. 当前可直接运行的命令
 
@@ -642,11 +661,20 @@ env PYTHONNOUSERSITE=1 PYTHONPATH= \
 ./scripts/run_stage1_pilot.sh --dry-run
 ```
 
-获得明确 compute authorization 后启动或恢复：
+已完成 pilot 的历史启动/恢复入口（不要在 O8 前重新启动）：
 
 ```bash
 ./scripts/run_stage1_pilot.sh --authorized-full-pilot
 ./scripts/run_stage1_pilot.sh --authorized-full-pilot --resume
+```
+
+复现冻结分析和图表：
+
+```bash
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/analyze_stage1_pilot.py
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/plot_stage1_pilot.py
 ```
 
 统一评估 checkpoint：

@@ -17,16 +17,20 @@ Before proposing changes or running installation commands, read:
 1. `README.md`
 2. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 3. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
-4. `DECISIONS.md`
-5. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-6. `PROJECT_CONTEXT.md`
-7. `docs/research_direction_novelty_feasibility.md`
-8. `docs/theory_and_revised_experiment_8.10.md`
-9. `docs/minimum_research_delivery_8.10.md`
-10. `docs/stage1_rule_monitor_spec.md`
-11. `docs/stage1_plan.md`
-12. `docs/omnisafe_integration_report.md`
-13. `references/REFERENCES.md`
+4. `docs/stage1_pilot_result_report.md`
+5. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+6. `docs/stage1_o8_main_study_decision_proposal.md`
+7. `docs/stage2_o7_benchmark_design_proposal.md`
+8. `DECISIONS.md`
+9. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+10. `PROJECT_CONTEXT.md`
+11. `docs/research_direction_novelty_feasibility.md`
+12. `docs/theory_and_revised_experiment_8.10.md`
+13. `docs/minimum_research_delivery_8.10.md`
+14. `docs/stage1_rule_monitor_spec.md`
+15. `docs/stage1_plan.md`
+16. `docs/omnisafe_integration_report.md`
+17. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -94,20 +98,35 @@ O6 is confirmed by D31 as a Stage I pilot protocol only, not as the final
 main-study standard. The exact protocol and three condition overlays are frozen
 under `configs/stage1_pilot/`. The three-condition 10,000-transition-per-
 condition sanity gate passed on 2026-08-11 with exact cost routing and common
-gold-oracle evaluation. The complete 1M runs have not started.
+gold-oracle evaluation.
 
 The complete authorized preparation package in
 `docs/CURRENT_EXECUTION_DIRECTIVE.md` passed on 2026-08-11: the resumable
 15-job runner, frozen paired hierarchical analysis, focused tests, excluded
 100k exact-scale throughput preflight, and launch-readiness report are complete.
 The preflight measured 335.68 transitions/second and projected approximately
-13.13 hours for training plus 1,500 evaluations. No frozen pilot job started.
+13.13 hours for training plus 1,500 evaluations. This is retained as historical
+pre-launch evidence; the authorized pilot later completed as recorded below.
 
-The immediate task is now the one explicit compute-authorization gate for the
-15M-transition full pilot. Do not launch it before the owner reviews
-`docs/stage1_pilot_launch_readiness.md` and explicitly approves. After launch
-approval, training, final-checkpoint evaluation, analysis, WP1 reporting, O8
-proposal, and the non-compute WP2/O7 proposal form one continuous package.
+The owner subsequently authorized the full pilot. By 2026-08-12 all 15 jobs,
+15M transitions and 1,500 paired final-checkpoint evaluations completed. The
+frozen analysis found task/gold missed-per-trigger rates of 25.85%/26.03% and a
+-0.71% relative reduction (95% interval -24.92% to +21.88%); the 30% target was
+not met. Both primary conditions had 100% goal success, so goal non-inferiority
+passed. Costs above their semantic budgets and rising multipliers prevent a
+convergence claim. D35 and `docs/stage1_pilot_result_report.md` are
+authoritative.
+
+The post-pilot code diagnosis and candidate repair hierarchy are recorded in
+`docs/stage1_code_failure_analysis_and_repair_recommendations.md`. Its P0
+adapter/runtime tests are non-compute engineering proposals; its P1/P2 training
+ideas are not approved protocols. The immediate compute boundary is O8. Do not
+launch additional GPU training until the owner chooses whether to close Stage
+I, prepare a longer same-method standard, or freeze the proposed bounded
+optimization/budget/credit diagnostic in
+`docs/stage1_o8_main_study_decision_proposal.md`. The non-compute O7 Stage II
+benchmark proposal is ready but its formula fragment, dataset composition,
+split, baselines and gates remain unconfirmed.
 
 D32 fixes the matched training backend to the verified RTX 4090 `cuda:0` device
 with PyTorch 2.4.1+cu124. Launch deterministic CUDA training with

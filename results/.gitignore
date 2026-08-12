@@ -57,3 +57,16 @@ pilot_preflight/*
 !pilot_preflight/README.md
 !pilot_preflight/summary.json
 !pilot_preflight/dry_run_15_job_manifest.json
+!stage1_pilot/
+stage1_pilot/*
+!stage1_pilot/README.md
+!stage1_pilot/analysis/
+stage1_pilot/analysis/*
+!stage1_pilot/analysis/*.json
+!stage1_pilot/analysis/*.csv
+!stage1_pilot/analysis/*.md
+!stage1_pilot/analysis/figures/
+stage1_pilot/analysis/figures/*
+!stage1_pilot/analysis/figures/*.json
+!stage1_pilot/analysis/figures/*.png
+!stage1_pilot/analysis/figures/*.svg

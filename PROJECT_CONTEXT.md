@@ -491,10 +491,9 @@ cost, and a common checkpoint evaluator passed direct-oracle and RTAMT checks.
 The project owner then approved D31 as the Stage I pilot protocol only. The
 protocol and three condition overlays were frozen, and a 10,000-transition-per-
 condition sanity passed exact cost-routing, final-checkpoint, paired-evaluation,
-direct-oracle, and RTAMT checks. No full matched-seed pilot result exists yet.
-The next work is the 5-seed, 3-condition, 1M-transition pilot and learning-curve
-review. Language translation remains outside Stage I, and O8 keeps the final
-main-study standard open.
+direct-oracle, and RTAMT checks. The full matched-seed pilot later completed on
+2026-08-12; Section 27 supersedes this pre-launch status. Language translation
+remains outside Stage I, and O8 keeps the final main-study standard open.
 
 Later on 2026-08-11, the host RTX 4090 and driver 560.35.03 were confirmed
 healthy. The earlier GPU limitation was only the installed CPU Torch wheel.
@@ -630,8 +629,34 @@ analysis; and 54 passing tests. An excluded 100k exact-scale CUDA preflight
 measured 335.68 transitions/second and projected about 13.13 hours for the full
 training/evaluation matrix. Oracle and RTAMT agreement remained exact.
 
-No frozen pilot seed has started. The current boundary is therefore no longer
+At that pre-launch time, no frozen pilot seed had started. The boundary was
+therefore no longer
 an implementation task: it is the single owner compute authorization documented
 in `docs/stage1_pilot_launch_readiness.md`. This preflight is engineering
 evidence only and does not change the research question, D31/D32, or the absence
 of a behavioral safety conclusion.
+
+## 27. Full-pilot result and revised boundary
+
+The owner authorized the full D31 package, and all 15 jobs completed on
+2026-08-12. The dataset contains 15M training transitions and 1,500 paired
+deterministic final-checkpoint evaluations. Every artifact hash and gold
+oracle/RTAMT check passed.
+
+The primary result was negative: task-only and gold-STL missed 25.85% and
+26.03% of triggered recovery obligations. Relative reduction was -0.71% with a
+95% paired hierarchical bootstrap interval from -24.92% to +21.88%, so the 30%
+pilot target was not met. Both conditions had 100% goal success and passed the
+10-point goal non-inferiority criterion.
+
+Gold-STL selected cost remained far above the 0.1-event budget and its
+multiplier continued rising. The 1M budget therefore cannot be called
+converged. This isolates the current failure to the downstream cost-learning
+stage under these settings; no language model was present, and monitor/oracle
+agreement was exact.
+
+The active boundary is O8, documented in
+`docs/stage1_o8_main_study_decision_proposal.md`. Additional GPU training waits
+for a choice among closing Stage I, a longer same-method standard, or a bounded
+optimization/budget/credit diagnostic. The non-compute O7 benchmark proposal
+is ready for review, but Stage II implementation remains unconfirmed.

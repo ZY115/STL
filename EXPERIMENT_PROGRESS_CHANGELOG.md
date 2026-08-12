@@ -25,7 +25,7 @@
 
 ## 2. 当前总体状态
 
-截至 2026-08-11，Stage I 已经完成：
+截至 2026-08-12，Stage I 已经完成：
 
 1. 研究问题定义与三阶段拆分；
 2. Ubuntu/Conda 软件环境建立和复核；
@@ -45,10 +45,14 @@
 16. 三条件 10k transitions/condition matched engineering sanity；
 17. 可恢复 15-job matrix runner 和冻结 paired hierarchical analysis；
 18. 54 项完整测试；
-19. excluded 100k exact-scale CUDA preflight 与 launch-readiness report。
+19. excluded 100k exact-scale CUDA preflight 与 launch-readiness report；
+20. 15-job、15M-transition full pilot 和 1,500 条 paired evaluations；
+21. 10,000 次 frozen hierarchical bootstrap、learning-curve review 和 WP1 report；
+22. 四组 PNG/SVG 图表、O8 final-standard proposal 和 O7 benchmark proposal。
 
-当前尚未开始 matched-seed 主训练，也没有形成 STL-cost condition 能改善安全行为的
-实验结论。
+当前结论是：gold-STL cost 在冻结 pilot 下没有改善 primary missed-per-trigger
+metric；goal-success non-inferiority 通过；约束 cost/multiplier 未稳定，因此不能声称
+收敛。更多 GPU 工作等待 O8。
 
 ## 3. 里程碑时间线
 
@@ -65,7 +69,7 @@
 | 2026-08-11 | Stage I pilot protocol | 已确认 | D31；仅限 pilot，不是最终 main-study 标准 |
 | 2026-08-11 | Three-condition pilot sanity | 完成 | frozen composition、cost routing、final checkpoints、paired gold evaluation |
 | 2026-08-11 | Full-pilot launch preparation | 完成 | runner、analysis、tests、100k preflight、readiness report |
-| 待定 | Full matched pilot training | 等待一次授权 | 5 seeds × 3 conditions × 1M transitions 和正式 paired evaluation |
+| 2026-08-12 | Full matched pilot and WP1 report | 完成 | 15M transitions、1,500 evaluations、bootstrap、figures、negative result |
 
 ## 4. 已冻结且未被本次修改改变的研究定义
 
@@ -240,18 +244,16 @@ O6 已由 D31 确认为 pilot protocol。O8 仍需在 pilot learning curves 和 
 
 ### 9.2 尚未实施
 
-- full pilot matched-seed training；
-- 100 paired episodes/seed/condition 的正式 evaluation 和 bootstrap report；
+- O8 final-main-study standard 决定及其可能的 bounded diagnostic；
 - 训练后 policy 可视化；
-- GPU/CUDA 训练环境恢复；
 - Stage II controlled-language layer。
 
 ## 10. 下一步
 
-runner、analysis、tests 和 exact-scale preflight 已完成。下一 gate 是负责人审阅
-`docs/stage1_pilot_launch_readiness.md` 并明确授权或拒绝完整 15M-transition pilot。
-只有获得授权后，才使用 frozen D31 configs 连续运行五 seed、三 condition、paired
-gold evaluation、10,000 次 hierarchical bootstrap 和 learning-curve review。
+full pilot、analysis 和 report 已完成。下一 compute gate 是负责人审阅
+`docs/stage1_o8_main_study_decision_proposal.md` 并选择 close、longer same-method 或
+bounded diagnostic。下一 non-compute gate 是审阅
+`docs/stage2_o7_benchmark_design_proposal.md`；在 O7 冻结前不实现语言模型。
 
 ## 11. 维护规则
 
@@ -454,3 +456,76 @@ rollout 前失败，执行 transition 数为 0；问题修复后 attempt 3 完�
 新增 `docs/stage1_pilot_launch_readiness.md` 和 compact
 `results/pilot_preflight/` evidence。完整 15M pilot 没有启动。当前只等待一次明确的
 compute authorization；本次工作不改变冻结协议，也不构成行为或收敛结论。
+
+## 18. 2026-08-12 Full pilot、冻结分析与 WP1 报告
+
+### 18.1 执行完成
+
+负责人明确批准后，可恢复 runner 顺序完成 task-only、native-cost 和 gold-STL-cost
+各五个 seed。15/15 jobs 成功、failure manifest 为 0；总计 15M training transitions
+和 1,500 条 deterministic paired final-checkpoint evaluations。所有 checkpoint、
+progress、evaluation artifact hash 通过，online/direct oracle 全部一致，RTAMT 最大
+difference 为 0。
+
+### 18.2 冻结统计结果
+
+D31 的 10,000 次 paired hierarchical bootstrap 使用固定 RNG seed `20260811`。
+task-only/gold-STL missed-per-trigger 为 `25.85%/26.03%`；relative reduction 为
+`-0.71%`，95% interval `[-24.92%, +21.88%]`，因此 30% target 未达到。两者 goal
+success 都是 100%，10 percentage-point non-inferiority 通过。
+
+### 18.3 Learning-curve 结论
+
+gold-STL final-20 selected cost 为 `1.650` missed events/episode，对应 limit 为
+`0.1`；multiplier 均值为 `3.217` 且四个 seed 有 tail drift。native cost 同样保持在
+自己的不同单位预算之上。1M budget 不作收敛声明，也不选择 post-hoc best checkpoint。
+
+### 18.4 新增产物
+
+- `docs/stage1_pilot_result_report.md`：正式 WP1 结果、限制和解释；
+- `scripts/plot_stage1_pilot.py`：可复现 PNG/SVG 图表入口；
+- `results/stage1_pilot/analysis/`：analysis JSON/CSV、bootstrap、图和 hash manifest；
+- `docs/stage1_o8_main_study_decision_proposal.md`：close/longer/diagnostic 三选项；
+- `docs/stage2_o7_benchmark_design_proposal.md`：Stage II non-compute schema proposal。
+
+### 18.5 当前 gate
+
+O8 尚未决议，当前不启动更多 GPU training。O7 proposal 已准备，但 formula fragment、
+dataset composition、split、baseline 和 numerical offline gate 仍需负责人确认。
+
+## 19. 2026-08-12 Pilot 后代码失败分析与修复建议
+
+### 19.1 分析结论
+
+新增 `docs/stage1_code_failure_analysis_and_repair_recommendations.md`。该文档把
+monitor/oracle 的语义正确性与 learner 的策略学习有效性分开，并记录：
+
+- 当前 PPOLag 优化 missed events/episode，而 frozen primary metric 是
+  missed/trigger；trigger 分母随 policy 改变，因此两者不等价；
+- binary STL event 只在 `K=79` deadline 或 terminal unresolved 时出现，训练后段
+  正 cost 约占 0.165% steps，存在显著 delayed-credit 问题；
+- `cost_limit=0.1 event/episode` 与 30% primary relative-reduction target 处于明显
+  不同尺度，不能把二者视为等价标准；
+- multiplier 在训练后段才达到明显量级，而 linear actor LR 同时衰减至零，且多数
+  epochs 受到 KL early stop；
+- OmniSafe 0.5.0 的实际 on-policy 行为包括：cost advantage 只去均值、EpCost
+  window 硬编码为 50、该 buffer 路径未读取 `cost_gamma`；
+- terminal unresolved 已在 monitor 中结算，但 timeout path 仍从 active final state
+  bootstrap cost value，构成本项目 episode-cost 语义风险，实际影响仍需隔离测试。
+
+### 19.2 建议顺序
+
+1. P0 无 GPU：补 truncation/bootstrap regression、effective-runtime contract 和
+   advantage/gradient/value diagnostics；
+2. O8-C 获批后：依次运行 bounded optimization、event-budget 和一个
+   mass-conserving post-rollout credit-redistribution diagnostic；
+3. 通过预声明 gate 后：使用新的五个 matched seeds 从头运行确认性实验。
+
+建议不修改 gold monitor 和 evaluator，不 patch Conda `site-packages`，不续跑 LR 已到
+零的 pilot checkpoint。raw gold event 与 learner shaping 必须分列保存，最终仍用
+unchanged gold oracle 评价。
+
+### 19.3 决策与权限状态
+
+本次只新增诊断文档和索引记录，没有修改 D31、没有冻结任何 O8 参数、没有运行新的
+GPU training。O8-A/B/C 仍等待负责人明确决定。

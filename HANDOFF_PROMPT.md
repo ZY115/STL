@@ -37,13 +37,22 @@ After confirming the summary, use:
 The Stage I environment-inspection, rule-and-monitor, visualization,
 OmniSafe wrapper/integration-smoke, on-policy positive-cost sanity, common
 checkpoint evaluator, pilot-protocol freeze, three-condition small-budget
-sanity, resumable runner, frozen analysis, tests, excluded 100k exact-scale
-preflight, and launch-readiness milestones are complete.
+sanity, resumable runner, excluded 100k preflight, full 15-job pilot, frozen
+analysis, figures and WP1 report are complete.
 The calibrated rule is d_warn=0.45, d_safe=0.55, K=79 environment steps.
 
-Read docs/stage1_pilot_launch_readiness.md. Do not launch the full
-15M-transition pilot until the owner gives the one explicit compute
-authorization, and do not add the Stage II language model.
+Read docs/stage1_pilot_result_report.md, D35 and the compact outputs under
+results/stage1_pilot/analysis/. The completed pilot produced task/gold
+missed-per-trigger rates of 25.85%/26.03% and -0.71% relative reduction (95%
+interval -24.92% to +21.88%), so the 30% target was not met. Both primary
+conditions had 100% goal success. Constraint costs remained over budget and
+multipliers rose, so do not claim convergence or formal safety.
+
+Read docs/stage1_code_failure_analysis_and_repair_recommendations.md. It records
+the metric/learner-objective mismatch, sparse delayed event credit, budget and
+optimizer timing, terminal cost-bootstrap risk, and OmniSafe effective-runtime
+differences. Treat P0 as proposed non-GPU engineering work and P1/P2 as
+unapproved candidates; do not silently change D31 or the gold evaluator.
 
 Read docs/omnisafe_integration_report.md and its tracked smoke summary. Preserve
 the fixed rule, three cost-routing conditions, identical temporal observation,
@@ -57,19 +66,21 @@ evaluation episodes, 10,000 hierarchical bootstrap replicates, fixed final
 checkpoints, and the different cost units. Treat 1M transitions as a pilot
 budget and inspect learning curves before any convergence claim.
 
-The 10k-per-condition sanity and 100k exact-scale preflight gates passed. Full
-1M runs have not started. The measured projection is approximately 13.13 hours
-for all training and evaluation. Keep O8 open for the final main-study standard.
+The 10k-per-condition sanity, 100k exact-scale preflight and full 1M×3×5 pilot
+all passed their engineering gates. Keep O8 open for the final main-study
+standard; the completed negative pilot is evidence, not an automatically
+selected final configuration.
 
 D32 enabled and validated RTX 4090 CUDA training with torch 2.4.1+cu124. The
 frozen backend is cuda:0 for every condition, and deterministic launchers must
 set CUBLAS_WORKSPACE_CONFIG=:4096:8. Read docs/cuda_enablement_report.md and do
 not mix historical CPU sanity artifacts with the CUDA pilot.
 
-The work is currently stopped at the explicit full-pilot compute gate. After
-launch approval, run all 15 jobs, evaluate 1,500 paired episodes,
-analyze, report WP1, prepare O8, and begin the non-compute WP2/O7 proposal as one
-continuous package. If a different listed blocking decision lacks confirmation,
-prepare a decision proposal and continue every other unblocked item; do not end
-with only a request for the next step.
+The work is currently stopped at O8 for any additional GPU compute. Read
+docs/stage1_o8_main_study_decision_proposal.md and do not launch another run
+until the owner chooses close, longer same-method, or bounded diagnostic. Read
+docs/stage2_o7_benchmark_design_proposal.md; O7 formula families, exact dataset
+composition, split, baselines and offline gates remain proposals. Do not add a
+Stage II language model before O7 is confirmed. Continue every other unblocked
+non-compute item from docs/END_TO_END_RESEARCH_PIPELINE.md.
 ```

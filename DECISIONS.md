@@ -430,13 +430,42 @@ has run, and it does not approve the full 15M-transition compute package,
 change D31/D32, establish convergence, or provide behavioral evidence. The
 single owner launch authorization remains required.
 
+### D35. The authorized Stage I pilot completed without meeting its safety target
+
+After explicit owner authorization, all 15 frozen jobs completed on 2026-08-12:
+three conditions, five matched training seeds, one million transitions per job,
+and 100 deterministic paired final-checkpoint evaluations per job. All manifest
+and artifact hashes passed; all 1,500 online/direct-oracle comparisons agreed;
+and the maximum RTAMT robustness difference was zero.
+
+Under the D31 primary metric, task-only missed `25.85%` of triggered recovery
+obligations and gold-STL cost missed `26.03%`. The task-minus-gold absolute
+reduction was `-0.18` percentage points (95% paired hierarchical bootstrap
+interval `[-5.52, +6.87]`), and the relative reduction was `-0.71%`
+(`[-24.92%, +21.88%]`). The predeclared 30% relative-reduction pilot target was
+not met. Task-only and gold-STL both achieved 100% goal success; the 10-point
+goal-success non-inferiority criterion passed.
+
+The final 20-epoch gold-STL selected cost averaged 1.650 missed events per
+episode against the 0.1 limit, while its multiplier averaged 3.217 and retained
+tail drift in four of five seeds. Native cost also remained above its own
+different-unit budget. Therefore the one-million-transition budget is not
+declared converged, and this pilot is not promoted to the final main-study
+standard.
+
+These facts establish a valid negative pilot result: the verified cost path ran
+but did not improve the primary behavior under the frozen settings. They do not
+change the rule, establish formal safety, prove that STL is generally
+ineffective, or authorize a post-hoc best checkpoint. Full evidence is in
+`docs/stage1_pilot_result_report.md`.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31
 
-**Current status (2026-08-11):** resolved for the pilot only. D31 and
-`configs/stage1_pilot/` are authoritative. The three-condition gate passed on
-the D32 CUDA backend; the full 1M pilot remains unrun.
+**Current status (2026-08-12):** resolved and executed for the pilot only. D31
+and `configs/stage1_pilot/` remain the authoritative frozen protocol; D35
+records the completed result. O6 is not the final main-study standard.
 
 ### O8. Final main-study quantitative standard
 
@@ -447,6 +476,14 @@ episodes, a different uncertainty interval, or a predeclared cost-budget sweep.
 This decision must use the pilot's learning-curve stability and feasibility
 evidence without relabeling pilot-selected settings as independently confirmed
 main-study hypotheses.
+
+**Current status (2026-08-12):** the pilot is complete and D35 records that the
+safety target was not met while goal non-inferiority passed. The proposal in
+`docs/stage1_o8_main_study_decision_proposal.md` recommends a bounded
+optimization/budget/credit-assignment diagnostic before freezing a final
+standard. Option A (close Stage I), Option B (longer same-method run), and
+Option C (bounded diagnostic) remain owner choices. No additional GPU run is
+authorized by this proposal.
 
 ### O7. Stage II controlled language and direct-cost baseline
 
@@ -461,6 +498,13 @@ Before Stage II implementation, fix:
 - the NL-to-STL translator implementation;
 - formula-equivalence and trace-label metrics;
 - whether a human formula-confirmation condition is included.
+
+**Current status (2026-08-12):** a non-compute candidate design is recorded in
+`docs/stage2_o7_benchmark_design_proposal.md`. It proposes a 30--50-item pilot,
+typed grounding, semantic minimal pairs, causal-history fairness, leakage-safe
+splits and independent human confirmation. Formula families, exact item count,
+split, baselines and numerical offline gates remain unconfirmed until the owner
+resolves O7.
 
 ## Deferred to Stage II
 

@@ -1,0 +1,11 @@
+selection,training_seed,evaluation_seed,gold_minus_task_missed_count,task_trigger_count,task_missed_count,gold_trigger_count,gold_missed_count,task_episode_return,gold_episode_return,task_goal_success,gold_goal_success
+largest_gold_minus_task_missed,4404,10066,5,8,0,7,5,24.57448665627453,18.763305087300978,True,True
+largest_gold_minus_task_missed,1101,10055,4,7,0,7,4,22.37521730964272,22.045600411445548,True,True
+largest_gold_minus_task_missed,1101,10068,4,8,0,6,4,21.36846610248176,21.400922798249667,True,True
+largest_gold_minus_task_missed,2202,10036,4,7,0,8,4,19.955272061080905,20.759361999281282,True,True
+largest_gold_minus_task_missed,1101,10010,3,8,1,6,4,25.097376166111644,23.70048687918461,True,True
+largest_task_minus_gold_missed,2202,10031,-4,6,5,7,1,18.71948369070242,14.851238475859816,True,True
+largest_task_minus_gold_missed,2202,10084,-4,7,5,10,1,14.336726795649156,21.667867877446042,True,True
+largest_task_minus_gold_missed,2202,10088,-4,8,4,6,0,16.5381722257207,14.624191953509467,True,True
+largest_task_minus_gold_missed,3303,10001,-4,7,5,8,1,25.58061702413397,24.687314880931808,True,True
+largest_task_minus_gold_missed,3303,10044,-4,7,5,8,1,24.917880023705948,24.097300403995177,True,True

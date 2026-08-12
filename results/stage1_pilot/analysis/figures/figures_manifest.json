@@ -1,0 +1,47 @@
+{
+  "analysis_companion_files": {
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/learning_curve_tail_windows.csv": "95682f2e9966935f09a7de52e20188bf6c58a884837277e105710c1c2a1ef863",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/paired_episode_examples.csv": "30e8e6024e5736a76730fdfe0028005daa903559089c5d86d73c44ee0868cd0c"
+  },
+  "description": "Stage I pilot descriptive figures; inferential intervals come from the frozen D31 analysis.",
+  "figure_files": {
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/constraint_diagnostics.png": "7840ca3c483b3ebf986f1e86debc6954ff283d290051d1453b8edab6b360b2bd",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/constraint_diagnostics.svg": "eff1d94ce25119df4602488996bdbc18b318f9d740cc2d95e8b810d23a3a09c3",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/evaluation_overview.png": "a492aca48378b72de74d00d27772e4552d71bcd1715a1bb931f45bb51bf96cd2",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/evaluation_overview.svg": "6fc26d9deebdc14ef17e6ce16c54698e8be5ca7e46048fa204f2fad67907f5f2",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/learning_curves.png": "2a630efb9cc7200fe01793263ed7fe178d21c67380aa5945b7b752ccd7935c40",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/learning_curves.svg": "b4fa3c5eadc9b036e88f9d8333ae01a9e25b9560c6ebd8402324576ce14a72bd",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/primary_comparison.png": "911c72bfa6067b032de013f5d925ca97830bb6ac40fba5e616dace1d230bb749",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/figures/primary_comparison.svg": "ee4c20eaf24df4f257cdb6e1939afbb0bc101d0cf195b5ba775db2cb4d004896"
+  },
+  "interpretation_guards": [
+    "learning_curve_seed_ranges_are_descriptive_not_confidence_intervals",
+    "cost_units_differ_between_native_and_gold_stl_conditions",
+    "plots_do_not_change_the_frozen_statistical_protocol"
+  ],
+  "matplotlib_version": "3.7.5",
+  "numpy_version": "1.23.5",
+  "schema_version": 1,
+  "source_files": {
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/analysis.json": "3858aaafe7dde4e4627f847bb1cb560b026fea0ba166ef359af9c66d0c2d937a",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/bootstrap_primary.csv": "ce150d6db026ea3e093380b4feabddb423486938d16ede59f0f01460b26f9bb3",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/episode_records.csv": "7eadcc589ca24e43a71aa1a7b9b54bb5008193411dc0d7ba03f626814c30e4ff",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/per_training_seed.csv": "49a56f3af48c2ed6ce7bba2a96b794cf8b5c1754ad3f013eddafda07a6402003",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/gold_stl_cost/seed-1101/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-1101-2026-08-11-22-07-09/progress.csv": "2bb9abae6e9eb910224731ef85b481cee49ed2ad3bd05c0e6b0c1af6810a1fa3",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/gold_stl_cost/seed-2202/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-2202-2026-08-11-22-41-26/progress.csv": "211ae65548c08e99f0ce33e4833f333568734fb482e8f0103494dce1c75bfcab",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/gold_stl_cost/seed-3303/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-3303-2026-08-11-23-16-54/progress.csv": "72cda07ae35dc4c809f2d9f787c1db56e5b8f5c28548b41ac90acfe95e3989a8",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/gold_stl_cost/seed-4404/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-4404-2026-08-11-23-52-29/progress.csv": "0965e1572d713e0c0f42fa5fc7508aa1253da69df432a75fdefb99bdbcc69f6a",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/gold_stl_cost/seed-5505/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1STLCost-v0}/seed-5505-2026-08-12-00-28-11/progress.csv": "08126ad321bcb8872dddeb49385b0df8c4eab2af97dd4a33fd8d1458961a4a0f",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/native_cost/seed-1101/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1NativeCost-v0}/seed-1101-2026-08-11-19-02-45/progress.csv": "84c7d710d673c0888fc8194ab5a8ae441097cc746661581436734d836d9d7ce1",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/native_cost/seed-2202/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1NativeCost-v0}/seed-2202-2026-08-11-19-39-38/progress.csv": "c911ea5a5219548633fab981f751927abdd4f41d6848713a9d039bb315a6dede",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/native_cost/seed-3303/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1NativeCost-v0}/seed-3303-2026-08-11-20-16-51/progress.csv": "0e077c3705e58ad68378b26eee096105f662657a5f8ab1b1f937204c35e04cd9",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/native_cost/seed-4404/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1NativeCost-v0}/seed-4404-2026-08-11-20-53-38/progress.csv": "95d7cb6e48b2f4294d3995195927cbbe198f17ec9a9f11f6140f5116ef728656",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/native_cost/seed-5505/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1NativeCost-v0}/seed-5505-2026-08-11-21-30-42/progress.csv": "f1ce71f83d3ba5a7d67869e17534ca46d41b7ac5fd0804572533eaf2d3c8fe18",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/task_only/seed-1101/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-1101-2026-08-11-16-05-49/progress.csv": "b4ef6826f32eb23b7a1da894d47609c89eb19428315f0e44db2b5fd7c392e75a",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/task_only/seed-2202/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-2202-2026-08-11-16-41-14/progress.csv": "dd268f3e91f24c1da3c96f82052db4c34d378c40615e66a1c0c0796439faa17e",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/task_only/seed-3303/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-3303-2026-08-11-17-15-41/progress.csv": "ed6d1109ea3a955a5ee7eed21e3a5f6e37f62e1ac19e6c9f85282a3ee47ef2dc",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/task_only/seed-4404/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-4404-2026-08-11-17-51-19/progress.csv": "199b2494730963dd07269a4d4e226adbaf5b0202041be016ab6447f6f5913540",
+    "/home/jerry/Desktop/STL/results/stage1_pilot/jobs/task_only/seed-5505/attempts/attempt-0001/training/PPOLag-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-5505-2026-08-11-18-26-48/progress.csv": "37089c03cd3b035ced811d81e7a3858b540f9867f7ec91e11f8e390ecc8edef5",
+    "/home/jerry/Desktop/STL/scripts/plot_stage1_pilot.py": "28ae19723611fb3b386190c1513a701fb385a5c71bdef718cee7016917765b6f"
+  }
+}

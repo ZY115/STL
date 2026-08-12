@@ -7,8 +7,9 @@ This handoff package contains the durable research context required to continue 
 It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
 environment-inspection, rule-and-monitor, visualization, and OmniSafe-wrapper
 integration milestones are complete. Tested monitor/wrapper code, runnable
-visualization, frozen pilot configs, and stable sanity evidence are tracked;
-full pilot training has not started.
+visualization, frozen pilot configs, the completed full pilot's compact
+analysis/figures, and stable sanity evidence are tracked; bulk checkpoints and
+raw job logs remain local and ignored.
 
 ## Root documents
 
@@ -49,6 +50,10 @@ full pilot training has not started.
 | `docs/stage1_pilot_sanity_report.md` | Frozen pilot protocol and three-condition engineering-sanity evidence |
 | `docs/cuda_enablement_report.md` | RTX 4090/PyTorch CUDA enablement, deterministic launch requirement, and PPOLag evidence |
 | `docs/stage1_pilot_launch_readiness.md` | Completed runner/analysis/tests/preflight gate, exact launch/resume commands, resource projection, risks, and compute decision request |
+| `docs/stage1_pilot_result_report.md` | Completed 15-job pilot result, frozen confidence intervals, learning-curve interpretation, figures and limitations |
+| `docs/stage1_code_failure_analysis_and_repair_recommendations.md` | Post-pilot code-level diagnosis, evidence grading, OmniSafe runtime risks, and prioritized non-compute/diagnostic/confirmatory repair plan |
+| `docs/stage1_o8_main_study_decision_proposal.md` | Post-pilot close/longer/bounded-diagnostic decision package; no compute authorization |
+| `docs/stage2_o7_benchmark_design_proposal.md` | Candidate controlled-language schema, semantic pairs, splits, human review and offline gate |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -121,6 +126,7 @@ These are reference snapshots, not project implementation code.
 | `scripts/run_stage1_pilot.py` | 15-job dry-run/selection/resume/train/evaluate orchestration and compute gate |
 | `scripts/run_stage1_pilot.sh` | Deterministic CUDA launcher for pilot runner and preflight |
 | `scripts/analyze_stage1_pilot.py` | Complete-matrix frozen analysis CLI |
+| `scripts/plot_stage1_pilot.py` | Reproducible PNG/SVG evaluation, primary-comparison, learning-curve and constraint figures |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
@@ -149,7 +155,9 @@ The package excludes:
 - raw generated CSV files below `results/`;
 - bulk OmniSafe run directories and checkpoints below `results/integration_smoke/`
   `results/on_policy_sanity/`, and `results/pilot_sanity/`;
-- full matched-seed pilot outputs, which do not exist yet.
+- bulk full-pilot job attempts, checkpoints and raw progress logs under
+  `results/stage1_pilot/jobs/`; they exist locally and are hash-addressed by
+  successful manifests but are intentionally not packaged.
 
 ## Generated outputs
 
@@ -188,9 +196,15 @@ The launch-preparation gate tracks `results/pilot_preflight/README.md`, compact
 `summary.json`, and the 15-job dry-run manifest. Raw attempts, checkpoints,
 progress logs and excluded evaluation CSV remain local and ignored.
 
+The completed full pilot tracks `results/stage1_pilot/README.md` and the compact
+`analysis/` package: frozen JSON/CSV outputs, 10,000 bootstrap primary rows,
+1,500 episode records, learning-curve summaries, PNG/SVG figures and a figure
+hash manifest. The 15 raw job/checkpoint trees remain ignored.
+
 ## Future additions
 
 The D31 protocol, three-condition sanity, resumable matrix runner, frozen
-analysis, 54 tests and excluded 100k preflight have passed. Full five-seed,
-three-condition training remains one explicit compute gate; the 1M budget is
-pilot-only and O8 remains open for the final main-study standard.
+analysis, 54 tests, excluded 100k preflight and full five-seed/three-condition
+pilot have passed their engineering gates. The pilot did not meet the 30%
+safety target and is not converged. O8 remains open for the final-main-study
+standard, and O7 remains open for Stage II benchmark implementation.

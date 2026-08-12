@@ -2,7 +2,7 @@
 
 - **Directive ID:** `WP1-PILOT-EXECUTION-PREP-2026-08-11`
 - **Current WP:** WP1 Gold-STL downstream control
-- **Status:** preparation package completed; full 15M-transition pilot awaits explicit authorization
+- **Status:** authorized full pilot, frozen analysis, WP1 report and follow-on proposals completed
 - **Long-term map:** `docs/END_TO_END_RESEARCH_PIPELINE.md`
 - **Scientific protocol:** D31 and `configs/stage1_pilot/`
 
@@ -35,7 +35,9 @@ The following gates are closed:
 The 10k sanity is engineering evidence only. Its three evaluation episodes per
 condition are not evidence for or against the Stage I hypothesis.
 
-No full 1M condition/seed run has started.
+This paragraph described the pre-launch state. The owner subsequently approved
+the full package, and all 15 jobs completed on 2026-08-12; see Section 8 and
+`docs/stage1_pilot_result_report.md`.
 
 The complete Sections 4.1--4.5 package passed on 2026-08-11. The runner,
 analysis module and 11 focused tests are present; the complete suite has 54
@@ -44,7 +46,7 @@ evaluation passed; and `docs/stage1_pilot_launch_readiness.md` records the
 resource projection and recovery procedure. The full compute gate remains
 closed.
 
-## 3. Why the full pilot should not be launched manually yet
+## 3. Historical pre-launch rationale
 
 The frozen matrix contains 15 training jobs:
 
@@ -183,12 +185,11 @@ Do not stop after writing the runner, analysis module or tests individually.
 Continue through the preflight and readiness report unless a real technical
 failure prevents progress.
 
-## 5. Full-pilot compute gate
+## 5. Full-pilot compute gate — authorized and completed
 
-The expensive 15-job full pilot remains a deliberate owner gate. The readiness
-report must be reviewed once because it authorizes substantial GPU time and
-creates the first behavioral dataset. This is a binary launch decision, not a
-request to redesign the next step.
+The expensive 15-job full pilot was a deliberate owner gate. The owner gave the
+required explicit launch authorization, and the package completed on
+2026-08-12. The text below remains the historical post-approval work order.
 
 After explicit launch approval, the work computer must execute the following as
 one continuous package without further step-by-step questions:
@@ -248,6 +249,14 @@ reserved CUDA memory was 90 MiB. Linear projection for fifteen 1M jobs and
 fixed-checkpoint, direct-oracle and RTAMT checks passed. The successful
 preflight resume returned `skipped_verified_success` without retraining.
 
-No full pilot job has started. Section 5 is now the active boundary: wait for
-one explicit owner authorization, then execute the already defined continuous
-post-approval package.
+The owner subsequently authorized Section 5. All 15 one-million-transition jobs
+and 1,500 paired deterministic evaluations completed without failure. Frozen
+analysis found task-only/gold-STL missed-obligation rates of 25.85%/26.03%, a
+relative reduction of -0.71% with 95% interval [-24.92%, +21.88%]; the 30%
+target was not met. Both primary conditions had 100% goal success and passed
+the 10-point non-inferiority criterion. Rising multipliers and costs above both
+condition-specific budgets preclude a convergence claim.
+
+The WP1 report, reproducible figures, O8 decision proposal and non-compute O7
+benchmark proposal are complete. The active boundary is now owner resolution
+of O8 before more GPU work and O7 before Stage II dataset implementation.

@@ -1,0 +1,16 @@
+job_id,progress_rows,final_total_env_steps,tail_drift_flags,convergence_claim,interpretation
+task_only__seed-1101,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+task_only__seed-2202,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+task_only__seed-3303,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+task_only__seed-4404,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+task_only__seed-5505,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+native_cost__seed-1101,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+native_cost__seed-2202,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+native_cost__seed-3303,100,1000000.0,Metrics/SelectedAlgorithmCost;Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+native_cost__seed-4404,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+native_cost__seed-5505,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+gold_stl_cost__seed-1101,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+gold_stl_cost__seed-2202,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+gold_stl_cost__seed-3303,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test
+gold_stl_cost__seed-4404,100,1000000.0,,False,descriptive learning-curve review only; not a convergence test
+gold_stl_cost__seed-5505,100,1000000.0,Metrics/LagrangeMultiplier,False,descriptive learning-curve review only; not a convergence test

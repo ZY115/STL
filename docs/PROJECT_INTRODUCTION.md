@@ -19,7 +19,7 @@ Stage I 选择 `SafetyPointGoal1-v0` 作为 benchmark，研究机器人进入障
 - **Slides**：介绍原始研究问题、完整链路中的不确定性、三阶段拆分、Stage I 的 application、benchmark、STL 规则、实验比较、适用范围，以及 Stage I 成功后如何进入 Stage II。
 - **Stage I Engineering Plan**：记录完成 Stage I 所需的开源资源、相关论文、系统模块、现有组件与自行开发部分，以及环境搭建后的工程步骤。
 
-目前已经完成问题定义、Stage I 实验规划、environment inspection、rule-and-monitor milestone、OmniSafe wrapper、pre-main engineering gate、D31 pilot protocol freeze、RTX 4090 CUDA enablement 和三条件 small-budget sanity。独立实验环境已按锁文件复核；公开 `hazards_lidar` 可以可靠重建最近 hazard center distance。正式校准选择 `d_warn=0.45`、`d_safe=0.55`、`K=79`。真实 PPOLag CUDA rollout 已产生非零 STL deadline-event cost；三个条件的 cost routing 和 final-checkpoint gold evaluation gate 通过，完整 43 个测试全部通过。O6 只批准为 pilot 标准；5 seeds × 3 conditions × 1M transitions 的完整 pilot 尚未开始。
+目前已经完成问题定义、环境/规则/monitor/wrapper、CUDA、三条件 sanity，以及 5 seeds × 3 conditions × 1M transitions 的完整 pilot、1,500 条 paired evaluation 和 10,000 次 hierarchical bootstrap。task-only/gold-STL 的 missed-per-trigger 为 25.85%/26.03%，relative reduction 为 -0.71%（95% CI -24.92% 到 +21.88%），没有达到 30% pilot target；两者 goal success 均为 100%，goal non-inferiority 通过。gold-STL cost 仍高于预算且 multiplier 上升，因此不能声称收敛。当前等待 O8 决定 final main-study standard；O7 Stage II benchmark proposal 已准备但未确认。
 
 ## English version
 
@@ -46,4 +46,11 @@ Stage I uses `SafetyPointGoal1-v0` to examine whether an agent can recover to a 
 - **Slides:** explain the original problem, independent uncertainties, three-stage decomposition, selected application and benchmark, Stage I rule and experiment, limitations, and the transition to Stage II.
 - **Stage I Engineering Plan:** records the required repositories and papers, planned system components, reused and self-developed modules, engineering work packages, and immediate preparation steps.
 
-The problem definition, Stage I experiment plan, environment inspection, rule-and-monitor milestone, OmniSafe wrapper, pre-main engineering gate, D31 pilot-protocol freeze, RTX 4090 CUDA enablement, and three-condition small-budget sanity are complete. The locked environment was reconfirmed, and public `hazards_lidar` reconstructs nearest hazard center distance. Formal calibration selected `d_warn=0.45`, `d_safe=0.55`, and `K=79`. Real PPOLag CUDA rollouts produced nonzero STL event costs; all three cost-routing contracts and final-checkpoint gold evaluations passed, and all 43 tests pass. O6 is approved for the pilot only. The full five-seed, three-condition, 1M-transition pilot has not started.
+The environment/rule/monitor/wrapper/CUDA gates and the complete five-seed,
+three-condition, 1M-transition pilot are finished, including 1,500 paired
+evaluations and 10,000 hierarchical bootstrap replicates. Task-only/gold-STL
+missed-per-trigger was 25.85%/26.03%; relative reduction was -0.71% (95% CI
+-24.92% to +21.88%), so the 30% pilot target was not met. Both had 100% goal
+success and passed goal non-inferiority. Gold-STL cost remained over budget and
+its multiplier rose, so convergence is not claimed. O8 now controls any final
+main-study compute, while the O7 Stage II benchmark proposal awaits approval.

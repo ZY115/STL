@@ -407,7 +407,9 @@ independence are covered by wrapper tests.
 **Status:** bounded integration smoke completed on 2026-08-10. D31 pilot
 configs, three-condition small-budget sanity, resumable matrix runner, frozen
 analysis, 54 tests and excluded 100k exact-scale preflight passed by
-2026-08-11; full matched-seed pilot training awaits one compute authorization.
+2026-08-11. The authorized full matched-seed pilot, 1,500 evaluations and WP1
+report completed on 2026-08-12. The 30% safety target was not met, goal
+non-inferiority passed, and O8 now blocks additional GPU work.
 
 The main conditions should share:
 
@@ -464,8 +466,8 @@ Stage I should proceed to Stage II only if:
 | Rule parameterization | Our work | Calibrated and fixed |
 | Stateful bounded-recovery monitor | Our work | Implemented and tested |
 | STL-to-cost conversion | Our work | Binary mapping and three-mode wrapper implemented/tested |
-| Safe RL wrapper integration | Our work | Pilot configs/sanity passed; full matched pilot pending |
-| Temporal evaluation metrics | Our work | Wrapper episode logs implemented; main evaluation pending |
+| Safe RL wrapper integration | Our work | Full 15-job pilot completed; constraint-learning diagnostic remains O8 |
+| Temporal evaluation metrics | Our work | 1,500 episodes, frozen bootstrap, curves and result report completed |
 
 The central engineering contribution of Stage I is therefore not a new simulator, STL parser, or Safe RL algorithm. It is the carefully tested connection between existing components, together with the temporal monitor, cost definition, and evaluation needed for the selected safety rule.
 
@@ -496,5 +498,7 @@ all completed. On 2026-08-11, a full-horizon actor-sampled PPOLag rollout
 produced a nonzero STL deadline-event cost, and the common checkpoint evaluator
 passed direct-oracle and RTAMT checks. D31 then approved the quantitative
 protocol for the Stage I pilot only; three frozen condition overlays and the
-small-budget sanity passed. The full five-seed, three-condition 1M pilot remains
-unrun, and O8 retains the final main-study-standard decision.
+small-budget sanity passed. The full five-seed, three-condition 1M pilot
+completed on 2026-08-12. It did not meet the 30% safety target and did meet
+goal non-inferiority; rising multipliers prevent a convergence claim. O8
+retains the final-main-study-standard decision.
