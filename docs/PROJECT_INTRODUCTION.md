@@ -12,14 +12,14 @@
 gold-STL control 一直定义到 benchmark 构建、已有方法复现、离线语义比较、在线
 Safe RL 对比、贡献类型判断和后续环境扩展，而不只记录一个近期步骤。
 
-由于完整链路同时包含语言理解、grounding、STL monitoring、cost design 和 Safe RL learning 等多个相互独立的不确定性，我们将研究拆分为三个阶段。当前聚焦于 **Stage I: Gold-STL Experiment**，即暂时移除语言层，使用一条人工确认正确的 STL 规则，先验证下游的“环境信号 -> STL monitor -> safety cost -> Safe RL”链路。
+由于完整链路同时包含语言理解、grounding、STL monitoring、cost design 和 Safe RL learning 等多个相互独立的不确定性，我们将研究拆分为三个阶段。Stage I 已完成，它暂时移除语言层，使用一条人工确认正确的 STL 规则，验证了“环境信号 -> STL monitor -> safety cost -> Safe RL”链路。当前工作已转入 D37/D38 定义的 Stage II 连续工作包。
 
 Stage I 选择 `SafetyPointGoal1-v0` 作为 benchmark，研究机器人进入障碍物 warning zone 后，能否在规定步数内恢复到安全距离，同时保持正常的目标到达能力。
 
 - **Slides**：介绍原始研究问题、完整链路中的不确定性、三阶段拆分、Stage I 的 application、benchmark、STL 规则、实验比较、适用范围，以及 Stage I 成功后如何进入 Stage II。
 - **Stage I Engineering Plan**：记录完成 Stage I 所需的开源资源、相关论文、系统模块、现有组件与自行开发部分，以及环境搭建后的工程步骤。
 
-目前已经完成问题定义、环境/规则/monitor/wrapper、CUDA、三条件 sanity，以及 5 seeds × 3 conditions × 1M transitions 的完整 pilot、1,500 条 paired evaluation 和 10,000 次 hierarchical bootstrap。task-only/gold-STL 的 missed-per-trigger 为 25.85%/26.03%，relative reduction 为 -0.71%（95% CI -24.92% 到 +21.88%），没有达到 30% pilot target；两者 goal success 均为 100%，goal non-inferiority 通过。gold-STL cost 仍高于预算且 multiplier 上升，因此不能声称收敛。当前等待 O8 决定 final main-study standard；O7 Stage II benchmark proposal 已准备但未确认。
+目前已经完成问题定义、环境/规则/monitor/wrapper、CUDA、三条件 sanity，以及 5 seeds × 3 conditions × 1M transitions 的完整 pilot、1,500 条 paired evaluation 和 10,000 次 hierarchical bootstrap。task-only/gold-STL 的 missed-per-trigger 为 25.85%/26.03%，relative reduction 为 -0.71%（95% CI -24.92% 到 +21.88%），没有达到 30% pilot target；两者 goal success 均为 100%，goal non-inferiority 通过。gold-STL cost 仍高于预算且 multiplier 上升，因此不能声称收敛。D37 已冻结 O7 设计，D38 已授权真实二维轨迹复现、Stage II-A 离线比较、Gold learner-cost 诊断、公平 online interface 冻结和 bounded Stage II-B pilot。
 
 ## English version
 
@@ -35,7 +35,7 @@ gold-STL gate through benchmark construction, prior-method reproduction,
 offline semantic comparison, matched online Safe RL evaluation, contribution
 selection, and broader validation.
 
-Because the complete pipeline contains several independent sources of uncertainty, including language interpretation, grounding, STL monitoring, cost design, and Safe RL optimization, we divide the research into three stages. We currently focus on **Stage I: the Gold-STL Experiment**, which removes the language layer and uses one manually verified STL rule to test the downstream chain:
+Because the complete pipeline contains several independent sources of uncertainty, including language interpretation, grounding, STL monitoring, cost design, and Safe RL optimization, we divide the research into three stages. Stage I is complete: it removed the language layer and used one manually verified STL rule to test the downstream chain:
 
 ```text
 environment signals -> STL monitor -> safety cost -> Safe RL
@@ -52,5 +52,6 @@ evaluations and 10,000 hierarchical bootstrap replicates. Task-only/gold-STL
 missed-per-trigger was 25.85%/26.03%; relative reduction was -0.71% (95% CI
 -24.92% to +21.88%), so the 30% pilot target was not met. Both had 100% goal
 success and passed goal non-inferiority. Gold-STL cost remained over budget and
-its multiplier rose, so convergence is not claimed. O8 now controls any final
-main-study compute, while the O7 Stage II benchmark proposal awaits approval.
+its multiplier rose, so convergence is not claimed. D37 has frozen the O7
+design, and D38 authorizes spatial replay, Stage II-A, a bounded Gold learner-
+cost diagnostic, fair online-interface freeze and a bounded Stage II-B pilot.

@@ -19,15 +19,15 @@ class Stage2BenchmarkTests(unittest.TestCase):
         self.contract = validate_benchmark_contract(BENCHMARK_ROOT)
         self.records = generate_synthetic(self.contract["specifications"])
 
-    def test_contract_remains_unfrozen_and_uses_public_signal(self) -> None:
+    def test_five_item_foundation_is_reviewed_but_remains_unfrozen(self) -> None:
         self.assertEqual(self.contract["specification_count"], 5)
         self.assertEqual(self.contract["semantic_pair_split_leakage_count"], 0)
         self.assertEqual(
             self.contract["benchmark"]["draft_split_policy"]["status"],
-            "unassigned_pending_o7_review",
+            "d37_assignment_frozen_implementation_pending",
         )
         self.assertEqual(len(self.contract["reviews"]), 5)
-        self.assertTrue(all(review["status"] == "pending" for review in self.contract["reviews"]))
+        self.assertTrue(all(review["status"] == "approved" for review in self.contract["reviews"]))
 
     def test_all_synthetic_gold_labels_have_three_way_agreement(self) -> None:
         result = validate_trajectories(self.records)

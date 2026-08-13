@@ -9,9 +9,10 @@ offline benchmark foundation.
 
 The long-term project translates natural-language safety requirements into STL and uses STL monitoring results during Safe RL training.
 
-Stage I does not contain a language model. The next authorized work remains
-offline and non-GPU: diagnose existing trajectories, build Gold-labelled data,
-and prepare the formal-versus-direct baseline specifications.
+Stage I does not contain a language model. D37 and D38 now authorize the
+spatial replay, frozen Stage II-A implementation, bounded Gold learner-cost
+diagnostic and gated Stage II-B pilot defined in
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.
 
 ## Required reading
 
@@ -20,20 +21,21 @@ Before proposing changes or running installation commands, read:
 1. `README.md`
 2. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 3. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
-4. `docs/stage1_pilot_result_report.md`
-5. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
-6. `docs/stage1_o8_main_study_decision_proposal.md`
-7. `docs/stage2_o7_benchmark_design_proposal.md`
-8. `DECISIONS.md`
-9. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-10. `PROJECT_CONTEXT.md`
-11. `docs/research_direction_novelty_feasibility.md`
-12. `docs/theory_and_revised_experiment_8.10.md`
-13. `docs/minimum_research_delivery_8.10.md`
-14. `docs/stage1_rule_monitor_spec.md`
-15. `docs/stage1_plan.md`
-16. `docs/omnisafe_integration_report.md`
-17. `references/REFERENCES.md`
+4. `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
+5. `docs/stage1_pilot_result_report.md`
+6. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+7. `docs/stage1_o8_main_study_decision_proposal.md`
+8. `docs/stage2_o7_benchmark_design_proposal.md`
+9. `DECISIONS.md`
+10. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+11. `PROJECT_CONTEXT.md`
+12. `docs/research_direction_novelty_feasibility.md`
+13. `docs/theory_and_revised_experiment_8.10.md`
+14. `docs/minimum_research_delivery_8.10.md`
+15. `docs/stage1_rule_monitor_spec.md`
+16. `docs/stage1_plan.md`
+17. `docs/omnisafe_integration_report.md`
+18. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -120,29 +122,25 @@ passed. Costs above their semantic budgets and rising multipliers prevent a
 convergence claim. D35 and `docs/stage1_pilot_result_report.md` are
 authoritative.
 
-The post-pilot code diagnosis and candidate repair hierarchy are recorded in
-`docs/stage1_code_failure_analysis_and_repair_recommendations.md`. D36 and
-`docs/CURRENT_EXECUTION_DIRECTIVE.md` now authorize one continuous non-GPU
-package: preserve the pilot, diagnose existing checkpoint trajectories and
-runtime semantics, build the Stage II v0 benchmark foundation, and prepare the
-three representation baselines as one review package. Complete all unblocked
-parts of Steps 1--3 before requesting another instruction.
+The post-pilot diagnosis is complete. D37 freezes O7 and D38 authorizes the
+continuous package in `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`. Complete spatial
+replay, dataset implementation, all unblocked train/validation work, Stage II-A
+after human review, the bounded Gold cost diagnostic, online-interface freeze
+and bounded Stage II-B pilot without asking after each substep.
 
-Do not launch additional GPU training. Do not rerun the same sparse binary-cost
-configuration to prove that cost can enter PPO; that integration is already
-verified. O8 remains the later online-training decision, while O7's final
-formula families, splits, baseline implementations and numerical gates still
-require review after the benchmark foundation is available.
+Do not rerun the same sparse binary-cost configuration merely to prove that
+cost can enter PPO. Do not let model code access held-out Gold labels before
+the independent human review gate. Do not silently expand the bounded Stage
+II-B pilot into a final five-seed/one-million-transition main study.
 
 D32 fixes the matched training backend to the verified RTX 4090 `cuda:0` device
 with PyTorch 2.4.1+cu124. Launch deterministic CUDA training with
 `CUBLAS_WORKSPACE_CONFIG=:4096:8`. Do not mix historical CPU sanity outputs with
 CUDA pilot results.
 
-Do not add or train the Stage II language models during the current package.
-Build the benchmark schema, reviewed examples, distinguishing traces, Gold
-labels, coverage checks and baseline specifications first. The complete order,
-outputs and gates are authoritative in `docs/CURRENT_EXECUTION_DIRECTIVE.md`.
+Stage II-A model training is authorized after its train/validation artifacts
+pass. The complete order, inputs, outputs, models, gates and 20-minute
+monitoring rule are authoritative in `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.
 After completing the current gate, continue with the next unfinished work
 package in `docs/END_TO_END_RESEARCH_PIPELINE.md`; do not reduce the handoff to
 one isolated next-step instruction.

@@ -477,6 +477,57 @@ method, freeze the final O7 dataset, or resolve the final online comparison
 protocol. The exact continuous work order, outputs and gates are defined in
 `docs/CURRENT_EXECUTION_DIRECTIVE.md`.
 
+### D37. O7 benchmark and Stage II-A design are frozen
+
+On 2026-08-12 the project owner requested that O7 be resolved and that the work
+computer continue beyond the machine-foundation draft. The following design is
+now fixed for the Stage II v0 controlled comparison:
+
+- 40 canonical specifications and two paraphrases per specification;
+- eight specifications in each of bounded recovery, recovery-persistence,
+  bounded avoidance, conjunction and disjunction families;
+- a typed-AST representation over the public nearest-hazard distance signal;
+- 20 train, eight validation, four parameter-test and eight held-out
+  disjunction structure-test specifications;
+- a local `google-t5/t5-base` structured formal translator;
+- a MiniLM current-observation direct adaptation as a published-style
+  structural ablation;
+- a MiniLM plus GRU-128 causal-history direct model as the primary direct
+  opponent;
+- no paid API or proprietary model in v0;
+- predeclared trace, boundary, minimal-pair and paraphrase admission thresholds;
+- final truth from the unchanged Gold evaluator.
+
+The exact composition, parameter tuples, split, supervision, metrics and gates
+are normative in `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.
+
+This resolves the owner design decisions in O7. It does not fabricate the
+independent human review required for Gold release. Every item still requires a
+named human reviewer different from its author before held-out evaluation. The
+work computer may implement methods and use train/validation drafts while that
+external review gate is pending, but test Gold labels must remain unavailable
+to model code.
+
+### D38. Continuous spatial, offline and bounded-online execution is authorized
+
+The work computer is authorized to execute the continuous package in
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md`:
+
+1. reproduce existing checkpoints with diagnostic-only geometry and generate
+   true top-down trajectory figures;
+2. implement the D37 dataset, formula evaluators and Stage II-A baselines;
+3. run held-out Stage II-A only after independent review;
+4. implement the project-owned terminal cost-bootstrap repair and the bounded
+   predeclared Gold learner-cost matrix;
+5. freeze one common online cost interface only if its gate passes;
+6. run the 10k routing sanity and three-seed/300k bounded Stage II-B pilot.
+
+For any training process, the agent verifies one real update/epoch, finite
+metrics, GPU activity, checkpoint output and ETA. If remaining time exceeds 20
+minutes, it leaves the resumable job running, records PID, hashes, logs, ETA and
+resume commands, and stops continuous monitoring. This authorization does not
+cover a five-seed, one-million-transition confirmatory Stage II-B main study.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31
@@ -495,15 +546,12 @@ This decision must use the pilot's learning-curve stability and feasibility
 evidence without relabeling pilot-selected settings as independently confirmed
 main-study hypotheses.
 
-**Current status (2026-08-12):** the pilot is complete and D35 records that the
-safety target was not met while goal non-inferiority passed. The proposal in
-`docs/stage1_o8_main_study_decision_proposal.md` recommends a bounded
-optimization/budget/credit-assignment diagnostic before freezing a final
-standard. D36's no-training runtime/trajectory diagnosis is complete and
-confirms sparse/delayed cost plus effective-runtime risks, but does not select
-an O8 repair. Option A (close Stage I), Option B (longer same-method run), and
-Option C (bounded diagnostic) remain owner choices. No additional GPU run is
-authorized by this proposal.
+**Current status (2026-08-12):** D38 selects the bounded diagnostic path and
+authorizes only the C0/C1 matrix defined in
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md`. The old same-method run must not be
+repeated. O8 remains open only for a later confirmatory main-study standard:
+the bounded diagnostic result will determine whether such a study is justified,
+but D38 does not authorize a five-seed, one-million-transition confirmation.
 
 ### O7. Stage II controlled language and direct-cost baseline
 
@@ -519,15 +567,12 @@ Before Stage II implementation, fix:
 - formula-equivalence and trace-label metrics;
 - whether a human formula-confirmation condition is included.
 
-**Current status (2026-08-12):** a non-compute candidate design is recorded in
-`docs/stage2_o7_benchmark_design_proposal.md`. It proposes a 30--50-item pilot,
-typed grounding, semantic minimal pairs, causal-history fairness, leakage-safe
-splits and independent human confirmation. D36 has implemented a machine-
-validated foundation using only the already verified bounded-recovery family:
-five pending-review examples, 55 synthetic and six real traces, Gold checks and
-three baseline specifications. This is not an O7 freeze. Formula families,
-exact item count, split, reviewed labels, model choices, resources and numerical
-offline gates remain unconfirmed until the owner resolves O7.
+**Current status (2026-08-12):** owner design resolved by D37. The 40-item
+composition, split, local model choices, resource boundary and numerical
+offline gates are frozen in `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`. The existing
+five-item machine foundation must now be expanded. Independent human review is
+an implementation/release gate, not an unresolved owner design choice; held-out
+Gold evaluation remains prohibited until it is complete.
 
 ## Deferred to Stage II
 

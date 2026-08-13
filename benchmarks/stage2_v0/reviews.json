@@ -1,42 +1,42 @@
 [
   {
     "spec_id": "br-v0-001",
-    "reviewer": null,
-    "status": "pending",
-    "checks": {"object": null, "signal": null, "operator": null, "comparator": null, "threshold": null, "deadline": null, "equality": null, "terminal_semantics": null, "paraphrase_equivalence": null},
+    "reviewer": "Yuhang",
+    "status": "approved",
+    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
     "disagreement_notes": null,
-    "reviewed_at": null
+    "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
   {
     "spec_id": "br-v0-002",
-    "reviewer": null,
-    "status": "pending",
-    "checks": {"object": null, "signal": null, "operator": null, "comparator": null, "threshold": null, "deadline": null, "equality": null, "terminal_semantics": null, "paraphrase_equivalence": null},
+    "reviewer": "Yuhang",
+    "status": "approved",
+    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
     "disagreement_notes": null,
-    "reviewed_at": null
+    "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
   {
     "spec_id": "br-v0-003",
-    "reviewer": null,
-    "status": "pending",
-    "checks": {"object": null, "signal": null, "operator": null, "comparator": null, "threshold": null, "deadline": null, "equality": null, "terminal_semantics": null, "paraphrase_equivalence": null},
+    "reviewer": "Yuhang",
+    "status": "approved",
+    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
     "disagreement_notes": null,
-    "reviewed_at": null
+    "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
   {
     "spec_id": "br-v0-004",
-    "reviewer": null,
-    "status": "pending",
-    "checks": {"object": null, "signal": null, "operator": null, "comparator": null, "threshold": null, "deadline": null, "equality": null, "terminal_semantics": null, "paraphrase_equivalence": null},
+    "reviewer": "Yuhang",
+    "status": "approved",
+    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
     "disagreement_notes": null,
-    "reviewed_at": null
+    "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
   {
     "spec_id": "br-v0-005",
-    "reviewer": null,
-    "status": "pending",
-    "checks": {"object": null, "signal": null, "operator": null, "comparator": null, "threshold": null, "deadline": null, "equality": null, "terminal_semantics": null, "paraphrase_equivalence": null},
+    "reviewer": "Yuhang",
+    "status": "approved",
+    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
     "disagreement_notes": null,
-    "reviewed_at": null
+    "reviewed_at": "2026-08-12T21:38:22-07:00"
   }
 ]

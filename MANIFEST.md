@@ -32,7 +32,8 @@ raw job logs remain local and ignored.
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
 | `docs/END_TO_END_RESEARCH_PIPELINE.md` | Authoritative long-term map: revised objective, benchmark role, method baselines, WP1--WP7 inputs/outputs/gates, result branches, references, and status |
-| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Current post-pilot route: Gold-STL diagnosis, offline benchmark, representation baselines, offline comparison, online gate, and result branches |
+| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Short current directive for the D37/D38 continuous Stage II package |
+| `docs/STAGE2_CONTINUOUS_WORK_ORDER.md` | Normative spatial replay, frozen O7, Stage II-A, Gold-cost diagnostic, online-interface and Stage II-B work order |
 | `docs/research_direction_novelty_feasibility.md` | 2026-08-10 novelty correction, closest prior work, revised research question, theoretical feasibility, and staged experiment path |
 | `docs/theory_and_revised_experiment_8.10.md` | 8.10 Chinese theory analysis and revised matched experiment design for explicit NL-to-STL versus direct learned cost |
 | `docs/minimum_research_delivery_8.10.md` | Minimum teacher-facing research delivery: purpose, required artifacts, acceptance gates, and work-computer sequence |

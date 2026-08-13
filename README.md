@@ -52,8 +52,9 @@ train and evaluate a Safe RL agent
 3. **Stage III: Broader setting**  
    进一步研究模糊语言、缺失参数、更多 STL 结构、感知噪声、动态障碍、其他 benchmark 和真实系统。
 
-Stage I pilot 已完成。当前进入 **Stage I 诊断收尾 + Stage II 离线 benchmark
-基础建设**；尚未加入语言模型，也不启动新的长 RL 训练。
+Stage I pilot 已完成。D37 已冻结 Stage II v0 benchmark 和三条 baseline 的设计。
+当前连续工作是：真实二维轨迹复现、40 条规格实现与人工复核、Stage II-A 离线比较、
+Gold learner-cost 诊断、公平 online interface 冻结和 bounded Stage II-B pilot。
 
 ## 2026-08-10 研究定位更新
 
@@ -185,7 +186,7 @@ Stage I pilot 的历史问题是：
   window 和 effective cost discount；未修改 Conda `site-packages`；
 - 已实现旧 final-checkpoint 的 CPU-only per-step replay/export、机制分解和图表入口，
   不训练、不选择 checkpoint；
-- 已建立 Stage II v0 单一已验证公式族的机器可验证基础：5 条待人工复核草案、55 条
+- 已建立 Stage II v0 单一已验证公式族的机器可验证基础：5 条草案已由 Yuhang 人工复核通过、55 条
   synthetic boundary/history trajectories、真实轨迹统一导入、Gold 三方一致性、
   schema/leakage/coverage 检查和统一离线指标；
 - 已准备 formal、published-style current-observation direct 和 history-aware direct
@@ -215,22 +216,20 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-Stage I full pilot、统计 analysis 和 WP1 report 已完成。当前连续工作包已经更新为：
+Stage I full pilot 和无训练诊断已完成。D38 授权工作电脑按以下顺序连续推进：
 
-1. 保留当前 negative pilot，不重复证明 STL cost 可以进入 PPO；
-2. 使用已有 checkpoint 和轨迹诊断 79-step binary cost 的稀疏、延迟、budget 与
-   optimizer 行为，不启动新训练；
-3. 建立 Stage II v0 离线 benchmark 的 schema、五个待独立复核 examples、synthetic
-   boundary traces、真实轨迹导入和 Gold label 验证；
-4. 准备 formal、published-style direct 和 history-aware direct 三条 baseline 的统一
-   评审包；
-5. 在离线语义比较通过预设 gate 后，再冻结公平的 online cost interface 并申请 GPU
-   实验授权。
+1. 用原 checkpoint/seed 补采 agent、goal 和 hazard 坐标，画真实二维轨迹；
+2. 将五条草稿扩展为 D37 的 40 条受控规格并准备独立人工复核；
+3. 实现 T5-base formal、MiniLM current-observation direct 和 MiniLM+GRU history
+   direct baseline；
+4. 通过复核后运行 Stage II-A held-out 离线比较；
+5. 并行修复 terminal cost bootstrap，并比较 binary 与 causal dense Gold learner
+   cost；
+6. gate 通过后冻结统一 online cost interface，运行 bounded Stage II-B pilot。
 
-Steps 1--3 的机器实现和 Step 4 评审包现已形成；最终 O7 数据集仍等待独立人工语义
-复核、公式族/划分和 numerical gate 的负责人决定。完整执行顺序、输出、通过条件和停止边界见
-`docs/CURRENT_EXECUTION_DIRECTIVE.md`。工作电脑应连续完成其中 Steps 1--3，并准备
-Step 4；不要在每个文件或小测试后暂停询问。
+完整参数、split、模型、公式、成功门槛、输出和训练监控规则见
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md`。训练启动后只监测到真实 update、checkpoint
+和 ETA；若预计剩余时间超过 20 分钟，保留 resumable job 运行并停止持续轮询。
 
 - 正式结果：`docs/stage1_pilot_result_report.md`
 - 代码失败分析与修复建议：
@@ -307,24 +306,25 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
 2. `README.md`
 3. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 4. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
-5. `docs/stage1_pilot_result_report.md`
-6. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
-7. `docs/stage1_o8_main_study_decision_proposal.md`
-8. `docs/stage2_o7_benchmark_design_proposal.md`
-9. `docs/stage1_trajectory_diagnosis_report.md`
-10. `docs/stage2_v0_benchmark_report.md`
-11. `docs/stage2_v0_baseline_review_package.md`
-12. `DECISIONS.md`
-13. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-14. `PROJECT_CONTEXT.md`
-15. `docs/research_direction_novelty_feasibility.md`
-16. `docs/theory_and_revised_experiment_8.10.md`
-17. `docs/minimum_research_delivery_8.10.md`
-18. `docs/CURRENT_STAGE1_STATUS.md`
-19. `docs/stage1_rule_monitor_spec.md`
-20. `docs/stage1_plan.md`
-21. `docs/omnisafe_integration_report.md`
-22. `references/REFERENCES.md`
+5. `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
+6. `docs/stage1_pilot_result_report.md`
+7. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+8. `docs/stage1_o8_main_study_decision_proposal.md`
+9. `docs/stage2_o7_benchmark_design_proposal.md`
+10. `docs/stage1_trajectory_diagnosis_report.md`
+11. `docs/stage2_v0_benchmark_report.md`
+12. `docs/stage2_v0_baseline_review_package.md`
+13. `DECISIONS.md`
+14. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+15. `PROJECT_CONTEXT.md`
+16. `docs/research_direction_novelty_feasibility.md`
+17. `docs/theory_and_revised_experiment_8.10.md`
+18. `docs/minimum_research_delivery_8.10.md`
+19. `docs/CURRENT_STAGE1_STATUS.md`
+20. `docs/stage1_rule_monitor_spec.md`
+21. `docs/stage1_plan.md`
+22. `docs/omnisafe_integration_report.md`
+23. `references/REFERENCES.md`
 
 ## 文件夹说明
 

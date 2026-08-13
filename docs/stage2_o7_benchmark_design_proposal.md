@@ -1,7 +1,8 @@
 # O7 Proposal: Stage II Controlled-Language Benchmark
 
 - **Prepared:** 2026-08-12
-- **Status:** non-compute design proposal; not yet frozen
+- **Status:** historical proposal; owner design resolved by D37
+- **Normative successor:** `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
 - **Scope:** WP2 controlled NL/gold-STL and trajectory benchmark
 - **Excluded:** model training, free-form language, online Stage II RL
 

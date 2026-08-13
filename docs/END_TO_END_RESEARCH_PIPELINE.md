@@ -1,9 +1,10 @@
 # End-to-End Research Pipeline and Independent Handoff
 
-- **Version:** 2026-08-10
+- **Version:** 2026-08-12
 - **Purpose:** 让没有原聊天记录的新成员能够理解研究目标、已有依据、完整实验路线、
   当前状态、后续阶段和所有阻塞信息，并能按预先定义的 gate 独立推进。
 - **Authority:** 本文定义长期研究路线；`DECISIONS.md` 定义已确认与待确认决定；
+  `docs/STAGE2_CONTINUOUS_WORK_ORDER.md` 定义 D37/D38 的当前执行细节；
   各专项 report 定义已经完成的工程事实。
 
 ## 1. 一句话研究目标
@@ -217,8 +218,9 @@ pilot 后的最终标准决定。
 was not met: task/gold missed-per-trigger was 25.85%/26.03%, relative reduction
 was -0.71% (95% interval -24.92% to +21.88%), and both conditions had 100% goal
 success. Constraint costs and multipliers did not stabilize at their semantic
-budgets, so O8 remains the next compute decision. See
-`docs/stage1_pilot_result_report.md`.
+budgets. D38 subsequently selected a bounded learner-cost diagnostic rather
+than repeating the same sparse-cost run. See `docs/stage1_pilot_result_report.md`
+and `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.
 
 ### 输出
 
@@ -240,28 +242,18 @@ cost sparsity、budget、policy memory 或 optimization，而不能把失败归�
 
 建立同一批数据，使 formal path 和 direct path 可以公平比较安全语义。
 
-### 必须确认的信息
+### D37 已冻结的范围
 
-`DECISIONS.md` 中 O7 必须确认：
-
-- 支持的 STL fragment 和 formula templates；
-- controlled-language grammar；
-- predicates、signals、thresholds 和 deadlines；
-- semantic minimal-pair taxonomy；
-- train/validation/test split，尤其是 unseen formula structure split；
-- human formula-confirmation protocol。
-
-### 第一版建议范围
-
-- 30--50 个 controlled NL/gold-STL specifications 作为 pilot，不是最终规模承诺；
-- meaning-preserving paraphrases；
-- threshold 和 deadline 变化；
-- `within` vs `after`；
-- eventual recovery vs sustained safety；
-- conjunction vs disjunction；
-- polarity/negation cases；
-- no-trigger、on-time、deadline-boundary、late、terminal-unresolved trajectories；
-- 相同当前 observation、不同 temporal history 的成对 trajectories。
+- 40 个 canonical specifications，每个有两个 meaning-preserving paraphrases；
+- bounded recovery、recovery plus persistence、bounded avoidance、conjunction
+  和 held-out disjunction 五个 family，每个 8 条；
+- 20 train、8 validation、4 parameter-test 和 8 structure-test specifications；
+- 每条 specification 至少 12 条 boundary/history traces，加入固定 real-policy
+  corpus；
+- typed AST、public signal registry、Gold oracle/RTAMT agreement 和 independent
+  human review；
+- exact parameters、split、review fields 和 leakage boundary 见
+  `docs/STAGE2_CONTINUOUS_WORK_ORDER.md` Section 4。
 
 ### 输出
 
@@ -296,11 +288,11 @@ policy。数据格式和 schema 必须进入版本控制；bulk trajectory data 
 
 ### 方法
 
-1. gold STL oracle；
-2. 一个当前 NL-to-STL 方法，例如 RESTL 或 ReasonSTL，最终选择需记录理由；
-3. Lou et al. 2024 published-style direct cost baseline；
-4. 一个具有 causal history 的强 direct-cost baseline；
-5. 可选 TTCT-style learned trajectory safety signal。
+1. unchanged Gold STL oracle；
+2. `google-t5/t5-base` -> typed AST -> deterministic STL formal path；
+3. MiniLM current-observation direct cost adaptation，作为 published-style ablation；
+4. MiniLM + GRU-128 causal-history direct predictor，作为 primary direct opponent；
+5. deterministic controlled-grammar parser，仅作为 non-neural sanity baseline。
 
 “复现”必须说明是 strict reproduction、adaptation 还是 idea-level reimplementation。
 不能把论文原设置和本项目适配设置混写。
@@ -474,10 +466,10 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report、P0 runtime regression 和 existing-checkpoint trajectory diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | O8 决定 close、longer same-method 或 bounded diagnostic；决定前不启动额外 GPU run，也不改 frozen pilot |
-| WP2 Controlled benchmark | 单一已验证 bounded-recovery family 的 v0 schema、5 条待人工复核草案、synthetic/real common schema、Gold relabel/RTAMT/coverage tools 已实现 | 独立人工复核；负责人冻结最终 formula families、30--50 item composition、semantic-pair grouping 和 exact splits |
-| WP3 Offline methods | formal、published-style current-observation direct、history-aware direct 的 access/supervision spec 与 evaluator 已准备；未调用或训练模型 | 一次性确认 translator、direct architecture、reproduction level、pretrained/compute allowance 和 prospective numerical gate |
-| WP4 Online comparison | not started | 等 WP3 trace gate |
+| WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report、P0 runtime regression 和 existing-checkpoint trajectory diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | D38 已选 bounded Gold learner-cost diagnostic；先补真实二维轨迹图，不重跑旧 sparse-cost pilot |
+| WP2 Controlled benchmark | five-item machine foundation complete; D37 freezes the 40-item/five-family expansion and split | implement D37 and complete independent human review |
+| WP3 Offline methods | D37 freezes T5-base formal, MiniLM current-observation direct and MiniLM+GRU history direct plus numerical gates | implement train/validation first; held-out evaluation waits for review |
+| WP4 Online comparison | not started | 等 WP3 trace gate 和 Gold learner-cost gate，然后冻结 common interface 并运行 bounded Stage II-B |
 | WP5 Contribution decision | not started | 按预定义 Branch A--E 处理 |
 | WP6 Method/benchmark extension | deferred | 由 WP5 failure mode 决定 |
 | WP7 External validity | deferred | 由前述内部有效性决定 |

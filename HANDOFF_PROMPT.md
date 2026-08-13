@@ -4,7 +4,8 @@ Run Codex from the root of this folder and use the following prompt before reque
 
 ```text
 Read AGENTS.md, README.md, docs/END_TO_END_RESEARCH_PIPELINE.md,
-docs/CURRENT_EXECUTION_DIRECTIVE.md, DECISIONS.md,
+docs/CURRENT_EXECUTION_DIRECTIVE.md,
+docs/STAGE2_CONTINUOUS_WORK_ORDER.md, DECISIONS.md,
 EXPERIMENT_PROGRESS_CHANGELOG.md, PROJECT_CONTEXT.md,
 docs/research_direction_novelty_feasibility.md,
 docs/theory_and_revised_experiment_8.10.md,
@@ -44,18 +45,17 @@ this as a valid negative pilot. The monitor is a verified trajectory evaluator,
 but the current sparse binary event cost is not a validated training baseline.
 Do not rerun the same configuration to prove that STL cost can enter PPO.
 
-Read D36 and docs/CURRENT_EXECUTION_DIRECTIVE.md. Execute Steps 1--3 as one
-continuous non-GPU package:
-1. preserve and correctly describe the completed pilot;
-2. replay existing checkpoints, export per-step trajectories, visualize actual
-   behavior, quantify cost sparsity/delay and test the recorded runtime risks;
-3. build the Stage II v0 benchmark foundation: schema, five reviewed examples,
-   distinguishing synthetic traces, real-trajectory imports, Gold labels,
-   validators and coverage report.
+Read D37, D38, docs/CURRENT_EXECUTION_DIRECTIVE.md and
+docs/STAGE2_CONTINUOUS_WORK_ORDER.md. Follow the full work order continuously:
+produce true top-down Stage I replay figures, implement the frozen 40-item O7
+benchmark and review packet, implement the frozen Stage II-A baselines, run
+held-out evaluation only after independent human review, diagnose the two
+predeclared Gold learner costs, freeze the common online interface if its gate
+passes, and run the bounded Stage II-B pilot.
 
-Prepare Step 4 as one combined review package defining the formal path, a
-published-style direct baseline and a history-aware direct baseline. Do not
-train language models, change Gold STL semantics, choose post-hoc shaping, or
-launch any new long RL run. Consolidate unresolved scientific choices into one
-decision request instead of stopping after each file or test.
+Do not use paid APIs, change Gold semantics or leak held-out labels. For any
+training process, verify one real update/epoch, finite metrics, GPU activity,
+checkpoint output and ETA. If remaining time exceeds 20 minutes, leave the
+resumable job running, record PID/log/hash/ETA/resume information, and stop
+continuous polling rather than terminating the job.
 ```

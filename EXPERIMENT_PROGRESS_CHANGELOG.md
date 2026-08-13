@@ -602,3 +602,56 @@ fragment 也不能支持 structure split。这是当前真实 review blocker，�
 完整 suite 增至 68 tests 并全部通过；`pip check`、全 Python compile、shell syntax、
 JSON/YAML parsing、diagnosis/benchmark artifact hashes、第二次 deterministic benchmark
 rebuild 和 `git diff --check` 全部通过。
+
+## 21. 2026-08-12 D37/D38：O7 冻结与 Stage II 连续工作包
+
+### 21.1 O7 设计决策
+
+D37 冻结 Stage II v0 的 40 条 canonical specifications、5 个 formula
+families、train/validation/parameter-test/structure-test split、两个 paraphrases per
+specification、离线 trace corpus、三条 baseline 和 numerical admission gates。
+主要 formal path 使用 local `google-t5/t5-base` 输出 typed AST；主要 direct
+opponent 使用 MiniLM + causal GRU；current-observation direct method 作为结构消融。
+
+这解决了 O7 的 owner design choices，但不伪造独立人工复核。在所有
+held-out records 完成 independent review 和 adjudication 前，test Gold labels 仍不得
+向 model code 开放。
+
+### 21.2 连续执行路线
+
+D38 授权工作电脑不再每完成一个脚本就停止请示，而是按
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md` 连续执行：
+
+```text
+existing-checkpoint spatial replay and figures
+  -> O7 40-spec implementation and independent review packet
+  -> Stage II-A offline formal-versus-direct comparison
+  -> parallel Gold-STL learner-cost diagnosis
+  -> fair online cost-interface freeze
+  -> bounded Stage II-B Safe RL pilot
+```
+
+空间复现要输出 agent/hazard/goal 真实二维坐标和三张诊断图，但
+privileged geometry 只用于画图和解释，不得进入 policy 或语言方法。Gold
+learner-cost branch 保持 Gold evaluator 不变，只比较原 binary event cost 与一个
+预声明 causal dense surrogate。如果两者都无法通过预声明的行为 gate，
+在 Stage II-B 之前停止并保留 negative result。
+
+### 21.3 长训练监控边界
+
+每个训练任务必须先通过 config/hash tests、dry run 和最小真实 update。
+启动后只监控到 process、GPU、finite metrics、checkpoint 和 ETA 均有证据。
+若剩余时间超过 20 分钟，保留可恢复 job 运行，记录 PID、command、commit、
+hashes、log、progress、ETA 和 resume command，然后停止持续轮询，不终止
+健康的训练进程。
+
+## 22. 2026-08-12 现有五条 Stage II 规格人工复核
+
+Yuhang 在查看现有 `br-v0-001` 至 `br-v0-005` 的 natural language、
+paraphrases、Gold STL、thresholds、deadline、equality 和 terminal semantics
+后，明确确认五条内容无误。`benchmarks/stage2_v0/reviews.json` 已记录
+reviewer、审核时间和九项全通过 checklist，specification records 同步标为
+`independently_reviewed`。
+
+该确认仅覆盖当前五条 historical foundation。D37 新增的 35 条尚未生成，
+仍必须完成独立人工复核后才能开放 held-out Gold evaluation。

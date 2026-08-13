@@ -1,104 +1,126 @@
-schema_version: 1
-status: review_package_not_finally_frozen
+schema_version: 2
+status: d37_design_frozen_implementation_pending
+authority: D37
+work_order: docs/STAGE2_CONTINUOUS_WORK_ORDER.md
 benchmark_id: safety_stl_controlled_language_v0
+
 common_contract:
   environment: SafetyPointGoal1-v0
-  language_inputs: same controlled-language item and split
+  language_inputs: same controlled-language record and frozen split
   public_signals:
     - nearest_hazard_center_distance_public
   causal_only: true
   future_trajectory_access: prohibited
-  test_gold_label_access: prohibited
+  test_gold_label_access: prohibited_until_independent_human_review
+  paid_api_access: prohibited
   final_truth: human-reviewed Gold STL evaluated by the verified oracle
   report_separately:
     - annotation_count
     - supervision_type
-    - pretrained_resources
+    - pretrained_resources_and_revisions
     - model_parameter_count
     - training_compute
     - inference_compute
     - API_use_and_cost
 
+benchmark_design:
+  canonical_specification_count: 40
+  paraphrases_per_specification: 2
+  formula_families:
+    hysteretic_bounded_recovery: 8
+    recovery_plus_persistence: 8
+    bounded_avoidance: 8
+    conjunction: 8
+    disjunction: 8
+  split:
+    train: 20
+    validation: 8
+    parameter_test: 4
+    structure_test_disjunction: 8
+  independent_human_review_required: true
+
 methods:
   formal_path:
-    method_id: formal_nl_to_stl_v0
-    implementation_classification: adaptation
+    method_id: formal_t5_structured_stl_v0
+    role: primary_formal_method
+    implementation_classification: project_adaptation_motivated_by_nl2tl
+    pretrained_model: google-t5/t5-base
+    output: typed_json_ast_then_deterministic_stl_compilation
+    model_seeds: 3
     input:
-      language: controlled natural language
-      signal_registry: public typed grounding registry
+      language: controlled_natural_language
+      signal_registry: public_typed_grounding_registry
       trajectory_history: none_during_translation
-    output: candidate_STL_and_typed_parameters
-    downstream: verified causal monitor
     supervision: gold_formula_and_typed_grounding_on_training_split_only
     prohibited:
-      - held_out_gold_STL
+      - held_out_gold_stl
       - held_out_gold_labels
-    unresolved_model_choice:
-      - RESTL_or_ReasonSTL_style_local_adaptation
-      - constrained_structured_prediction_without_a_language_model
+      - silent_test_output_repair
+      - paid_api
+
+  grammar_sanity:
+    method_id: deterministic_controlled_grammar_parser_v0
+    role: non_neural_engineering_sanity_not_primary_method
 
   published_direct_current_observation:
-    method_id: lou_style_current_observation_direct_v0
-    implementation_classification: idea_level_adaptation_pending_paper_reproduction_audit
+    method_id: lou_style_minilm_current_observation_v0
     role: published_style_structural_ablation_not_sole_primary_opponent
+    implementation_classification: idea_level_adaptation
+    pretrained_model: sentence-transformers/all-MiniLM-L12-v2
+    classifier: documented_cosine_or_mlp_binary_classifier
+    model_seeds: 3
     input:
-      language: controlled natural language
+      language: controlled_natural_language
       trajectory_history: current_public_observation_only
-    output: binary_cost_or_violation_label
-    supervision: Gold_trace_labels_on_training_split_only
+    output: binary_violation_event_probability
+    supervision: gold_trace_labels_on_training_split_only
     prohibited:
-      - gold_STL
+      - gold_stl
       - gold_monitor_state
       - future_trajectory
       - test_gold_labels
-    unresolved_model_choice:
-      - implementation_to_be_selected_after_reproduction_audit
+      - paid_api
 
   history_aware_direct:
-    method_id: causal_history_direct_v0
-    implementation_classification: new_project_adaptation
+    method_id: minilm_gru_causal_history_v0
     role: primary_direct_opponent
-    input:
-      language: controlled natural language
-      trajectory_history: same_causal_public_prefix_available_to_formal_monitor
-    output: binary_cost_or_violation_label
-    supervision: Gold_trace_labels_on_training_split_only
-    memory_candidates:
-      - GRU
-      - causal_Transformer
+    implementation_classification: project_adaptation
+    language_model: sentence-transformers/all-MiniLM-L12-v2
+    temporal_model: GRU
+    hidden_size: 128
+    maximum_context_steps: 128
+    fusion_head: two_layer_mlp
+    model_seeds: 3
+    output:
+      - violation_event_probability
+      - active_obligation_probability
+      - auxiliary_remaining_fraction
+    supervision: gold_trace_labels_on_training_split_only
+    loss: class_weighted_binary_cross_entropy_from_training_prevalence
     prohibited:
-      - gold_STL
+      - gold_stl
       - gold_monitor_state
       - handcrafted_monitor_timer
       - future_trajectory
       - test_gold_labels
-    unresolved_model_choice:
-      - GRU_or_causal_Transformer
+      - paid_api
 
-offline_metrics:
-  script: scripts/evaluate_stage2_predictions.py
-  metrics:
-    - formula_syntax_validity
-    - structured_meaning_field_accuracy
-    - structured_meaning_exact_record_accuracy
-    - precision
-    - recall
-    - f1
-    - false_negative_rate
-    - false_positive_rate
-    - event_time_mean_absolute_error_steps
-    - deadline_boundary_accuracy
-    - terminal_unresolved_accuracy
-    - minimal_pair_consistency
-    - paraphrase_consistency
-  numerical_online_admission_gate: unresolved_must_be_frozen_before_test_evaluation
+offline_admission_gate:
+  minimum_positive_held_out_events: 100
+  output_schema_validity: 1.0
+  violation_event_recall_min: 0.95
+  violation_event_precision_min: 0.90
+  f1_min: 0.92
+  false_negative_rate_max: 0.05
+  event_time_mae_steps_max: 2.0
+  deadline_equality_boundary_accuracy_min: 0.95
+  terminal_unresolved_accuracy_min: 0.90
+  minimal_pair_accuracy_min: 0.90
+  paraphrase_consistency_min: 0.95
+  report_uncertainty: 95_percent_wilson_or_bootstrap
+  primary_methods_required_to_pass:
+    - formal_path
+    - history_aware_direct
 
-unresolved_review_decisions:
-  - approve_final_O7_formula_families_and_40_item_composition
-  - approve_split_axes_and_exact_assignment
-  - complete_independent_human_review
-  - choose_formal_translator_implementation
-  - choose_history_aware_direct_architecture
-  - audit_published_method_and_fix_reproduction_classification
-  - freeze_model_capacity_pretraining_compute_and_API_budget
-  - freeze_numerical_offline_admission_thresholds_before_test_evaluation
+remaining_external_gate:
+  - independent_human_review_and_adjudication_of_all_held_out_gold_records

@@ -1,4 +1,12 @@
-# Stage I 当前状态、可视化含义与下一步工作
+# Stage I 结果与 Stage II 转入状态
+
+> **Current execution note (2026-08-12):** Sections 2--10 preserve the Stage I
+> experiment and its historical gates. D37 has since frozen O7, and D38 has
+> authorized the continuous Stage II work package. For current execution order,
+> use [`STAGE2_CONTINUOUS_WORK_ORDER.md`](STAGE2_CONTINUOUS_WORK_ORDER.md) and
+> [`CURRENT_EXECUTION_DIRECTIVE.md`](CURRENT_EXECUTION_DIRECTIVE.md). Any older
+> statement below saying that only Stage I is authorized or that O7 awaits an
+> owner decision is historical and superseded.
 
 ## 1. 文档目的
 
@@ -36,7 +44,7 @@ Safe RL 学习产生的错误。
 - **Stage II：**加入对象、距离和时间参数明确的受控语言；
 - **Stage III：**再研究模糊语言、感知噪声、动态环境和更多规则结构。
 
-当前只实施 Stage I。其研究问题是：
+Stage I 当时的研究问题是：
 
 > 在一个已知静态障碍的简单导航环境中，一条人工确认正确的 bounded-recovery
 > STL 规则能否被正确监测并转换成 Safe RL cost，从而减少超时恢复失败，同时
@@ -475,8 +483,8 @@ remaining deadline = 154 - 130 = 24 steps
 | P0 adapter/runtime audit | 已完成当前无训练范围 | executable timeout-bootstrap、advantage scaling、rolling window、discount、LR/lambda source/hash tests；未来 run 的 gradient/value logging 尚未执行 |
 | GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
 | Checkpoint visualization | 已完成诊断图 | 两组预先选定 case × 三条件的 per-step distance/event 图；未额外生成 MuJoCo rollout video |
-| O8 final standard | 等待负责人决定 | close/longer/diagnostic 三个选项，当前推荐 bounded diagnostic |
-| Stage II benchmark | 机器基础已实现、最终 gate 未通过 | 5 条草案/55 synthetic/6 real 统一 schema、Gold/coverage/evaluator；独立人工复核及 O7 final families/splits/models/gates 仍待确认 |
+| O8 final standard | 由 D38 的 bounded diagnostic 取代 | 不重跑旧 sparse-cost pilot；按新 C0/C1 learner-cost gate 执行 |
+| Stage II benchmark | O7 设计已冻结、实现与人工 gate 待完成 | D37 固定 40 specifications、5 families、splits、models 和 admission gates；独立人工复核仍是 held-out release gate |
 
 ### 8.1 D36 无训练诊断与离线 benchmark 状态
 
@@ -487,12 +495,13 @@ episode 表且 Gold/RTAMT checks 通过。Gold 相对 task-only 的 trigger freq
 optimizer/runtime risk，但不能归因于单一 bug。完整表、两张图和 supported/rejected
 explanations 见 [`stage1_trajectory_diagnosis_report.md`](stage1_trajectory_diagnosis_report.md)。
 
-Stage II v0 机器包含 61 条统一 schema trajectories（55 synthetic、6 existing-policy
-real），9,208 samples，monitor/oracle/RTAMT 最大差异 0；5 个 history pairs 和全部 10
-个 parameter-spec pairs 有机器证据。当前 final gate 明确为 false：5 条 example 尚无
-独立人工 reviewer，O7 final formula family、split、model 和 numerical gate 未确认。
-没有调用或训练语言模型。完整 suite 为 68 tests，依赖、compile、schema、hash 和
-deterministic rebuild 验收通过。
+Stage II v0 历史机器基础包含 61 条统一 schema trajectories（55
+synthetic、6 existing-policy real），9,208 samples，monitor/oracle/RTAMT 最大差异
+0。D37 现已确认 final family、split、model 和 numerical gates，下一步是将该
+5-item foundation 扩展为 40-specification benchmark。现有 5 条已由 Yuhang 人工复核
+通过；未来 35 条尚未生成和审核，因此 held-out Gold labels 仍不得向 model
+code 开放。详细执行要求见
+[`STAGE2_CONTINUOUS_WORK_ORDER.md`](STAGE2_CONTINUOUS_WORK_ORDER.md)。
 
 ## 9. 已完成里程碑：OmniSafe wrapper 与 integration smoke test
 
@@ -605,8 +614,9 @@ gold oracle 和 RTAMT checks 通过。pre-launch 详细证据见
 [`stage1_pilot_launch_readiness.md`](stage1_pilot_launch_readiness.md)。
 
 当前 CPU 历史路径和 RTX 4090 CUDA 路径都已验证；frozen pilot training device 为
-`cuda:0`。完整 pilot 实际用时 8.97 小时；当前 GPU gate 是 O8，而不是重新启动
-D31 pilot。O8 决定前不启动额外训练，O7 非 compute proposal 可并行审阅。
+`cuda:0`。完整 pilot 实际用时 8.97 小时。该段原有 O8/O7 等待状态已被
+D37/D38 取代：现在按 continuous work order 执行 spatial replay、Stage II-A、
+bounded Gold learner-cost diagnostic 和 gated Stage II-B，不重跑 D31 pilot。
 
 pilot 后的代码级证据、已排除根因、P0 无 GPU 修复顺序和 O8-C 候选诊断设计见
 [`stage1_code_failure_analysis_and_repair_recommendations.md`](stage1_code_failure_analysis_and_repair_recommendations.md)。

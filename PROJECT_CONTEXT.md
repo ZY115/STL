@@ -655,8 +655,9 @@ converged. This isolates the current failure to the downstream cost-learning
 stage under these settings; no language model was present, and monitor/oracle
 agreement was exact.
 
-The active boundary is O8, documented in
-`docs/stage1_o8_main_study_decision_proposal.md`. Additional GPU training waits
-for a choice among closing Stage I, a longer same-method standard, or a bounded
-optimization/budget/credit diagnostic. The non-compute O7 benchmark proposal
-is ready for review, but Stage II implementation remains unconfirmed.
+This was the boundary immediately after the pilot. It was superseded on
+2026-08-12 by D37 and D38. O7 design is now frozen, and a bounded learner-cost
+diagnostic was selected instead of repeating the same sparse-cost pilot. The
+current continuous path is spatial replay, Stage II-A offline comparison,
+parallel Gold learner-cost diagnosis, fair online-interface freeze and a gated
+Stage II-B pilot. See `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.

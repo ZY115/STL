@@ -2,7 +2,7 @@
 
 - **Prepared:** 2026-08-12
 - **Scope:** D36 non-GPU offline foundation
-- **Status:** machine-validatable draft; final O7 and human-review gates remain closed
+- **Status:** historical five-item foundation reviewed; D37 expansion pending
 
 ## What was implemented
 
@@ -56,16 +56,21 @@ declared anchor. Machine foundation status is `true`; final dataset status is
 
 ## What this package does not claim
 
-- The five examples have not yet been independently reviewed by a human.
-- The final 30–50 specifications and broader formula families are not frozen.
+- The five existing examples were independently approved by Yuhang on
+  2026-08-12; the 35 future D37 records do not yet exist or have reviews.
+- D37 has frozen the final 40-item composition and broader formula families,
+  but they have not yet been implemented.
 - Every record remains `draft_unassigned`; no held-out split exists yet.
 - A structure split is impossible in the current single-family fragment.
-- No translator or direct predictor has been selected, called or trained.
-- No numerical offline-to-online admission gate has been chosen.
+- D37 has selected the translator and direct predictors, but none has been
+  called or trained.
+- D37 has chosen the numerical admission gate, but it has not been applied.
 
-Consequently, the **machine-foundation gate** can pass after generation and
-tests, while the **final Stage II dataset gate** must remain closed. The exact
-review choices are consolidated in `docs/stage2_v0_baseline_review_package.md`.
+Consequently, the **machine-foundation gate** passed, while the final Stage II
+dataset gate remains closed until the D37 40-specification expansion and
+independent review are complete. The normative successor is
+`docs/STAGE2_CONTINUOUS_WORK_ORDER.md`; the earlier review package is retained
+as historical input.
 
 The complete repository suite contains 68 passing tests. A second benchmark
 build reproduced the same generated manifest hash

@@ -1,7 +1,8 @@
 # Stage II v0 Offline Benchmark Foundation
 
-This directory is the machine-readable foundation for the controlled-language
-comparison. It is deliberately **not** the final O7 dataset.
+This directory is the historical five-item machine-readable foundation for the
+controlled-language comparison. It is deliberately **not** the final D37 O7
+dataset. Expand it according to `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`.
 
 ## Current executable scope
 
@@ -53,16 +54,18 @@ method prediction used to score causal-history contrasts, not an input label.
 
 ## Review boundary
 
-All five records are machine-validated but still require an independent human
-reviewer. `reviews.json` provides the required nine-field checklist and
-provenance slots; `review.schema.json` defines its format. O7 must also freeze
-the final formula families, complete item
-composition, semantic-pair grouping, exact train/validation/test assignments,
-and numerical offline admission gates. Therefore:
+All five current records are machine-validated and were independently approved
+by Yuhang on 2026-08-12. `reviews.json` records the completed nine-field
+checklists; `review.schema.json` defines their format. D37 has now frozen
+the final formula families, item composition, semantic-pair grouping, exact
+train/validation/test assignments and numerical offline admission gates.
+Therefore:
 
 - `draft_unassigned` is intentional;
 - no structure split is claimed from the current single-family fragment;
 - the generated files may support review and implementation tests but are not
   a final held-out benchmark;
-- model inference, model training, paid API use, and online RL are outside this
-  package.
+- this five-item package alone does not authorize held-out evaluation because
+  the remaining 35 D37 records do not yet exist or have reviews;
+- train/validation model work and later gated online RL follow the continuous
+  work order, while paid API use remains prohibited.

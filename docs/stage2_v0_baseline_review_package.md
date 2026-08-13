@@ -1,7 +1,8 @@
 # Stage II v0 Representation-Baseline Review Package
 
 - **Prepared:** 2026-08-12
-- **Status:** implementation specification prepared; final freeze requires O7 review
+- **Status:** historical pre-freeze review package; superseded by D37
+- **Normative successor:** `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
 - **Machine-readable contract:** `configs/stage2_v0/baselines.yaml`
 - **No execution performed:** no language model was called or trained
 
@@ -30,9 +31,8 @@ general be inferred from the current distance alone.
 - Output: candidate STL plus typed predicate and temporal parameters.
 - Runtime: the existing verified causal monitor executes the candidate.
 - Training supervision: Gold formula and grounding on the training split only.
-- Classification: **adaptation**; the exact translator remains unresolved.
-- Candidate choices for review: a local RESTL/ReasonSTL-style adaptation or a
-  constrained structured predictor that does not require an LLM.
+- Historical classification: **adaptation**. D37 later selected local
+  `google-t5/t5-base` with typed-AST output and deterministic STL compilation.
 
 ### Published-style direct path
 
@@ -51,7 +51,9 @@ general be inferred from the current distance alone.
 - Training supervision: training-split Gold trace labels only.
 - Classification: **new project adaptation** rather than a claimed strict
   reproduction.
-- Candidate architectures for review: GRU or causal Transformer.
+- Historical candidates were GRU or causal Transformer. D37 later selected a
+  GRU-128 primary model and deferred the Transformer to a resource-dependent
+  ablation.
 
 ## 3. Information-access fairness table
 
@@ -92,7 +94,7 @@ reports:
 Formula exact match is only a diagnostic. Semantic or trace equivalence must be
 evaluated separately; syntactically different formulas can be equivalent.
 
-## 5. Consolidated decision request
+## 5. Historical consolidated decision request
 
 The following choices must be made together before test-set model evaluation:
 
@@ -110,5 +112,6 @@ The following choices must be made together before test-set model evaluation:
 8. Freeze numerical offline admission thresholds using only corpus balance and
    annotation-quality evidence, before viewing held-out predictions.
 
-Until these decisions are recorded, `configs/stage2_v0/baselines.yaml` is a
-teacher-reviewable proposal, not a claim that the methods or gates are frozen.
+D37 records the owner decisions, and `configs/stage2_v0/baselines.yaml` has
+been regenerated as the machine-readable D37 contract. Independent human
+review remains required before held-out evaluation.

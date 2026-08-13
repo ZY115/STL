@@ -738,7 +738,7 @@ def build_benchmark(
     reviewed = sum(review["status"] == "approved" for review in contract["reviews"])
     coverage = {
         "schema_version": 1,
-        "status": "machine_validated_foundation_pending_independent_review_and_o7_freeze",
+        "status": "machine_validated_five_item_foundation_reviewed_pending_d37_expansion",
         "scope": "offline data construction only; no model inference or training",
         "specification_count": len(specifications),
         "formula_families": sorted({spec["formula_family"] for spec in specifications}),
@@ -758,14 +758,14 @@ def build_benchmark(
             "pending_independent_review_specifications": len(specifications) - reviewed,
             "all_splits_frozen": False,
             "structure_split_available": False,
-            "o7_final_contract_frozen": False,
+            "o7_final_contract_frozen": True,
         },
         "gates": {
             "stage2_v0_machine_foundation": True,
             "stage2_v0_final_dataset": False,
             "reason_final_gate_is_closed": [
-                "independent human semantic review is incomplete",
-                "O7 formula-family and split decisions are not frozen",
+                "the D37 40-specification expansion is incomplete",
+                "the 35 future specifications have not yet undergone independent review",
                 "the current single-family fragment cannot support a structure split",
             ],
         },

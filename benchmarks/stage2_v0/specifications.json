@@ -24,8 +24,8 @@
     "allowed_online_use": true,
     "split": "draft_unassigned",
     "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D36 Stage II v0 foundation; parameters from frozen Stage I calibration"
   },
   {
@@ -53,8 +53,8 @@
     "allowed_online_use": false,
     "split": "draft_unassigned",
     "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
   },
   {
@@ -82,8 +82,8 @@
     "allowed_online_use": false,
     "split": "draft_unassigned",
     "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
   },
   {
@@ -111,8 +111,8 @@
     "allowed_online_use": false,
     "split": "draft_unassigned",
     "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
   },
   {
@@ -140,8 +140,8 @@
     "allowed_online_use": false,
     "split": "draft_unassigned",
     "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
   }
 ]
