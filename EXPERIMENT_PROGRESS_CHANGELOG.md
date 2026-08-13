@@ -732,3 +732,36 @@ CPU replay 未受影响；所有 partial formal checkpoints 标为 diagnosis-onl
 `generate-parameter-library-py` 声明的 `typeguard`，已从缓存安装并锁定
 `typeguard==4.4.0`；Stage I/II 两个环境的 `pip check` 均恢复 clean。manifest 和
 checksum 在提交前收尾更新。
+
+## 24. 2026-08-13 D42：fixed-route v1 受控实验
+
+为降低旧 Stage I 随机起点、随机布局和回合内随机 goal resampling 对空间解释的
+干扰，新增 `configs/fixed_route_v1/scenario.yaml`。该版本保持
+`SafetyPointGoal1-v0` 动力学、reward、8 hazards 和 native cost 不变，但固定起点、
+朝向、hazard/vase 布局和四个顺序目标。固定的是 route request，不是 agent 的动作
+或实际轨迹。
+
+候选 center-distance 阈值由 owner 确认为 `d_warn=0.25`、`d_safe=0.28`。旧
+`K=79` 来自 `0.45 -> 0.55` 校准，明确禁止直接迁移；新配置保持
+`deadline_steps: null`，OmniSafe fixed-route 入口会在没有匹配可执行 rule 时拒绝
+启动。新增 loader、task installer、几何 validator 和独立单元测试，完整执行顺序见
+`docs/FIXED_ROUTE_V1_WORK_ORDER.md`。
+
+三条件仍以同一 Gold rule 做离线/在线诊断：Task-only learner cost 为 0，Native
+使用 simulator hazard cost，STL 使用 monitor learner cost。三张图都画 warning/safe
+圈是为了使用同一评价标尺，圈本身不是三个 learner 共享的训练 cost。固定场景只能
+作为 controlled diagnostic，后续仍需 randomized-layout 或额外 route generalization。
+
+## 25. 2026-08-13 D43：30 分钟 fixed-route quick-turn
+
+Owner 要求首次新场景结果不再等待十几个小时。新增
+`configs/fixed_route_v1/quick_turn.yaml`：一个新 matched seed，Task-only、Native 和
+STL-dense 三组目标各 150k transitions，总训练 wall-clock 上限 30 分钟。10k preflight
+若预测超时，只能按吞吐量把三组等量缩到相同 10k multiple，不得看结果后追加或调整，
+最低 50k。
+
+STL cell 使用已有 C1 causal dense learner cost；Gold binary event 继续作为共同评价
+真值。Task-only 先训练并用 20 stochastic episodes 分别导出 Native/C1 自身单位的
+70% provisional limits。三组完成后立即各做一条 deterministic 真实轨迹和 20 条
+stochastic summary，输出三栏 trajectory、learning curves、CSV/JSON 和 quick report，
+然后停止，不自动启动长实验。D41 硬件 gate 和新 K 校准仍是训练前置条件。

@@ -293,7 +293,7 @@ def plot_top_down(
                 axis.set_xlabel("x")
     figure.suptitle(
         "Frozen Stage I policies: true top-down trajectories\n"
-        "blue disks=physical hazards, red dashed=d_warn, green dotted=d_safe",
+        "blue disks=physical hazards; dashed/dotted circles=common Gold evaluation overlay",
         y=0.995,
     )
     figure.tight_layout(rect=(0.0, 0.0, 1.0, 0.965))

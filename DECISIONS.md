@@ -577,6 +577,58 @@ stability gate consisting of independent CPU/RAM checks plus one discarded
 formal epoch with no new MCE, segfault, CUDA Xid, OOM or non-finite value.
 CPU-only replay, artifact generation, validation and documentation may continue.
 
+### D42. Add a fixed-route controlled variant with narrower STL geometry
+
+On 2026-08-13 the project owner selected a controlled variant of
+`SafetyPointGoal1-v0` to make policy trajectories and three-condition differences
+easier to interpret. The variant keeps the benchmark dynamics and task but
+fixes the initial pose, eight-hazard layout, vase and four-goal sequence. It
+fixes requested waypoints, not the agent's realized trajectory; the policy
+continues to choose every action.
+
+The candidate center-distance thresholds are prospectively fixed as
+`d_warn=0.25` and `d_safe=0.28`. The historical `K=79` must not be transferred
+because it was calibrated for `0.45 -> 0.55`; the new deadline remains open
+until a new recovery calibration and online/direct-oracle/RTAMT boundary check
+pass. The historical Stage I rule, pilot configs, checkpoints and conclusions
+remain unchanged.
+
+All three conditions use identical fixed geometry and the same Gold STL rule
+for evaluation. Task-only still returns zero learner cost, Native-safety returns
+only the simulator hazard cost, and STL-safety returns the chosen STL learner
+cost. Warning/safe circles in all three plots are therefore a common evaluation
+overlay, not evidence that all three policies trained on STL cost.
+
+The fixed-route experiment is a controlled diagnostic. A positive result still
+requires held-out randomized-layout or additional-route evaluation before any
+generalization claim. Exact geometry, gates and execution order are defined in
+`docs/FIXED_ROUTE_V1_WORK_ORDER.md`.
+
+### D43. The first fixed-route training is a 30-minute quick-turn diagnostic
+
+On 2026-08-13 the project owner rejected another many-hour first result and
+authorized one short fixed-route diagnostic. It uses one new matched seed and
+targets 150,000 transitions for each of Task-only, Native-safety and
+STL-dense-safety, with a 30-minute aggregate training cap. A 10k preflight may
+reduce all three reported cells to the same 10k transition multiple if required
+by measured throughput, but never in response to policy outcomes and never
+below 50k.
+
+The STL training cell uses the already implemented C1 causal dense learner cost
+because the historical 1M-transition C0 sparse binary event pilot did not alter
+behavior. Unchanged Gold binary bounded-recovery events remain the common
+evaluation truth. Task-only is trained first; its short stochastic evaluation
+freezes separate provisional Native and C1 cost limits at 70% of their own
+means before either constrained cell starts.
+
+Immediately after the three final checkpoints, the work computer must produce
+matched exploratory metrics and a three-panel real trajectory figure on the
+fixed scenario. It then stops. This diagnostic may establish routing, runtime
+and visible early behavioral separation, but not convergence, significance,
+method superiority or generalization. D41 hardware recovery and the new
+fixed-route deadline calibration remain mandatory launch gates. The exact
+machine-readable protocol is `configs/fixed_route_v1/quick_turn.yaml`.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

@@ -62,6 +62,17 @@ Stage II-A 独立 CUDA 环境和三方法最小真实 update 均通过；但 ful
 记录新 MCE。D41 已暂停所有新训练，partial checkpoints 不算结果。held-out evaluation
 还独立受到人工复核 gate 限制。
 
+2026-08-13 新增 D42 fixed-route controlled variant：保持
+`SafetyPointGoal1-v0` 的动力学与任务，固定起点、hazard 布局和四个顺序目标，并将
+候选 center-distance 阈值改为 `d_warn=0.25`、`d_safe=0.28`。该版本固定的是任务路线
+输入，不是 agent 的实际轨迹。旧 `K=79` 不得沿用；完成新 deadline 校准前以及 D41
+硬件 gate 解除前，不启动训练。详见 `docs/FIXED_ROUTE_V1_WORK_ORDER.md`。
+
+D43 将第一次 fixed-route 训练限制为 30 分钟 quick-turn：一个 matched seed，三组
+目标各 150k transitions，按预检吞吐量可等量下调但不得低于 50k。训练后立即生成
+三栏真实轨迹图和短报告并停止。该结果只用于检查运行和早期行为差异，不作为收敛、
+显著性或方法优越性证据。
+
 ## 2026-08-10 研究定位更新
 
 最新文献核查确认，`STL monitor/state -> cost -> Lagrangian Safe RL` 已被多项

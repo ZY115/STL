@@ -21,21 +21,22 @@ Before proposing changes or running installation commands, read:
 1. `README.md`
 2. `docs/END_TO_END_RESEARCH_PIPELINE.md`
 3. `docs/CURRENT_EXECUTION_DIRECTIVE.md`
-4. `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
-5. `docs/stage1_pilot_result_report.md`
-6. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
-7. `docs/stage1_o8_main_study_decision_proposal.md`
-8. `docs/stage2_o7_benchmark_design_proposal.md`
-9. `DECISIONS.md`
-10. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-11. `PROJECT_CONTEXT.md`
-12. `docs/research_direction_novelty_feasibility.md`
-13. `docs/theory_and_revised_experiment_8.10.md`
-14. `docs/minimum_research_delivery_8.10.md`
-15. `docs/stage1_rule_monitor_spec.md`
-16. `docs/stage1_plan.md`
-17. `docs/omnisafe_integration_report.md`
-18. `references/REFERENCES.md`
+4. `docs/FIXED_ROUTE_V1_WORK_ORDER.md`
+5. `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
+6. `docs/stage1_pilot_result_report.md`
+7. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
+8. `docs/stage1_o8_main_study_decision_proposal.md`
+9. `docs/stage2_o7_benchmark_design_proposal.md`
+10. `DECISIONS.md`
+11. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+12. `PROJECT_CONTEXT.md`
+13. `docs/research_direction_novelty_feasibility.md`
+14. `docs/theory_and_revised_experiment_8.10.md`
+15. `docs/minimum_research_delivery_8.10.md`
+16. `docs/stage1_rule_monitor_spec.md`
+17. `docs/stage1_plan.md`
+18. `docs/omnisafe_integration_report.md`
+19. `references/REFERENCES.md`
 
 Then summarize:
 
@@ -91,6 +92,14 @@ Do not add any of the following during Stage I unless the user explicitly change
 - multiple STL rule families.
 
 ## Immediate task
+
+D42/D43 are the current owner-facing priority. Before resuming a long Stage II
+or D38 compute matrix, execute the fixed-route work in
+`docs/FIXED_ROUTE_V1_WORK_ORDER.md`: validate the fixed lifecycle, recalibrate
+the `0.25 -> 0.28` deadline, implement the bounded quick-turn runner and real
+trajectory plotter, then run the three matched cells only after D41 clears. The
+reported training cells have a 30-minute aggregate cap and must stop after the
+quick-turn figures/report. Do not extend them automatically.
 
 Environment inspection, calibration, monitor/oracle agreement, visualization,
 the OmniSafe wrapper, vectorized lifecycle tests, positive-cost routing probe,

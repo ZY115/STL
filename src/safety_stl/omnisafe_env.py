@@ -32,6 +32,11 @@ from gymnasium.spaces import Dict as DictSpace
 from omnisafe.envs.core import CMDP, env_register
 from omnisafe.envs.safety_gymnasium_env import SafetyGymnasiumEnv
 
+from safety_stl.fixed_route import (
+    FixedRouteScenario,
+    install_on_omnisafe_base_env,
+    load_fixed_route_scenario,
+)
 from safety_stl.monitor import BoundedRecoveryMonitor, MonitorOutput
 from safety_stl.learner_cost import causal_dense_surrogate
 from safety_stl.signals import distance_from_observation
@@ -579,6 +584,7 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
         num_envs: int = 1,
         device: torch.device = torch.device("cpu"),
         rule_config_path: Optional[str] = None,
+        scenario_config_path: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         if env_id not in ENV_ID_TO_COST_MODE:
@@ -587,6 +593,21 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
             raise ValueError("num_envs must be positive")
         config_path = DEFAULT_RULE_CONFIG if rule_config_path is None else Path(rule_config_path)
         config = _load_rule_config(config_path)
+        scenario: Optional[FixedRouteScenario] = None
+        if scenario_config_path is not None:
+            scenario = load_fixed_route_scenario(Path(scenario_config_path))
+            if not (
+                np.isclose(float(config["d_warn"]), scenario.d_warn)
+                and np.isclose(float(config["d_safe"]), scenario.d_safe)
+            ):
+                raise ValueError(
+                    "fixed-route thresholds must match the executable rule configuration; "
+                    "recalibrate K and provide a matching rule_config_path before training",
+                )
+            if num_envs > 1:
+                if bool(kwargs.get("asynchronous", False)):
+                    raise ValueError("fixed-route vector environments require asynchronous=False")
+                kwargs["asynchronous"] = False
         max_episode_steps = int(kwargs.get("max_episode_steps", 1000))
         base_env = SafetyGymnasiumEnv(
             BASE_ENVIRONMENT_ID,
@@ -594,6 +615,12 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
             device=device,
             **kwargs,
         )
+        if scenario is not None:
+            installed = install_on_omnisafe_base_env(base_env, scenario)
+            if installed != num_envs:
+                raise RuntimeError(
+                    f"fixed route installed on {installed} environments, expected {num_envs}",
+                )
         super().__init__(
             base_env,
             cost_mode=ENV_ID_TO_COST_MODE[env_id],
@@ -605,6 +632,7 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
             max_episode_steps=max_episode_steps,
             device=torch.device(device),
         )
+        self.fixed_route_scenario = scenario
 
 
 def register_stage1_envs() -> Tuple[str, ...]:

@@ -1,0 +1,45 @@
+schema_version: 1
+scenario_id: safety_point_goal1_fixed_route_v1
+environment_id: SafetyPointGoal1-v0
+status: geometry_fixed_deadline_recalibration_required
+
+# This freezes scenario inputs, not the policy trajectory. The agent remains
+# free to choose every action and can detour around any hazard.
+layout:
+  agent_start: [0.95, -0.30]
+  agent_heading: 1.5707963267948966
+  goal_sequence:
+    - [1.15, 1.35]
+    - [-0.20, 1.30]
+    - [-0.70, -1.30]
+    - [1.20, -1.00]
+  cycle_goal_sequence: true
+  hazard_radius: 0.20
+  hazard_locations:
+    - [-0.9036719734969095, 1.0354921031225472]
+    - [0.5121765999393577, 1.0571987396641547]
+    - [-0.4187454054455305, -0.601566609349769]
+    - [0.007479417006611255, -0.9951056493821437]
+    - [0.866030768963838, 0.5727947400289752]
+    - [-0.17097883605593434, 0.022933773319758766]
+    - [-0.9580395387821452, -0.6155715927608764]
+    - [-1.100061510927607, -0.00908918876151077]
+  vase_locations:
+    - [-1.30, -1.30]
+
+stl_rule_candidate:
+  distance_semantics: nearest_hazard_center_distance
+  d_warn: 0.25
+  d_safe: 0.28
+  deadline_steps: null
+  deadline_status: must_be_recalibrated_before_training
+  warning_comparison: lt
+  safe_comparison: ge
+
+comparison_contract:
+  common_geometry_for_all_conditions: true
+  common_gold_evaluator_for_all_conditions: true
+  task_only_selected_cost: identically_zero
+  native_safety_selected_cost: native_hazard_cost
+  stl_safety_selected_cost: stl_monitor_cost
+  randomized_layout_generalization_check_required_later: true

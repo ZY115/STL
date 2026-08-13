@@ -7,6 +7,29 @@
   hardware gate; all new training paused by D41; held-out evaluation also
   requires independent human review
 
+## 2026-08-13 owner addendum: fixed-route v1
+
+D42 adds a controlled `SafetyPointGoal1-v0` variant with a fixed start, fixed
+layout, ordered goals and candidate center-distance thresholds
+`d_warn=0.25`, `d_safe=0.28`. Follow
+`docs/FIXED_ROUTE_V1_WORK_ORDER.md` for this branch.
+
+CPU geometry/lifecycle validation and deadline recalibration may proceed. Do
+not launch fixed-route training yet: the old `K=79` is invalid for the new
+thresholds, and D41 independently blocks new GPU training. This addendum does
+not alter historical Stage I artifacts or release held-out Stage II labels.
+
+### Immediate priority: D43 quick-turn
+
+The next owner-facing result is the fixed-route quick-turn defined by
+`configs/fixed_route_v1/quick_turn.yaml` and
+`docs/FIXED_ROUTE_V1_WORK_ORDER.md`, not another long matrix. Begin the fixed
+scenario lifecycle check, deadline recalibration, runner implementation,
+preflight and plotting implementation now. After the deadline and D41 gates
+pass, train the three matched cells within the aggregate 30-minute cap, evaluate
+them, generate the real three-panel trajectory figure and write the report.
+Then stop; do not automatically extend training or launch D38.
+
 ## Current objective
 
 Continue from the completed negative Stage I pilot through:

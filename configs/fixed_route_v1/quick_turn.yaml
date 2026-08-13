@@ -1,0 +1,122 @@
+schema_version: 1
+protocol_id: fixed_route_v1_quick_turn
+status: owner_authorized_exploratory_diagnostic
+authority: D43
+
+purpose:
+  question: can_a_short_matched_run_produce_visible_behavioral_separation
+  not_for:
+    - convergence_claim
+    - statistical_significance
+    - paper_result
+    - generalization_claim
+
+prerequisites:
+  scenario_config: configs/fixed_route_v1/scenario.yaml
+  executable_rule_config: configs/fixed_route_v1/rule.yaml
+  require_calibrated_integer_deadline: true
+  require_online_oracle_rtamt_agreement: true
+  require_fixed_route_lifecycle_and_render_gate: true
+  require_d41_hardware_recovery_gate: true
+
+training:
+  backend: project_owned_DiagnosticPPOLag
+  training_seed: 9173
+  condition_order:
+    - task_only
+    - native_safety
+    - stl_dense_safety
+  target_transitions_per_condition: 150000
+  minimum_transitions_per_condition: 50000
+  transitions_must_match_across_conditions: true
+  transition_granularity: 10000
+  aggregate_training_wall_clock_limit_minutes: 30
+  throughput_capacity_fraction: 0.80
+  effective_transition_formula: >-
+    min(150000, floor_to_10000(0.80 * 1800 * minimum_preflight_transitions_per_second / 3))
+  preflight_transitions_per_condition: 10000
+  preflight_is_not_part_of_reported_training: true
+  final_checkpoint_only: true
+  checkpoint_selection: no_best_checkpoint_selection
+  vector_env_nums: 10
+  asynchronous_vector_env: false
+  steps_per_epoch: 10000
+  update_iters: 40
+  batch_size: 64
+  lagrangian_multiplier_init: 0.1
+  actor_learning_rate_initial: 0.0003
+  actor_learning_rate_floor: 0.00003
+
+conditions:
+  task_only:
+    environment_id: Stage1SafetyPointGoal1TaskOnly-v0
+    selected_learner_cost: identically_zero
+    cost_limit: 0.0
+  native_safety:
+    environment_id: Stage1SafetyPointGoal1NativeCost-v0
+    selected_learner_cost: native_hazard_cost
+    cost_limit_from: quick_task_control.native_cost_per_episode
+  stl_dense_safety:
+    environment_id: Stage2SafetyPointGoal1STLDenseCost-v0
+    selected_learner_cost: c1_causal_dense_surrogate
+    gold_truth: binary_bounded_recovery_events
+    cost_limit_from: quick_task_control.c1_surrogate_mass_per_episode
+
+provisional_budget_derivation:
+  source: final_task_only_checkpoint
+  stochastic_evaluation_episodes: 20
+  native_limit_fraction_of_task_control_mean: 0.70
+  c1_limit_fraction_of_task_control_mean: 0.70
+  derive_units_separately: true
+  freeze_before_native_or_stl_training: true
+  interpretation: quick_turn_pressure_only_not_final_budget
+
+evaluation:
+  common_gold_evaluator: true
+  stochastic_summary_episodes_per_condition: 20
+  deterministic_trajectory_episodes_per_condition: 1
+  horizon_steps: 1000
+  same_fixed_geometry: true
+  use_final_checkpoint: true
+  trajectory_policy_mode: deterministic
+  summary_policy_mode: stochastic
+
+required_metrics:
+  - episode_return
+  - goal_events
+  - native_cost
+  - selected_learner_cost
+  - minimum_nearest_hazard_distance
+  - fraction_steps_inside_physical_hazard
+  - fraction_steps_inside_warning_zone
+  - fraction_steps_in_recovery_band
+  - warning_triggers
+  - recoveries
+  - deadline_violations
+  - terminal_unresolved
+  - missed_recovery_obligations_per_trigger
+  - training_wall_seconds
+  - transitions_per_second
+
+required_outputs:
+  root: results/fixed_route_v1/quick_turn
+  run_manifest: run_manifest.json
+  effective_protocol: effective_protocol.yaml
+  task_control_budgets: task_control_budgets.json
+  training_summary: training_summary.json
+  evaluation_episodes: evaluation_episodes.csv
+  trajectory_samples: deterministic_trajectories.csv
+  trajectory_figure: fixed_route_quick_turn_trajectories.png
+  learning_curve_figure: fixed_route_quick_turn_learning_curves.png
+  report: docs/fixed_route_v1_quick_turn_report.md
+
+stop_rules:
+  - never_extend_training_automatically_beyond_30_minutes
+  - stop_if_cost_routing_is_not_exact
+  - stop_if_monitor_oracle_rtamt_disagree
+  - stop_if_no_positive_native_or_dense_cost_occurs_in_preflight
+  - stop_on_new_MCE_segfault_CUDA_Xid_OOM_or_non_finite_metric
+  - preserve_partial_attempts_as_diagnostic_only
+  - stop_before_training_if_50000_matched_transitions_cannot_fit
+  - cumulative_reported_training_time_across_resumes_must_respect_the_cap
+  - do_not_launch_the_long_D38_matrix_after_completion
