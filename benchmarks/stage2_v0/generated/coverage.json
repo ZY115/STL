@@ -1,94 +1,954 @@
 {
   "combined": {
     "all_online_oracle_agree": true,
-    "rtamt_max_robustness_difference": 0.0,
-    "trajectory_count": 61
+    "machine_review_trajectory_count": 797,
+    "released_trajectory_count": 562,
+    "rtamt_max_robustness_difference": 0.0
   },
   "formula_families": [
-    "hysteretic_bounded_recovery"
+    "bounded_avoidance",
+    "conjunction",
+    "disjunction",
+    "hysteretic_bounded_recovery",
+    "recovery_plus_persistence"
   ],
   "gates": {
     "reason_final_gate_is_closed": [
-      "the D37 40-specification expansion is incomplete",
-      "the 35 future specifications have not yet undergone independent review",
-      "the current single-family fragment cannot support a structure split"
+      "35 new specifications have not yet undergone independent review",
+      "six frozen same-index Boolean contrasts are logical aliases and require owner disposition"
     ],
+    "stage2_v0_d37_implementation": true,
     "stage2_v0_final_dataset": false,
     "stage2_v0_machine_foundation": true
   },
   "parameter_contrast_coverage": {
-    "all_pairs_have_distinguishing_trace": true,
-    "pair_count": 10,
+    "all_non_alias_pairs_have_distinguishing_trace": true,
+    "missing_or_aliased": [
+      {
+        "classified_logical_alias": "recovery_failure_implies_avoidance_failure_so_disjunction_equals_recovery",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-006",
+          "or-v0-006"
+        ]
+      },
+      {
+        "classified_logical_alias": "avoidance_implies_no_warning_so_conjunction_equals_avoidance",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-006",
+          "and-v0-006"
+        ]
+      },
+      {
+        "classified_logical_alias": "recovery_failure_implies_avoidance_failure_so_disjunction_equals_recovery",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-007",
+          "or-v0-007"
+        ]
+      },
+      {
+        "classified_logical_alias": "avoidance_implies_no_warning_so_conjunction_equals_avoidance",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-007",
+          "and-v0-007"
+        ]
+      },
+      {
+        "classified_logical_alias": "recovery_failure_implies_avoidance_failure_so_disjunction_equals_recovery",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-008",
+          "or-v0-008"
+        ]
+      },
+      {
+        "classified_logical_alias": "avoidance_implies_no_warning_so_conjunction_equals_avoidance",
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-008",
+          "and-v0-008"
+        ]
+      }
+    ],
+    "missing_witness_count": 6,
+    "required_pair_count": 115,
+    "unclassified_missing_witness_count": 0,
+    "witness_count": 109,
     "witnesses": [
       {
+        "contrast_type": "adjacent_parameter",
         "spec_pair": [
           "br-v0-001",
           "br-v0-002"
         ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
       },
       {
-        "spec_pair": [
-          "br-v0-001",
-          "br-v0-003"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
-      },
-      {
-        "spec_pair": [
-          "br-v0-001",
-          "br-v0-004"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
-      },
-      {
-        "spec_pair": [
-          "br-v0-001",
-          "br-v0-005"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
-      },
-      {
+        "contrast_type": "adjacent_parameter",
         "spec_pair": [
           "br-v0-002",
           "br-v0-003"
         ],
-        "witness_trajectory_id": "synthetic__br-v0-002__exact_deadline_recovery"
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
       },
       {
-        "spec_pair": [
-          "br-v0-002",
-          "br-v0-004"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
-      },
-      {
-        "spec_pair": [
-          "br-v0-002",
-          "br-v0-005"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
-      },
-      {
+        "contrast_type": "adjacent_parameter",
         "spec_pair": [
           "br-v0-003",
           "br-v0-004"
         ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
       },
       {
-        "spec_pair": [
-          "br-v0-003",
-          "br-v0-005"
-        ],
-        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
-      },
-      {
+        "contrast_type": "adjacent_parameter",
         "spec_pair": [
           "br-v0-004",
           "br-v0-005"
         ],
         "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "br-v0-005",
+          "br-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "br-v0-006",
+          "br-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "br-v0-007",
+          "br-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-001",
+          "rp-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-002",
+          "rp-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-003",
+          "rp-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-004",
+          "rp-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-005",
+          "rp-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-006",
+          "rp-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "rp-v0-007",
+          "rp-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-001",
+          "ba-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_equality"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-002",
+          "ba-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-003",
+          "ba-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-004",
+          "ba-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-005",
+          "ba-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-006",
+          "ba-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "ba-v0-007",
+          "ba-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__history_inactive"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-001",
+          "and-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-002",
+          "and-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-003",
+          "and-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-004",
+          "and-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-005",
+          "and-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-006",
+          "and-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "and-v0-007",
+          "and-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__history_inactive"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-001",
+          "or-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-002",
+          "or-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-003__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-003",
+          "or-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-004",
+          "or-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-005",
+          "or-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-006",
+          "or-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__terminal_unresolved"
+      },
+      {
+        "contrast_type": "adjacent_parameter",
+        "spec_pair": [
+          "or-v0-007",
+          "or-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-001",
+          "rp-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-001",
+          "ba-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-001",
+          "and-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-001",
+          "or-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-001",
+          "ba-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-001",
+          "and-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-001",
+          "or-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-001",
+          "and-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-001",
+          "or-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-001",
+          "or-v0-001"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-002",
+          "rp-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-002",
+          "ba-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-002",
+          "and-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-002",
+          "or-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-002",
+          "ba-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-002",
+          "and-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-002",
+          "or-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-002",
+          "and-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-002",
+          "or-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-002",
+          "or-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-003",
+          "rp-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-003",
+          "ba-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-003",
+          "and-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-003",
+          "or-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-003",
+          "ba-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-003",
+          "and-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-003",
+          "or-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-003",
+          "and-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-003",
+          "or-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-003",
+          "or-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__terminal_unresolved"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-004",
+          "rp-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-004",
+          "ba-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-004",
+          "and-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-004",
+          "or-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-004__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-004",
+          "ba-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-004",
+          "and-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-004",
+          "or-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-004",
+          "and-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-004__one_step_late"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-004",
+          "or-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-004",
+          "or-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__warning_equality_no_trigger"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-005",
+          "rp-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-003__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-005",
+          "ba-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-005",
+          "and-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__history_pending"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-005",
+          "or-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-005",
+          "ba-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-005",
+          "and-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__history_pending"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-005",
+          "or-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-005",
+          "and-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-005",
+          "or-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__history_pending"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-005",
+          "or-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-006",
+          "rp-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-006",
+          "ba-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-006",
+          "and-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-006",
+          "ba-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-006",
+          "and-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-006",
+          "or-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-006",
+          "or-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-006",
+          "or-v0-006"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-007",
+          "rp-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-007",
+          "ba-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-007",
+          "and-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-007",
+          "ba-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-007",
+          "and-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-007",
+          "or-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__avoidance_holds_recovery_fails"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-007",
+          "or-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-007",
+          "or-v0-007"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-008",
+          "rp-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-008",
+          "ba-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "br-v0-008",
+          "and-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-008",
+          "ba-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-008",
+          "and-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "rp-v0-008",
+          "or-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "ba-v0-008",
+          "or-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
+      },
+      {
+        "contrast_type": "same_index_structure",
+        "spec_pair": [
+          "and-v0-008",
+          "or-v0-008"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__vacuous"
       }
     ]
   },
@@ -109,19 +969,34 @@
     "trajectory_count": 6
   },
   "review": {
-    "all_splits_frozen": false,
+    "all_splits_frozen": true,
+    "held_out_gold_labels_released_to_model_code": false,
     "independently_reviewed_specifications": 5,
     "o7_final_contract_frozen": true,
-    "pending_independent_review_specifications": 0,
-    "structure_split_available": false
+    "pending_independent_review_specifications": 35,
+    "released_gold_label_splits": [
+      "train",
+      "validation"
+    ],
+    "structure_split_available": true
   },
   "schema_version": 1,
   "scope": "offline data construction only; no model inference or training",
-  "specification_count": 5,
-  "status": "machine_validated_five_item_foundation_reviewed_pending_d37_expansion",
-  "synthetic": {
+  "specification_count": 40,
+  "status": "d37_40_item_machine_validated_pending_independent_review",
+  "synthetic_machine_review_all_40_specs": {
     "all_online_oracle_agree": true,
     "case_tags": [
+      "avoidance_boundary",
+      "avoidance_equality",
+      "avoidance_fails",
+      "avoidance_holds",
+      "avoidance_tags_are_cross_family_stress_only",
+      "avoidance_violation_final",
+      "avoidance_violation_first",
+      "avoidance_violation_middle",
+      "boolean_distinguishing_witness",
+      "comparator_equality",
       "deadline_violation",
       "exact_deadline",
       "finite_trace_boundary",
@@ -133,21 +1008,78 @@
       "on_time_recovery",
       "one_step_late",
       "pending_at_anchor",
+      "persistence_boundary",
+      "persistence_break_final",
+      "persistence_break_first",
+      "persistence_break_middle",
       "recovery_equality",
+      "recovery_fails",
+      "recovery_holds",
+      "recovery_tags_not_applicable_to_family",
       "repeated_unsafe_samples",
       "retrigger_after_recovery",
       "safe_equality",
       "same_current_observation",
       "single_active_obligation",
       "strict_warning_comparator",
+      "structure_contrast",
       "terminal_unresolved",
       "trigger",
       "vacuous",
       "warning_equality"
     ],
-    "history_pairs_checked": 5,
+    "history_pairs_checked": 40,
     "rtamt_max_robustness_difference": 0.0,
-    "sample_count": 3202,
-    "trajectory_count": 55
+    "sample_count": 57493,
+    "trajectory_count": 791
+  },
+  "synthetic_released_train_validation": {
+    "all_online_oracle_agree": true,
+    "case_tags": [
+      "avoidance_boundary",
+      "avoidance_equality",
+      "avoidance_fails",
+      "avoidance_holds",
+      "avoidance_tags_are_cross_family_stress_only",
+      "avoidance_violation_final",
+      "avoidance_violation_first",
+      "avoidance_violation_middle",
+      "boolean_distinguishing_witness",
+      "comparator_equality",
+      "deadline_violation",
+      "exact_deadline",
+      "finite_trace_boundary",
+      "history_contrast",
+      "inactive_at_anchor",
+      "inclusive_recovery_comparator",
+      "multiple_obligations",
+      "no_trigger",
+      "on_time_recovery",
+      "one_step_late",
+      "pending_at_anchor",
+      "persistence_boundary",
+      "persistence_break_final",
+      "persistence_break_first",
+      "persistence_break_middle",
+      "recovery_equality",
+      "recovery_fails",
+      "recovery_holds",
+      "recovery_tags_not_applicable_to_family",
+      "repeated_unsafe_samples",
+      "retrigger_after_recovery",
+      "safe_equality",
+      "same_current_observation",
+      "single_active_obligation",
+      "strict_warning_comparator",
+      "structure_contrast",
+      "terminal_unresolved",
+      "trigger",
+      "vacuous",
+      "warning_equality"
+    ],
+    "history_pairs_checked": 28,
+    "rtamt_max_robustness_difference": 0.0,
+    "sample_count": 38308,
+    "trajectory_count": 556
   }
 }

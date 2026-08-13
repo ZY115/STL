@@ -1,0 +1,29 @@
+{
+  "derived_metrics": {
+    "goal_context_metrics.json": {
+      "bytes": 1516,
+      "path": "results/post_pilot_spatial_diagnosis/goal_context_metrics.json",
+      "sha256": "b8fa2d46064d9e53390ba0380273058671a1394825c95710b7430018c7130a02"
+    }
+  },
+  "figures": {
+    "event_spatial_density.png": {
+      "bytes": 360262,
+      "path": "results/post_pilot_spatial_diagnosis/event_spatial_density.png",
+      "sha256": "6292713e54f1fc860c5e179aa5db34af3c6758113fb06acaa751fe793a0cfc51"
+    },
+    "layout_feasibility.png": {
+      "bytes": 96400,
+      "path": "results/post_pilot_spatial_diagnosis/layout_feasibility.png",
+      "sha256": "aadbc40b5ef9c06a702a15bf61a4bb576760be7a8e8954b4da0c236b22609967"
+    },
+    "paired_top_down_trajectories.png": {
+      "bytes": 1776691,
+      "path": "results/post_pilot_spatial_diagnosis/paired_top_down_trajectories.png",
+      "sha256": "4b6e555ca036b17c4f531ba13204a4631155faa7787e83bc275642c09639db97"
+    }
+  },
+  "replay_manifest_sha256": "0dfbcde65ffa7801ebc81db42389ac81428c94b95e36e86bfb1e8c62578e0337",
+  "schema_version": 1,
+  "verified_compact_input_count": 5
+}

@@ -3,7 +3,17 @@
     "spec_id": "br-v0-001",
     "reviewer": "Yuhang",
     "status": "approved",
-    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
+    "checks": {
+      "object": true,
+      "signal": true,
+      "operator": true,
+      "comparator": true,
+      "threshold": true,
+      "deadline": true,
+      "equality": true,
+      "terminal_semantics": true,
+      "paraphrase_equivalence": true
+    },
     "disagreement_notes": null,
     "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
@@ -11,7 +21,17 @@
     "spec_id": "br-v0-002",
     "reviewer": "Yuhang",
     "status": "approved",
-    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
+    "checks": {
+      "object": true,
+      "signal": true,
+      "operator": true,
+      "comparator": true,
+      "threshold": true,
+      "deadline": true,
+      "equality": true,
+      "terminal_semantics": true,
+      "paraphrase_equivalence": true
+    },
     "disagreement_notes": null,
     "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
@@ -19,7 +39,17 @@
     "spec_id": "br-v0-003",
     "reviewer": "Yuhang",
     "status": "approved",
-    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
+    "checks": {
+      "object": true,
+      "signal": true,
+      "operator": true,
+      "comparator": true,
+      "threshold": true,
+      "deadline": true,
+      "equality": true,
+      "terminal_semantics": true,
+      "paraphrase_equivalence": true
+    },
     "disagreement_notes": null,
     "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
@@ -27,7 +57,17 @@
     "spec_id": "br-v0-004",
     "reviewer": "Yuhang",
     "status": "approved",
-    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
+    "checks": {
+      "object": true,
+      "signal": true,
+      "operator": true,
+      "comparator": true,
+      "threshold": true,
+      "deadline": true,
+      "equality": true,
+      "terminal_semantics": true,
+      "paraphrase_equivalence": true
+    },
     "disagreement_notes": null,
     "reviewed_at": "2026-08-12T21:38:22-07:00"
   },
@@ -35,8 +75,648 @@
     "spec_id": "br-v0-005",
     "reviewer": "Yuhang",
     "status": "approved",
-    "checks": {"object": true, "signal": true, "operator": true, "comparator": true, "threshold": true, "deadline": true, "equality": true, "terminal_semantics": true, "paraphrase_equivalence": true},
+    "checks": {
+      "object": true,
+      "signal": true,
+      "operator": true,
+      "comparator": true,
+      "threshold": true,
+      "deadline": true,
+      "equality": true,
+      "terminal_semantics": true,
+      "paraphrase_equivalence": true
+    },
     "disagreement_notes": null,
     "reviewed_at": "2026-08-12T21:38:22-07:00"
+  },
+  {
+    "spec_id": "br-v0-006",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "br-v0-007",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "br-v0-008",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-001",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-002",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-003",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-004",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-005",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-006",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-007",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "rp-v0-008",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-001",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-002",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-003",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-004",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-005",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-006",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-007",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "ba-v0-008",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-001",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-002",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-003",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-004",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-005",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-006",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-007",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "and-v0-008",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-001",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-002",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-003",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-004",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-005",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-006",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-007",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
+  },
+  {
+    "spec_id": "or-v0-008",
+    "reviewer": null,
+    "status": "pending",
+    "checks": {
+      "object": null,
+      "signal": null,
+      "operator": null,
+      "comparator": null,
+      "threshold": null,
+      "deadline": null,
+      "equality": null,
+      "terminal_semantics": null,
+      "paraphrase_equivalence": null
+    },
+    "disagreement_notes": null,
+    "reviewed_at": null
   }
 ]

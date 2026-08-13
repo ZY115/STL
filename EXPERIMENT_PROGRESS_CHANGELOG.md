@@ -655,3 +655,80 @@ reviewer、审核时间和九项全通过 checklist，specification records 同�
 
 该确认仅覆盖当前五条 historical foundation。D37 新增的 35 条尚未生成，
 仍必须完成独立人工复核后才能开放 held-out Gold evaluation。
+
+## 23. 2026-08-12 D37/D38 实现、空间交付与硬件停止点
+
+### 23.1 Stage I 空间 replay 完整交付
+
+对 15 个 frozen final checkpoints 使用原 100 paired evaluation seeds 做同步几何
+复放，完成 1,500 episodes 和 1,501,500 rows。checkpoint/evaluation hashes、episode
+length/return/native cost/Gold events 均与原结果一致；policy simulator 与 raw diagnostic
+twin 的 public observation 最大差 `9.54e-7`，public capped nearest distance 与坐标重算
+最大差 `1.78e-15`。
+
+生成并人工检查 top-down、event density 和 layout feasibility 三张图。aggregate 结果
+显示 task/Gold path length 与 band crossings 几乎相同；missed event 在 goal-change
+±20-step 窗口内没有相对时间暴露富集。地图在所有 `d_safe=0.55` disks 外的比例平均
+仅 `41.43%`（`33.01--52.32%`），而 physical `r=0.20` disks 外为 `88.91%`。
+
+完整 140,953,788-byte geometry gzip 保持 local/ignored，hash、schema 和命令已留存。
+新增 `docs/stage1_spatial_trajectory_report.md` 和 compact tracked artifacts。
+
+### 23.2 Stage II real corpus 与 review boundary
+
+按 condition × training seed × 四 outcome strata 固定选择 60 个 real-policy episodes，
+共 60,060 samples。全部 40 specs × 60 traces 的 2,400 个组合在构建器内部通过
+direct/online/RTAMT machine review，最大差 0；只写出 train/validation 的 1,680 个
+label records。held-out labels 没有生成 model-visible artifact。
+
+D37 40 条规格的 machine construction 发现 6 个可证明的 logical aliases，已由 D39
+分类并保持 final dataset gate 关闭；35 条新记录仍等待人类独立复核。
+
+### 23.3 Stage II-A 环境、模型和 formal-output 修复
+
+建立独立 `stl-stage2-offline` 环境，固定 Python 3.8.20、PyTorch 2.4.1+cu124、
+Transformers 4.46.3、Sentence-Transformers 3.2.1、T5/MiniLM revisions。三方法均完成
+CUDA forward/backward、optimizer update、finite validation 和 checkpoint preflight。
+
+首个 real T5 run 暴露 stock tokenizer 不能 lossless decode JSON braces/commas；加入
+五个 regular JSON structure tokens 并在训练前做 parse round-trip probe。没有修复
+validation/test prediction。修复后 epoch 0 的 compilable rate 为 1.0，typed-AST 与
+compiled-STL exact accuracy 均为 0.375，证明路径可执行但不构成结果。
+
+runner 增加 DataLoader RNG/optimizer-update checkpoint、source/data/config hash guard、
+earliest-best tie behavior 和 SIGINT manifest handling。
+
+### 23.4 Gold learner-cost 实现
+
+没有修改 Conda `site-packages` 或 Gold evaluator。项目内实现：
+
+- terminal unresolved 已结算时只把 cost bootstrap 置零，reward bootstrap 不变；
+- C0 原 binary missed-event 与 C1 causal distance/urgency dense surrogate；
+- raw Gold、dense learner cost、native cost 和 selected cost 分列；
+- actor LR floor `3e-5` 及 cost frequency/value/advantage/gradient/lambda/goal logs；
+- 新 seeds `7307/8419/9521` 的 task/C0/C1 × lambda matrix；
+- C0/C1 budget 必须来自三个新 task-only controls 各相同 50 paired evaluation seeds，
+  严格 1000 actions/episode，再各自取 mean 的 70%；单位永不复制；
+- failed/interrupted attempts 保留、success cells 可跳过的 matrix runner。
+
+300k matrix 尚未启动，不存在 screening 结果。
+
+### 23.5 D41 重复硬件异常
+
+第一次 full formal run 期间，kernel 在 `22:52:01/22:57:29` 记录 MCE，随后
+`pt_autograd_0` 于 `23:03:27` 在 `libstdc++` segfault。clean retry 从头运行并完成
+两个 finite epochs；kernel 于 `23:15:31` 再次记录 MCE。日志没有 CUDA Xid、OOM 或
+non-finite metric。
+
+这满足预先声明的 repeated-technical-failure stop condition。已停止该 T5 retry，空间
+CPU replay 未受影响；所有 partial formal checkpoints 标为 diagnosis-only。D41 暂停
+全部新 GPU research training，直到管理员完成硬件排查、CPU/RAM stability tests 和
+一个无新系统异常的 discarded formal epoch。此停止不改变任何 frozen protocol。
+
+### 23.6 验证状态
+
+本轮完整 pytest suite 最后一次运行通过 101 tests；全 Python compile 和
+`git diff --check` 通过。收尾发现 `stl-stage1` 缺少
+`generate-parameter-library-py` 声明的 `typeguard`，已从缓存安装并锁定
+`typeguard==4.4.0`；Stage I/II 两个环境的 `pip check` 均恢复 clean。manifest 和
+checksum 在提交前收尾更新。

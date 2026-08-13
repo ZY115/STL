@@ -127,6 +127,7 @@ dependencies:
       - torch==2.4.1+cu124
       - tqdm==4.70.0
       - triton==3.0.0
+      - typeguard==4.4.0
       - typer==0.20.1
       - typing-extensions==4.13.2
       - tzdata==2026.3

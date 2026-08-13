@@ -1,0 +1,49 @@
+{
+  "command": "env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/replay_stage1_spatial_trajectories.py --output-root results/post_pilot_spatial_diagnosis",
+  "compact_artifacts": {
+    "geometry_schema.json": {
+      "bytes": 1636,
+      "path": "results/post_pilot_spatial_diagnosis/geometry_schema.json",
+      "sha256": "9489776fa22a08b9ce9a63012fac726f73cf66f07c2966ec445eb4dd6b3a296f"
+    },
+    "layout_feasibility.csv": {
+      "bytes": 38097,
+      "path": "results/post_pilot_spatial_diagnosis/layout_feasibility.csv",
+      "sha256": "9db9259a8fdaddbb20ed65d9b050a3c99db00bd73f73e2510a1b33c9a9bb7e77"
+    },
+    "representative_geometry.csv": {
+      "bytes": 6521252,
+      "path": "results/post_pilot_spatial_diagnosis/representative_geometry.csv",
+      "sha256": "9160d5d52a9a086238887a5e5a67096ccd11d1226bf2cac541995a10e974a288"
+    },
+    "spatial_density_counts.npz": {
+      "bytes": 43013,
+      "path": "results/post_pilot_spatial_diagnosis/spatial_density_counts.npz",
+      "sha256": "9d255a77e42be85b6940d09dc245833edf976a54b36f1d6f897ef7990dcfe620"
+    },
+    "summary.json": {
+      "bytes": 21666,
+      "path": "results/post_pilot_spatial_diagnosis/summary.json",
+      "sha256": "d27cd1b80e12d7e6f04883698ab05cf5225d2a1b059746941d4d811d5003b085"
+    }
+  },
+  "git_commit_at_replay": "83f3e85ede641963b8cf9eb3307afd59b0fa3764",
+  "local_full_geometry": {
+    "bytes": 140953788,
+    "path": "results/post_pilot_spatial_diagnosis/full_geometry.csv.gz",
+    "row_count": 1501500,
+    "sha256": "7e0fe9c2c7f5c7f227812dbd15895051767762f817124fda0958c2744e62fb30",
+    "tracked_by_git": false
+  },
+  "schema_version": 1,
+  "source_files": {
+    "analysis_episode_table": {
+      "path": "/home/jerry/Desktop/STL/results/stage1_pilot/analysis/episode_records.csv",
+      "sha256": "7eadcc589ca24e43a71aa1a7b9b54bb5008193411dc0d7ba03f626814c30e4ff"
+    },
+    "module": {
+      "path": "/home/jerry/Desktop/STL/src/safety_stl/spatial_diagnosis.py",
+      "sha256": "736596fe2483121496a9493469fdbfc480e9173d6d30fd16a764e4456b74b0d1"
+    }
+  }
+}

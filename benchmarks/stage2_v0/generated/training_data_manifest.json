@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "direct_train_traces.jsonl": {
+      "bytes": 8835001,
+      "records": 2000,
+      "sha256": "588fdbf47f420d2a5f6a50c4948135a228f115ba2ffe29e08ce828c5f999289a"
+    },
+    "direct_validation_traces.jsonl": {
+      "bytes": 1825147,
+      "records": 400,
+      "sha256": "c6b03a971ca286a4956430e0ca0774f1aa5035540ce1f68604ddfceff1d93f0a"
+    },
+    "formal_train_pairs.jsonl": {
+      "bytes": 11109300,
+      "records": 10000,
+      "sha256": "a3f9e31c601e57b34487656fb7c2315311446ca14dedf753fc263a24f704a896"
+    },
+    "training_data_schema.json": {
+      "bytes": 382,
+      "records": 1,
+      "sha256": "aaf0c72f38135138483de779e86ef88b38fa64fd735875e9335d5ac794736b13"
+    }
+  },
+  "generation_seed": 20260812,
+  "schema_version": 1,
+  "test_or_structure_split_record_count": 0
+}

@@ -1,0 +1,24 @@
+{
+  "held_out_label_policy": "forbidden_until_all_held_out_records_independently_reviewed",
+  "sample_fields": [
+    "sample_index",
+    "distance",
+    "reward",
+    "native_cost",
+    "terminated",
+    "truncated"
+  ],
+  "schema_version": 1,
+  "selection_count_per_condition": 20,
+  "selection_strata": [
+    "no_missed",
+    "single_deadline",
+    "multiple_deadline",
+    "with_terminal_unresolved"
+  ],
+  "trajectory_fields": [
+    "trajectory_id",
+    "source",
+    "samples"
+  ]
+}

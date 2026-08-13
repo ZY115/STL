@@ -1,20 +1,23 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://safety-stl.local/schema/stage2-v0-specification.json",
-  "title": "Stage II v0 controlled-language specification",
+  "title": "Stage II v0 D37 controlled-language specification",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "spec_id",
     "canonical_natural_language",
     "paraphrases",
+    "typed_ast",
     "gold_stl",
     "formula_family",
     "grounding_schema",
     "parameter_values",
     "semantic_pair_id",
+    "contrast_group_id",
     "semantic_contrast_type",
     "allowed_online_use",
+    "online_use_status",
     "split",
     "annotation_author",
     "independent_reviewer",
@@ -22,29 +25,44 @@
     "source_or_generation_record"
   ],
   "properties": {
-    "spec_id": {"type": "string", "pattern": "^br-v0-[0-9]{3}$"},
-    "canonical_natural_language": {"type": "string", "minLength": 20},
-    "paraphrases": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
-    "gold_stl": {"type": "string"},
-    "formula_family": {"const": "hysteretic_bounded_recovery"},
-    "grounding_schema": {"type": "object"},
-    "parameter_values": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["d_warn", "d_safe", "deadline_steps"],
-      "properties": {
-        "d_warn": {"type": "number", "exclusiveMinimum": 0.2, "exclusiveMaximum": 3.0},
-        "d_safe": {"type": "number", "exclusiveMinimum": 0.2, "exclusiveMaximum": 3.0},
-        "deadline_steps": {"type": "integer", "minimum": 1}
-      }
+    "spec_id": {
+      "type": "string",
+      "pattern": "^(br|rp|ba|and|or)-v0-[0-9]{3}$"
     },
+    "canonical_natural_language": {"type": "string", "minLength": 20},
+    "paraphrases": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 20}
+    },
+    "typed_ast": {"type": "object"},
+    "gold_stl": {"type": "string", "minLength": 10},
+    "formula_family": {
+      "enum": [
+        "hysteretic_bounded_recovery",
+        "recovery_plus_persistence",
+        "bounded_avoidance",
+        "conjunction",
+        "disjunction"
+      ]
+    },
+    "grounding_schema": {"type": "object"},
+    "parameter_values": {"type": "object"},
     "semantic_pair_id": {"type": "string"},
+    "contrast_group_id": {"type": "string", "pattern": "^d37-index-[0-9]{3}$"},
     "semantic_contrast_type": {"type": "string"},
     "allowed_online_use": {"type": "boolean"},
-    "split": {"const": "draft_unassigned"},
-    "annotation_author": {"type": "string"},
+    "online_use_status": {
+      "enum": ["stage1_calibrated_online", "offline_only_pending_feasibility"]
+    },
+    "split": {"enum": ["train", "validation", "parameter_test", "structure_test"]},
+    "annotation_author": {"type": "string", "minLength": 1},
     "independent_reviewer": {"type": ["string", "null"]},
-    "review_status": {"enum": ["machine_validated_pending_independent_review", "independently_reviewed"]},
+    "review_status": {
+      "enum": ["machine_validated_pending_independent_review", "independently_reviewed"]
+    },
     "source_or_generation_record": {"type": "string"}
   }
 }

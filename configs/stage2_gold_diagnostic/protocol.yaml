@@ -1,0 +1,96 @@
+schema_version: 1
+protocol_id: d38_gold_learner_cost_diagnostic_v1
+status: frozen_before_diagnostic_training
+authority: D38
+gold_specification: br-v0-001
+gold_evaluator: unchanged_binary_bounded_recovery_oracle
+
+training_seeds: [7307, 8419, 9521]
+seed_guard:
+  stage1_pilot_seeds: [1101, 2202, 3303, 4404, 5505]
+  all_diagnostic_seeds_are_new: true
+
+scale:
+  transitions_per_cell: 300000
+  screening_evaluation_episodes_per_seed: 50
+  screening_evaluation_seed_start: 23001
+  screening_only_non_confirmatory: true
+
+budget_source:
+  path: configs/stage2_gold_diagnostic/budgets.json
+  derivation: 70_percent_of_three_new_seed_matched_task_control_screening_mean
+  freeze_after_task_controls_before_any_c0_or_c1_training: true
+  c0_field: diagnostic_cost_limit.c0_events_per_episode
+  c1_field: diagnostic_cost_limit.c1_surrogate_mass_per_episode
+  never_copy_numeric_limit_between_units: true
+
+conditions:
+  - condition_id: task_only_control
+    environment_id: Stage1SafetyPointGoal1TaskOnly-v0
+    learner_cost: identically_zero
+    lambda_cell: existing
+    lagrangian_multiplier_init: 0.001
+    cost_limit: 0.0
+  - condition_id: c0_existing_pressure
+    environment_id: Stage1SafetyPointGoal1STLCost-v0
+    learner_cost: c0_binary_event
+    lambda_cell: existing
+    lagrangian_multiplier_init: 0.001
+    cost_limit_from: diagnostic_cost_limit.c0_events_per_episode
+  - condition_id: c0_early_pressure
+    environment_id: Stage1SafetyPointGoal1STLCost-v0
+    learner_cost: c0_binary_event
+    lambda_cell: early_pressure
+    lagrangian_multiplier_init: 0.1
+    cost_limit_from: diagnostic_cost_limit.c0_events_per_episode
+  - condition_id: c1_existing_pressure
+    environment_id: Stage2SafetyPointGoal1STLDenseCost-v0
+    learner_cost: c1_causal_dense_surrogate
+    lambda_cell: existing
+    lagrangian_multiplier_init: 0.001
+    cost_limit_from: diagnostic_cost_limit.c1_surrogate_mass_per_episode
+  - condition_id: c1_early_pressure
+    environment_id: Stage2SafetyPointGoal1STLDenseCost-v0
+    learner_cost: c1_causal_dense_surrogate
+    lambda_cell: early_pressure
+    lagrangian_multiplier_init: 0.1
+    cost_limit_from: diagnostic_cost_limit.c1_surrogate_mass_per_episode
+
+omnisafe:
+  algorithm_backend: PPOLag
+  project_runtime_class: safety_stl.diagnostic_algorithm.DiagnosticPPOLag
+  project_rollout_adapter: safety_stl.omnisafe_adapter.SettledCostOnPolicyAdapter
+  source_protocol: configs/stage1_pilot/protocol.yaml
+  train_overrides:
+    total_steps: 300000
+    vector_env_nums: 10
+    steps_per_epoch: 10000
+    update_iters: 40
+    batch_size: 64
+    save_model_freq: 10
+  actor_lr:
+    initial: 0.0003
+    linear_floor: 0.00003
+  terminal_cost_bootstrap: zero_only_when_terminal_unresolved_is_settled
+  reward_timeout_bootstrap: unchanged
+
+required_epoch_diagnostics:
+  - positive_cost_step_fraction
+  - cost_value_rmse_and_means
+  - reward_advantage_std
+  - cost_advantage_actor_scale_std
+  - actor_reward_gradient_norm
+  - actor_cost_gradient_norm
+  - lagrange_multiplier
+  - actor_learning_rate
+  - triggers
+  - misses
+  - goal_events
+
+screening_gate:
+  exact_routing_and_finite_diagnostics: required
+  gold_missed_per_trigger_relative_reduction_vs_task: 0.10
+  maximum_goal_success_loss_percentage_points: 10
+  gold_cost_curve: decreasing_or_stabilizing
+  multiplier: non_runaway
+  if_no_candidate_passes: stop_before_stage2b

@@ -1,10 +1,10 @@
 # Stage II v0 Representation-Baseline Review Package
 
 - **Prepared:** 2026-08-12
-- **Status:** historical pre-freeze review package; superseded by D37
+- **Status:** D37 implementation and CUDA preflight complete; full training paused by D41 hardware gate
 - **Normative successor:** `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`
 - **Machine-readable contract:** `configs/stage2_v0/baselines.yaml`
-- **No execution performed:** no language model was called or trained
+- **Execution boundary:** local train/validation only; held-out Gold remains blocked
 
 ## 1. Comparison being prepared
 
@@ -115,3 +115,37 @@ The following choices must be made together before test-set model evaluation:
 D37 records the owner decisions, and `configs/stage2_v0/baselines.yaml` has
 been regenerated as the machine-readable D37 contract. Independent human
 review remains required before held-out evaluation.
+
+## 6. D37 implementation update
+
+The historical choices above have now been implemented without changing the
+frozen information-access table:
+
+- formal: pinned `google-t5/t5-base` produces typed JSON AST, followed by
+  schema validation and deterministic STL compilation;
+- grammar sanity: an exact registry parser accepts only the 120 frozen
+  controlled wordings and refuses arbitrary text;
+- current direct: pinned `all-MiniLM-L12-v2` language embedding plus current
+  numeric public distance and a two-layer MLP;
+- history direct: the same MiniLM encoder plus a causal GRU-128 and two-layer
+  head for event, active-obligation and remaining-fraction outputs.
+
+The separate `stl-stage2-offline` environment, exact versions, model revisions,
+licenses, CUDA test and minimal updates are recorded in
+`stage2a_environment_and_preflight_report.md`. Formal training attaches the
+same typed public signal registry to each input. Direct training contains no
+Gold formula/AST input, handcrafted timer, future sample, test tuple or OR
+composition.
+
+The deterministic grammar is explicitly an engineering ceiling/sanity check,
+not the claimed learned formal result. The current-observation direct method is
+reported as a structural ablation even if it fails. Selection uses validation
+only; held-out prediction/evaluation scripts must not run until all required
+human reviews are approved.
+
+The first full formal cell demonstrated an otherwise executable typed-JSON
+path (`compilable_rate=1.0` after epoch 0), but repeated kernel machine-check
+events and one native-thread segmentation fault triggered D41. Partial
+checkpoints are excluded. No further baseline or Gold-diagnostic training may
+start until the host stability gate in
+`stage2a_environment_and_preflight_report.md` passes.

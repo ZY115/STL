@@ -1,0 +1,602 @@
+[
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10003,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 1101
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10023,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 2202
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 4,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 3303
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10003,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 4404
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "task_only",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10006,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 5505
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10004,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10017,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 1101
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10009,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 3,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10003,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 2202
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 3,
+    "episode_length": 1000,
+    "evaluation_seed": 10016,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10003,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 3303
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10004,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 4404
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10007,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "native_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 5505
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10004,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 1101
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10006,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 1101
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10006,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 2202
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 2202
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10006,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10002,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 3303
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10004,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 3303
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10015,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10005,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 4404
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 4404
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10009,
+    "outcome_stratum": "no_missed",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 1,
+    "episode_length": 1000,
+    "evaluation_seed": 10000,
+    "outcome_stratum": "single_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 2,
+    "episode_length": 1000,
+    "evaluation_seed": 10007,
+    "outcome_stratum": "multiple_deadline",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 0,
+    "training_seed": 5505
+  },
+  {
+    "condition": "gold_stl_cost",
+    "deadline_violation_count": 0,
+    "episode_length": 1000,
+    "evaluation_seed": 10001,
+    "outcome_stratum": "with_terminal_unresolved",
+    "selection_rule": "lowest evaluation seed within each frozen condition/training-seed/outcome stratum",
+    "terminal_unresolved_count": 1,
+    "training_seed": 5505
+  }
+]

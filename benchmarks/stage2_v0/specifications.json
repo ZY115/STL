@@ -6,27 +6,65 @@
       "After entering the nearest-hazard warning zone below 0.45 units, recover to a distance of 0.55 units or more no later than 79 steps.",
       "If a new warning episode begins because nearest-hazard distance falls under 0.45, return to at least 0.55 within the next 79 environment steps, including the deadline step."
     ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.45
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 79,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.55
+          }
+        }
+      }
+    },
     "gold_stl": "G(e(d < 0.45) -> F_[0,79](d >= 0.55))",
     "formula_family": "hysteretic_bounded_recovery",
     "grounding_schema": {
       "object": "nearest_hazard",
       "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
       "warning_comparator": "lt",
       "recovery_comparator": "ge",
       "trigger_mode": "hysteretic_warning_episode",
-      "deadline_inclusive": true,
-      "distance_unit": "simulator_length_unit",
-      "time_unit": "environment_step"
+      "deadline_inclusive": true
     },
-    "parameter_values": {"d_warn": 0.45, "d_safe": 0.55, "deadline_steps": 79},
-    "semantic_pair_id": "br-v0-parameter-001",
+    "parameter_values": {
+      "d_warn": 0.45,
+      "d_safe": 0.55,
+      "deadline_steps": 79
+    },
+    "semantic_pair_id": "br-v0-001__language-equivalence",
+    "contrast_group_id": "d37-index-001",
     "semantic_contrast_type": "stage1_calibrated_reference",
     "allowed_online_use": true,
-    "split": "draft_unassigned",
+    "online_use_status": "stage1_calibrated_online",
+    "split": "train",
     "annotation_author": "project_draft_2026-08-12",
     "independent_reviewer": "Yuhang",
     "review_status": "independently_reviewed",
-    "source_or_generation_record": "D36 Stage II v0 foundation; parameters from frozen Stage I calibration"
+    "source_or_generation_record": "D36 Stage II v0 foundation; preserved D37 review record"
   },
   {
     "spec_id": "br-v0-002",
@@ -35,27 +73,65 @@
       "After nearest-hazard distance drops below 0.35 units, recover to 0.50 units or farther within 40 steps.",
       "A new warning episode under 0.35 must be followed by recovery to at least 0.50 by the inclusive 40-step deadline."
     ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.35
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 40,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.5
+          }
+        }
+      }
+    },
     "gold_stl": "G(e(d < 0.35) -> F_[0,40](d >= 0.5))",
     "formula_family": "hysteretic_bounded_recovery",
     "grounding_schema": {
       "object": "nearest_hazard",
       "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
       "warning_comparator": "lt",
       "recovery_comparator": "ge",
       "trigger_mode": "hysteretic_warning_episode",
-      "deadline_inclusive": true,
-      "distance_unit": "simulator_length_unit",
-      "time_unit": "environment_step"
+      "deadline_inclusive": true
     },
-    "parameter_values": {"d_warn": 0.35, "d_safe": 0.5, "deadline_steps": 40},
-    "semantic_pair_id": "br-v0-parameter-002",
-    "semantic_contrast_type": "parameter_composition",
+    "parameter_values": {
+      "d_warn": 0.35,
+      "d_safe": 0.5,
+      "deadline_steps": 40
+    },
+    "semantic_pair_id": "br-v0-002__language-equivalence",
+    "contrast_group_id": "d37-index-002",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
     "allowed_online_use": false,
-    "split": "draft_unassigned",
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
     "annotation_author": "project_draft_2026-08-12",
     "independent_reviewer": "Yuhang",
     "review_status": "independently_reviewed",
-    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+    "source_or_generation_record": "D36 Stage II v0 foundation; preserved D37 review record"
   },
   {
     "spec_id": "br-v0-003",
@@ -64,27 +140,65 @@
       "When nearest-hazard distance first becomes less than 0.40 units, regain a distance of 0.60 units or more within 60 steps.",
       "Every new below-0.40 warning episode requires recovery to at least 0.60 by its inclusive 60-step deadline."
     ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.4
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 60,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.6
+          }
+        }
+      }
+    },
     "gold_stl": "G(e(d < 0.4) -> F_[0,60](d >= 0.6))",
     "formula_family": "hysteretic_bounded_recovery",
     "grounding_schema": {
       "object": "nearest_hazard",
       "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
       "warning_comparator": "lt",
       "recovery_comparator": "ge",
       "trigger_mode": "hysteretic_warning_episode",
-      "deadline_inclusive": true,
-      "distance_unit": "simulator_length_unit",
-      "time_unit": "environment_step"
+      "deadline_inclusive": true
     },
-    "parameter_values": {"d_warn": 0.4, "d_safe": 0.6, "deadline_steps": 60},
-    "semantic_pair_id": "br-v0-parameter-003",
-    "semantic_contrast_type": "parameter_composition",
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.6,
+      "deadline_steps": 60
+    },
+    "semantic_pair_id": "br-v0-003__language-equivalence",
+    "contrast_group_id": "d37-index-003",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
     "allowed_online_use": false,
-    "split": "draft_unassigned",
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
     "annotation_author": "project_draft_2026-08-12",
     "independent_reviewer": "Yuhang",
     "review_status": "independently_reviewed",
-    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+    "source_or_generation_record": "D36 Stage II v0 foundation; preserved D37 review record"
   },
   {
     "spec_id": "br-v0-004",
@@ -93,27 +207,65 @@
       "After a new nearest-hazard warning below 0.50 units, move back to 0.65 units or farther within 90 steps.",
       "If distance to the nearest hazard falls under 0.50 while no warning is active, recover to at least 0.65 by the inclusive 90-step deadline."
     ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.5
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 90,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.65
+          }
+        }
+      }
+    },
     "gold_stl": "G(e(d < 0.5) -> F_[0,90](d >= 0.65))",
     "formula_family": "hysteretic_bounded_recovery",
     "grounding_schema": {
       "object": "nearest_hazard",
       "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
       "warning_comparator": "lt",
       "recovery_comparator": "ge",
       "trigger_mode": "hysteretic_warning_episode",
-      "deadline_inclusive": true,
-      "distance_unit": "simulator_length_unit",
-      "time_unit": "environment_step"
+      "deadline_inclusive": true
     },
-    "parameter_values": {"d_warn": 0.5, "d_safe": 0.65, "deadline_steps": 90},
-    "semantic_pair_id": "br-v0-parameter-004",
-    "semantic_contrast_type": "parameter_composition",
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.65,
+      "deadline_steps": 90
+    },
+    "semantic_pair_id": "br-v0-004__language-equivalence",
+    "contrast_group_id": "d37-index-004",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
     "allowed_online_use": false,
-    "split": "draft_unassigned",
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
     "annotation_author": "project_draft_2026-08-12",
     "independent_reviewer": "Yuhang",
     "review_status": "independently_reviewed",
-    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+    "source_or_generation_record": "D36 Stage II v0 foundation; preserved D37 review record"
   },
   {
     "spec_id": "br-v0-005",
@@ -122,26 +274,2681 @@
       "When a new warning begins below 0.55 units from the nearest hazard, recover to 0.75 units or farther within 100 steps.",
       "Each new nearest-hazard entry under 0.55 requires reaching at least 0.75 by the inclusive 100-environment-step deadline."
     ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.55
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 100,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.75
+          }
+        }
+      }
+    },
     "gold_stl": "G(e(d < 0.55) -> F_[0,100](d >= 0.75))",
     "formula_family": "hysteretic_bounded_recovery",
     "grounding_schema": {
       "object": "nearest_hazard",
       "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.55,
+      "d_safe": 0.75,
+      "deadline_steps": 100
+    },
+    "semantic_pair_id": "br-v0-005__language-equivalence",
+    "contrast_group_id": "d37-index-005",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": "Yuhang",
+    "review_status": "independently_reviewed",
+    "source_or_generation_record": "D36 Stage II v0 foundation; preserved D37 review record"
+  },
+  {
+    "spec_id": "br-v0-006",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.30 simulator units to the nearest hazard, it must reach at least 0.45 units away within 30 environment steps, including the deadline.",
+    "paraphrases": [
+      "After a new nearest-hazard warning below 0.30 units, recover to 0.45 units or farther no later than 30 steps afterward.",
+      "Each inactive-to-warning entry with nearest-hazard distance under 0.30 requires a return to at least 0.45 by the inclusive 30-step deadline."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.3
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 30,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.45
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.3) -> F_[0,30](d >= 0.45))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.3,
+      "d_safe": 0.45,
+      "deadline_steps": 30
+    },
+    "semantic_pair_id": "br-v0-006__language-equivalence",
+    "contrast_group_id": "d37-index-006",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "br-v0-007",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.40 simulator units to the nearest hazard, it must reach at least 0.55 units away within 80 environment steps, including the deadline.",
+    "paraphrases": [
+      "After a new nearest-hazard warning below 0.40 units, recover to 0.55 units or farther no later than 80 steps afterward.",
+      "Each inactive-to-warning entry with nearest-hazard distance under 0.40 requires a return to at least 0.55 by the inclusive 80-step deadline."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.4
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 80,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.55
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.4) -> F_[0,80](d >= 0.55))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.55,
+      "deadline_steps": 80
+    },
+    "semantic_pair_id": "br-v0-007__language-equivalence",
+    "contrast_group_id": "d37-index-007",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "br-v0-008",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.50 simulator units to the nearest hazard, it must reach at least 0.70 units away within 60 environment steps, including the deadline.",
+    "paraphrases": [
+      "After a new nearest-hazard warning below 0.50 units, recover to 0.70 units or farther no later than 60 steps afterward.",
+      "Each inactive-to-warning entry with nearest-hazard distance under 0.50 requires a return to at least 0.70 by the inclusive 60-step deadline."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.5
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 60,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "ge",
+            "threshold": 0.7
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.5) -> F_[0,60](d >= 0.7))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.7,
+      "deadline_steps": 60
+    },
+    "semantic_pair_id": "br-v0-008__language-equivalence",
+    "contrast_group_id": "d37-index-008",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "parameter_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-001",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.45 simulator units to the nearest hazard, it must start within 79 environment steps a period that stays at least 0.55 units away through the following 20 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.45 nearest-hazard warning, begin no later than 79 steps afterward an uninterrupted interval from its start through 20 further steps at distance 0.55 or greater.",
+      "A warning entry under 0.45 must be followed within the inclusive 79-step window by recovery to at least 0.55, maintained for the inclusive duration from 0 to 20 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.45
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 79,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 20,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.45) -> F_[0,79](G_[0,20](d >= 0.55)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
       "warning_comparator": "lt",
       "recovery_comparator": "ge",
       "trigger_mode": "hysteretic_warning_episode",
       "deadline_inclusive": true,
-      "distance_unit": "simulator_length_unit",
-      "time_unit": "environment_step"
+      "persistence_interval_inclusive": true
     },
-    "parameter_values": {"d_warn": 0.55, "d_safe": 0.75, "deadline_steps": 100},
-    "semantic_pair_id": "br-v0-parameter-005",
-    "semantic_contrast_type": "parameter_composition",
+    "parameter_values": {
+      "d_warn": 0.45,
+      "d_safe": 0.55,
+      "deadline_steps": 79,
+      "persistence_steps": 20
+    },
+    "semantic_pair_id": "rp-v0-001__language-equivalence",
+    "contrast_group_id": "d37-index-001",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
     "allowed_online_use": false,
-    "split": "draft_unassigned",
-    "annotation_author": "project_draft_2026-08-12",
-    "independent_reviewer": "Yuhang",
-    "review_status": "independently_reviewed",
-    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-002",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.35 simulator units to the nearest hazard, it must start within 40 environment steps a period that stays at least 0.50 units away through the following 10 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.35 nearest-hazard warning, begin no later than 40 steps afterward an uninterrupted interval from its start through 10 further steps at distance 0.50 or greater.",
+      "A warning entry under 0.35 must be followed within the inclusive 40-step window by recovery to at least 0.50, maintained for the inclusive duration from 0 to 10 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.35
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 40,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 10,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.5
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.35) -> F_[0,40](G_[0,10](d >= 0.5)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.35,
+      "d_safe": 0.5,
+      "deadline_steps": 40,
+      "persistence_steps": 10
+    },
+    "semantic_pair_id": "rp-v0-002__language-equivalence",
+    "contrast_group_id": "d37-index-002",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-003",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.40 simulator units to the nearest hazard, it must start within 60 environment steps a period that stays at least 0.60 units away through the following 15 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.40 nearest-hazard warning, begin no later than 60 steps afterward an uninterrupted interval from its start through 15 further steps at distance 0.60 or greater.",
+      "A warning entry under 0.40 must be followed within the inclusive 60-step window by recovery to at least 0.60, maintained for the inclusive duration from 0 to 15 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.4
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 60,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 15,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.6
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.4) -> F_[0,60](G_[0,15](d >= 0.6)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.6,
+      "deadline_steps": 60,
+      "persistence_steps": 15
+    },
+    "semantic_pair_id": "rp-v0-003__language-equivalence",
+    "contrast_group_id": "d37-index-003",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-004",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.50 simulator units to the nearest hazard, it must start within 90 environment steps a period that stays at least 0.65 units away through the following 20 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.50 nearest-hazard warning, begin no later than 90 steps afterward an uninterrupted interval from its start through 20 further steps at distance 0.65 or greater.",
+      "A warning entry under 0.50 must be followed within the inclusive 90-step window by recovery to at least 0.65, maintained for the inclusive duration from 0 to 20 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.5
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 90,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 20,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.65
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.5) -> F_[0,90](G_[0,20](d >= 0.65)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.65,
+      "deadline_steps": 90,
+      "persistence_steps": 20
+    },
+    "semantic_pair_id": "rp-v0-004__language-equivalence",
+    "contrast_group_id": "d37-index-004",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-005",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.55 simulator units to the nearest hazard, it must start within 100 environment steps a period that stays at least 0.75 units away through the following 25 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.55 nearest-hazard warning, begin no later than 100 steps afterward an uninterrupted interval from its start through 25 further steps at distance 0.75 or greater.",
+      "A warning entry under 0.55 must be followed within the inclusive 100-step window by recovery to at least 0.75, maintained for the inclusive duration from 0 to 25 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.55
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 100,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 25,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.75
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.55) -> F_[0,100](G_[0,25](d >= 0.75)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.55,
+      "d_safe": 0.75,
+      "deadline_steps": 100,
+      "persistence_steps": 25
+    },
+    "semantic_pair_id": "rp-v0-005__language-equivalence",
+    "contrast_group_id": "d37-index-005",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-006",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.30 simulator units to the nearest hazard, it must start within 30 environment steps a period that stays at least 0.45 units away through the following 10 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.30 nearest-hazard warning, begin no later than 30 steps afterward an uninterrupted interval from its start through 10 further steps at distance 0.45 or greater.",
+      "A warning entry under 0.30 must be followed within the inclusive 30-step window by recovery to at least 0.45, maintained for the inclusive duration from 0 to 10 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.3
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 30,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 10,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.45
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.3) -> F_[0,30](G_[0,10](d >= 0.45)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.3,
+      "d_safe": 0.45,
+      "deadline_steps": 30,
+      "persistence_steps": 10
+    },
+    "semantic_pair_id": "rp-v0-006__language-equivalence",
+    "contrast_group_id": "d37-index-006",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-007",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.40 simulator units to the nearest hazard, it must start within 80 environment steps a period that stays at least 0.55 units away through the following 15 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.40 nearest-hazard warning, begin no later than 80 steps afterward an uninterrupted interval from its start through 15 further steps at distance 0.55 or greater.",
+      "A warning entry under 0.40 must be followed within the inclusive 80-step window by recovery to at least 0.55, maintained for the inclusive duration from 0 to 15 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.4
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 80,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 15,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.4) -> F_[0,80](G_[0,15](d >= 0.55)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.55,
+      "deadline_steps": 80,
+      "persistence_steps": 15
+    },
+    "semantic_pair_id": "rp-v0-007__language-equivalence",
+    "contrast_group_id": "d37-index-007",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "rp-v0-008",
+    "canonical_natural_language": "Whenever the agent newly enters closer than 0.50 simulator units to the nearest hazard, it must start within 60 environment steps a period that stays at least 0.70 units away through the following 20 steps, with both bounds inclusive.",
+    "paraphrases": [
+      "After each new below-0.50 nearest-hazard warning, begin no later than 60 steps afterward an uninterrupted interval from its start through 20 further steps at distance 0.70 or greater.",
+      "A warning entry under 0.50 must be followed within the inclusive 60-step window by recovery to at least 0.70, maintained for the inclusive duration from 0 to 20 steps."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": null,
+      "child": {
+        "node_type": "implies",
+        "left": {
+          "node_type": "warning_entry",
+          "predicate": {
+            "node_type": "predicate",
+            "signal_id": "nearest_hazard_center_distance_public",
+            "comparator": "lt",
+            "threshold": 0.5
+          },
+          "trigger_mode": "hysteretic_warning_episode"
+        },
+        "right": {
+          "node_type": "eventually",
+          "interval": {
+            "lower": 0,
+            "upper": 60,
+            "inclusive": true
+          },
+          "child": {
+            "node_type": "globally",
+            "interval": {
+              "lower": 0,
+              "upper": 20,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.7
+            }
+          }
+        }
+      }
+    },
+    "gold_stl": "G(e(d < 0.5) -> F_[0,60](G_[0,20](d >= 0.7)))",
+    "formula_family": "recovery_plus_persistence",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "persistence_interval_inclusive": true
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.7,
+      "deadline_steps": 60,
+      "persistence_steps": 20
+    },
+    "semantic_pair_id": "rp-v0-008__language-equivalence",
+    "contrast_group_id": "d37-index-008",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "parameter_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-001",
+    "canonical_natural_language": "From environment step 0 through step 20, inclusive, the agent must always remain at least 0.20 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.20 units or greater at every sample in the inclusive interval from step 0 to step 20.",
+      "During the first bounded interval [0,20] in environment steps, never let the distance to the nearest hazard fall below 0.20 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 20,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.2
+      }
+    },
+    "gold_stl": "G_[0,20](d >= 0.2)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.2,
+      "avoidance_horizon_steps": 20
+    },
+    "semantic_pair_id": "ba-v0-001__language-equivalence",
+    "contrast_group_id": "d37-index-001",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-002",
+    "canonical_natural_language": "From environment step 0 through step 30, inclusive, the agent must always remain at least 0.25 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.25 units or greater at every sample in the inclusive interval from step 0 to step 30.",
+      "During the first bounded interval [0,30] in environment steps, never let the distance to the nearest hazard fall below 0.25 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 30,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.25
+      }
+    },
+    "gold_stl": "G_[0,30](d >= 0.25)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.25,
+      "avoidance_horizon_steps": 30
+    },
+    "semantic_pair_id": "ba-v0-002__language-equivalence",
+    "contrast_group_id": "d37-index-002",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-003",
+    "canonical_natural_language": "From environment step 0 through step 40, inclusive, the agent must always remain at least 0.30 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.30 units or greater at every sample in the inclusive interval from step 0 to step 40.",
+      "During the first bounded interval [0,40] in environment steps, never let the distance to the nearest hazard fall below 0.30 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 40,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.3
+      }
+    },
+    "gold_stl": "G_[0,40](d >= 0.3)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.3,
+      "avoidance_horizon_steps": 40
+    },
+    "semantic_pair_id": "ba-v0-003__language-equivalence",
+    "contrast_group_id": "d37-index-003",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-004",
+    "canonical_natural_language": "From environment step 0 through step 50, inclusive, the agent must always remain at least 0.35 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.35 units or greater at every sample in the inclusive interval from step 0 to step 50.",
+      "During the first bounded interval [0,50] in environment steps, never let the distance to the nearest hazard fall below 0.35 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 50,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.35
+      }
+    },
+    "gold_stl": "G_[0,50](d >= 0.35)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.35,
+      "avoidance_horizon_steps": 50
+    },
+    "semantic_pair_id": "ba-v0-004__language-equivalence",
+    "contrast_group_id": "d37-index-004",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-005",
+    "canonical_natural_language": "From environment step 0 through step 60, inclusive, the agent must always remain at least 0.40 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.40 units or greater at every sample in the inclusive interval from step 0 to step 60.",
+      "During the first bounded interval [0,60] in environment steps, never let the distance to the nearest hazard fall below 0.40 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 60,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.4
+      }
+    },
+    "gold_stl": "G_[0,60](d >= 0.4)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.4,
+      "avoidance_horizon_steps": 60
+    },
+    "semantic_pair_id": "ba-v0-005__language-equivalence",
+    "contrast_group_id": "d37-index-005",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-006",
+    "canonical_natural_language": "From environment step 0 through step 80, inclusive, the agent must always remain at least 0.45 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.45 units or greater at every sample in the inclusive interval from step 0 to step 80.",
+      "During the first bounded interval [0,80] in environment steps, never let the distance to the nearest hazard fall below 0.45 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 80,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.45
+      }
+    },
+    "gold_stl": "G_[0,80](d >= 0.45)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.45,
+      "avoidance_horizon_steps": 80
+    },
+    "semantic_pair_id": "ba-v0-006__language-equivalence",
+    "contrast_group_id": "d37-index-006",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-007",
+    "canonical_natural_language": "From environment step 0 through step 100, inclusive, the agent must always remain at least 0.50 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.50 units or greater at every sample in the inclusive interval from step 0 to step 100.",
+      "During the first bounded interval [0,100] in environment steps, never let the distance to the nearest hazard fall below 0.50 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 100,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.5
+      }
+    },
+    "gold_stl": "G_[0,100](d >= 0.5)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.5,
+      "avoidance_horizon_steps": 100
+    },
+    "semantic_pair_id": "ba-v0-007__language-equivalence",
+    "contrast_group_id": "d37-index-007",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "ba-v0-008",
+    "canonical_natural_language": "From environment step 0 through step 120, inclusive, the agent must always remain at least 0.55 simulator units from the nearest hazard.",
+    "paraphrases": [
+      "Keep nearest-hazard distance at 0.55 units or greater at every sample in the inclusive interval from step 0 to step 120.",
+      "During the first bounded interval [0,120] in environment steps, never let the distance to the nearest hazard fall below 0.55 simulator units."
+    ],
+    "typed_ast": {
+      "node_type": "globally",
+      "interval": {
+        "lower": 0,
+        "upper": 120,
+        "inclusive": true
+      },
+      "child": {
+        "node_type": "predicate",
+        "signal_id": "nearest_hazard_center_distance_public",
+        "comparator": "ge",
+        "threshold": 0.55
+      }
+    },
+    "gold_stl": "G_[0,120](d >= 0.55)",
+    "formula_family": "bounded_avoidance",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true
+    },
+    "parameter_values": {
+      "avoidance_threshold": 0.55,
+      "avoidance_horizon_steps": 120
+    },
+    "semantic_pair_id": "ba-v0-008__language-equivalence",
+    "contrast_group_id": "d37-index-008",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "parameter_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-001",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.45 units from the nearest hazard is followed by recovery to at least 0.55 within 79 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.20 units at every step from 0 through 20, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.45 warning recovers to 0.55 or farther by 79 inclusive steps, and (B) all samples in [0,20] stay at least 0.20 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.45, safety at 0.55, deadline 79) and the full bounded-avoidance rule (distance at least 0.20 throughout inclusive steps 0 to 20) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.45
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 79,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 20,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.2
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.45) -> F_[0,79](d >= 0.55))) AND (G_[0,20](d >= 0.2))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.45,
+      "d_safe": 0.55,
+      "deadline_steps": 79,
+      "avoidance_threshold": 0.2,
+      "avoidance_horizon_steps": 20
+    },
+    "semantic_pair_id": "and-v0-001__language-equivalence",
+    "contrast_group_id": "d37-index-001",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-002",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.35 units from the nearest hazard is followed by recovery to at least 0.50 within 40 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.25 units at every step from 0 through 30, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.35 warning recovers to 0.50 or farther by 40 inclusive steps, and (B) all samples in [0,30] stay at least 0.25 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.35, safety at 0.50, deadline 40) and the full bounded-avoidance rule (distance at least 0.25 throughout inclusive steps 0 to 30) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.35
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 40,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.5
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 30,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.25
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.35) -> F_[0,40](d >= 0.5))) AND (G_[0,30](d >= 0.25))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.35,
+      "d_safe": 0.5,
+      "deadline_steps": 40,
+      "avoidance_threshold": 0.25,
+      "avoidance_horizon_steps": 30
+    },
+    "semantic_pair_id": "and-v0-002__language-equivalence",
+    "contrast_group_id": "d37-index-002",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-003",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.40 units from the nearest hazard is followed by recovery to at least 0.60 within 60 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.30 units at every step from 0 through 40, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.40 warning recovers to 0.60 or farther by 60 inclusive steps, and (B) all samples in [0,40] stay at least 0.30 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.40, safety at 0.60, deadline 60) and the full bounded-avoidance rule (distance at least 0.30 throughout inclusive steps 0 to 40) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.4
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 60,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.6
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 40,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.3
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.4) -> F_[0,60](d >= 0.6))) AND (G_[0,40](d >= 0.3))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.6,
+      "deadline_steps": 60,
+      "avoidance_threshold": 0.3,
+      "avoidance_horizon_steps": 40
+    },
+    "semantic_pair_id": "and-v0-003__language-equivalence",
+    "contrast_group_id": "d37-index-003",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-004",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.50 units from the nearest hazard is followed by recovery to at least 0.65 within 90 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.35 units at every step from 0 through 50, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.50 warning recovers to 0.65 or farther by 90 inclusive steps, and (B) all samples in [0,50] stay at least 0.35 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.50, safety at 0.65, deadline 90) and the full bounded-avoidance rule (distance at least 0.35 throughout inclusive steps 0 to 50) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.5
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 90,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.65
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 50,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.35
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.5) -> F_[0,90](d >= 0.65))) AND (G_[0,50](d >= 0.35))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.65,
+      "deadline_steps": 90,
+      "avoidance_threshold": 0.35,
+      "avoidance_horizon_steps": 50
+    },
+    "semantic_pair_id": "and-v0-004__language-equivalence",
+    "contrast_group_id": "d37-index-004",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-005",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.55 units from the nearest hazard is followed by recovery to at least 0.75 within 100 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.40 units at every step from 0 through 60, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.55 warning recovers to 0.75 or farther by 100 inclusive steps, and (B) all samples in [0,60] stay at least 0.40 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.55, safety at 0.75, deadline 100) and the full bounded-avoidance rule (distance at least 0.40 throughout inclusive steps 0 to 60) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.55
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 100,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.75
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 60,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.4
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.55) -> F_[0,100](d >= 0.75))) AND (G_[0,60](d >= 0.4))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.55,
+      "d_safe": 0.75,
+      "deadline_steps": 100,
+      "avoidance_threshold": 0.4,
+      "avoidance_horizon_steps": 60
+    },
+    "semantic_pair_id": "and-v0-005__language-equivalence",
+    "contrast_group_id": "d37-index-005",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "train",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-006",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.30 units from the nearest hazard is followed by recovery to at least 0.45 within 30 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.45 units at every step from 0 through 80, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.30 warning recovers to 0.45 or farther by 30 inclusive steps, and (B) all samples in [0,80] stay at least 0.45 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.30, safety at 0.45, deadline 30) and the full bounded-avoidance rule (distance at least 0.45 throughout inclusive steps 0 to 80) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.3
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 30,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.45
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 80,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.45
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.3) -> F_[0,30](d >= 0.45))) AND (G_[0,80](d >= 0.45))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.3,
+      "d_safe": 0.45,
+      "deadline_steps": 30,
+      "avoidance_threshold": 0.45,
+      "avoidance_horizon_steps": 80
+    },
+    "semantic_pair_id": "and-v0-006__language-equivalence",
+    "contrast_group_id": "d37-index-006",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-007",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.40 units from the nearest hazard is followed by recovery to at least 0.55 within 80 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.50 units at every step from 0 through 100, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.40 warning recovers to 0.55 or farther by 80 inclusive steps, and (B) all samples in [0,100] stay at least 0.50 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.40, safety at 0.55, deadline 80) and the full bounded-avoidance rule (distance at least 0.50 throughout inclusive steps 0 to 100) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.4
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 80,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 100,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.5
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.4) -> F_[0,80](d >= 0.55))) AND (G_[0,100](d >= 0.5))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.55,
+      "deadline_steps": 80,
+      "avoidance_threshold": 0.5,
+      "avoidance_horizon_steps": 100
+    },
+    "semantic_pair_id": "and-v0-007__language-equivalence",
+    "contrast_group_id": "d37-index-007",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "validation",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "and-v0-008",
+    "canonical_natural_language": "The trajectory must satisfy both these complete requirements: (A) every new entry below 0.50 units from the nearest hazard is followed by recovery to at least 0.70 within 60 steps, including the deadline; and (B) nearest-hazard distance remains at least 0.55 units at every step from 0 through 120, inclusive.",
+    "paraphrases": [
+      "Require both clauses together: (A) a new below-0.50 warning recovers to 0.70 or farther by 60 inclusive steps, and (B) all samples in [0,120] stay at least 0.55 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.50, safety at 0.70, deadline 60) and the full bounded-avoidance rule (distance at least 0.55 throughout inclusive steps 0 to 120) must both hold."
+    ],
+    "typed_ast": {
+      "node_type": "and",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.5
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 60,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.7
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 120,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.55
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.5) -> F_[0,60](d >= 0.7))) AND (G_[0,120](d >= 0.55))",
+    "formula_family": "conjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.7,
+      "deadline_steps": 60,
+      "avoidance_threshold": 0.55,
+      "avoidance_horizon_steps": 120
+    },
+    "semantic_pair_id": "and-v0-008__language-equivalence",
+    "contrast_group_id": "d37-index-008",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "parameter_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-001",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.45 units from the nearest hazard is followed by recovery to at least 0.55 within 79 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.20 units at every step from 0 through 20, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.45 warning recovers to 0.55 or farther by 79 inclusive steps, or (B) all samples in [0,20] stay at least 0.20 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.45, safety at 0.55, deadline 79) or the full bounded-avoidance rule (distance at least 0.20 throughout inclusive steps 0 to 20) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.45
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 79,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 20,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.2
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.45) -> F_[0,79](d >= 0.55))) OR (G_[0,20](d >= 0.2))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.45,
+      "d_safe": 0.55,
+      "deadline_steps": 79,
+      "avoidance_threshold": 0.2,
+      "avoidance_horizon_steps": 20
+    },
+    "semantic_pair_id": "or-v0-001__language-equivalence",
+    "contrast_group_id": "d37-index-001",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-002",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.35 units from the nearest hazard is followed by recovery to at least 0.50 within 40 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.25 units at every step from 0 through 30, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.35 warning recovers to 0.50 or farther by 40 inclusive steps, or (B) all samples in [0,30] stay at least 0.25 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.35, safety at 0.50, deadline 40) or the full bounded-avoidance rule (distance at least 0.25 throughout inclusive steps 0 to 30) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.35
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 40,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.5
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 30,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.25
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.35) -> F_[0,40](d >= 0.5))) OR (G_[0,30](d >= 0.25))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.35,
+      "d_safe": 0.5,
+      "deadline_steps": 40,
+      "avoidance_threshold": 0.25,
+      "avoidance_horizon_steps": 30
+    },
+    "semantic_pair_id": "or-v0-002__language-equivalence",
+    "contrast_group_id": "d37-index-002",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-003",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.40 units from the nearest hazard is followed by recovery to at least 0.60 within 60 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.30 units at every step from 0 through 40, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.40 warning recovers to 0.60 or farther by 60 inclusive steps, or (B) all samples in [0,40] stay at least 0.30 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.40, safety at 0.60, deadline 60) or the full bounded-avoidance rule (distance at least 0.30 throughout inclusive steps 0 to 40) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.4
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 60,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.6
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 40,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.3
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.4) -> F_[0,60](d >= 0.6))) OR (G_[0,40](d >= 0.3))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.6,
+      "deadline_steps": 60,
+      "avoidance_threshold": 0.3,
+      "avoidance_horizon_steps": 40
+    },
+    "semantic_pair_id": "or-v0-003__language-equivalence",
+    "contrast_group_id": "d37-index-003",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-004",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.50 units from the nearest hazard is followed by recovery to at least 0.65 within 90 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.35 units at every step from 0 through 50, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.50 warning recovers to 0.65 or farther by 90 inclusive steps, or (B) all samples in [0,50] stay at least 0.35 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.50, safety at 0.65, deadline 90) or the full bounded-avoidance rule (distance at least 0.35 throughout inclusive steps 0 to 50) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.5
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 90,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.65
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 50,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.35
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.5) -> F_[0,90](d >= 0.65))) OR (G_[0,50](d >= 0.35))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.65,
+      "deadline_steps": 90,
+      "avoidance_threshold": 0.35,
+      "avoidance_horizon_steps": 50
+    },
+    "semantic_pair_id": "or-v0-004__language-equivalence",
+    "contrast_group_id": "d37-index-004",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-005",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.55 units from the nearest hazard is followed by recovery to at least 0.75 within 100 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.40 units at every step from 0 through 60, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.55 warning recovers to 0.75 or farther by 100 inclusive steps, or (B) all samples in [0,60] stay at least 0.40 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.55, safety at 0.75, deadline 100) or the full bounded-avoidance rule (distance at least 0.40 throughout inclusive steps 0 to 60) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.55
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 100,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.75
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 60,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.4
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.55) -> F_[0,100](d >= 0.75))) OR (G_[0,60](d >= 0.4))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.55,
+      "d_safe": 0.75,
+      "deadline_steps": 100,
+      "avoidance_threshold": 0.4,
+      "avoidance_horizon_steps": 60
+    },
+    "semantic_pair_id": "or-v0-005__language-equivalence",
+    "contrast_group_id": "d37-index-005",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-006",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.30 units from the nearest hazard is followed by recovery to at least 0.45 within 30 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.45 units at every step from 0 through 80, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.30 warning recovers to 0.45 or farther by 30 inclusive steps, or (B) all samples in [0,80] stay at least 0.45 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.30, safety at 0.45, deadline 30) or the full bounded-avoidance rule (distance at least 0.45 throughout inclusive steps 0 to 80) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.3
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 30,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.45
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 80,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.45
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.3) -> F_[0,30](d >= 0.45))) OR (G_[0,80](d >= 0.45))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.3,
+      "d_safe": 0.45,
+      "deadline_steps": 30,
+      "avoidance_threshold": 0.45,
+      "avoidance_horizon_steps": 80
+    },
+    "semantic_pair_id": "or-v0-006__language-equivalence",
+    "contrast_group_id": "d37-index-006",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-007",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.40 units from the nearest hazard is followed by recovery to at least 0.55 within 80 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.50 units at every step from 0 through 100, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.40 warning recovers to 0.55 or farther by 80 inclusive steps, or (B) all samples in [0,100] stay at least 0.50 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.40, safety at 0.55, deadline 80) or the full bounded-avoidance rule (distance at least 0.50 throughout inclusive steps 0 to 100) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.4
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 80,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.55
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 100,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.5
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.4) -> F_[0,80](d >= 0.55))) OR (G_[0,100](d >= 0.5))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.4,
+      "d_safe": 0.55,
+      "deadline_steps": 80,
+      "avoidance_threshold": 0.5,
+      "avoidance_horizon_steps": 100
+    },
+    "semantic_pair_id": "or-v0-007__language-equivalence",
+    "contrast_group_id": "d37-index-007",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
+  },
+  {
+    "spec_id": "or-v0-008",
+    "canonical_natural_language": "The trajectory must satisfy at least one of these complete requirements: (A) every new entry below 0.50 units from the nearest hazard is followed by recovery to at least 0.70 within 60 steps, including the deadline; or (B) nearest-hazard distance remains at least 0.55 units at every step from 0 through 120, inclusive.",
+    "paraphrases": [
+      "Require one complete clause or the other: (A) a new below-0.50 warning recovers to 0.70 or farther by 60 inclusive steps, or (B) all samples in [0,120] stay at least 0.55 units from the nearest hazard.",
+      "The full bounded-recovery rule (warning under 0.50, safety at 0.70, deadline 60) or the full bounded-avoidance rule (distance at least 0.55 throughout inclusive steps 0 to 120) must have at least one branch hold."
+    ],
+    "typed_ast": {
+      "node_type": "or",
+      "left": {
+        "node_type": "globally",
+        "interval": null,
+        "child": {
+          "node_type": "implies",
+          "left": {
+            "node_type": "warning_entry",
+            "predicate": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "lt",
+              "threshold": 0.5
+            },
+            "trigger_mode": "hysteretic_warning_episode"
+          },
+          "right": {
+            "node_type": "eventually",
+            "interval": {
+              "lower": 0,
+              "upper": 60,
+              "inclusive": true
+            },
+            "child": {
+              "node_type": "predicate",
+              "signal_id": "nearest_hazard_center_distance_public",
+              "comparator": "ge",
+              "threshold": 0.7
+            }
+          }
+        }
+      },
+      "right": {
+        "node_type": "globally",
+        "interval": {
+          "lower": 0,
+          "upper": 120,
+          "inclusive": true
+        },
+        "child": {
+          "node_type": "predicate",
+          "signal_id": "nearest_hazard_center_distance_public",
+          "comparator": "ge",
+          "threshold": 0.55
+        }
+      }
+    },
+    "gold_stl": "(G(e(d < 0.5) -> F_[0,60](d >= 0.7))) OR (G_[0,120](d >= 0.55))",
+    "formula_family": "disjunction",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step",
+      "finite_trace_terminal_semantics": "unresolved_obligations_are_positive_gold_events",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "avoidance_comparator": "ge",
+      "avoidance_interval_inclusive": true,
+      "boolean_scope": "complete_formula_branches"
+    },
+    "parameter_values": {
+      "d_warn": 0.5,
+      "d_safe": 0.7,
+      "deadline_steps": 60,
+      "avoidance_threshold": 0.55,
+      "avoidance_horizon_steps": 120
+    },
+    "semantic_pair_id": "or-v0-008__language-equivalence",
+    "contrast_group_id": "d37-index-008",
+    "semantic_contrast_type": "frozen_parameter_or_structure_contrast",
+    "allowed_online_use": false,
+    "online_use_status": "offline_only_pending_feasibility",
+    "split": "structure_test",
+    "annotation_author": "Codex_stage2_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   }
 ]

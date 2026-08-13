@@ -1,0 +1,42 @@
+{
+  "conditions": {
+    "gold_stl_cost": {
+      "action_step_near_goal_fraction": 0.444526,
+      "action_steps": 500000,
+      "action_steps_near_goal": 222263,
+      "deadline_violations": 684,
+      "deadline_violations_near_goal": 250,
+      "goal_context_window_steps": 20,
+      "missed_event_to_exposure_ratio": 0.728114650822363,
+      "missed_obligation_near_goal_fraction": 0.3236658932714617,
+      "terminal_unresolved": 178,
+      "terminal_unresolved_near_goal": 29
+    },
+    "native_cost": {
+      "action_step_near_goal_fraction": 0.305046,
+      "action_steps": 500000,
+      "action_steps_near_goal": 152523,
+      "deadline_violations": 579,
+      "deadline_violations_near_goal": 164,
+      "goal_context_window_steps": 20,
+      "missed_event_to_exposure_ratio": 0.85518107176423,
+      "missed_obligation_near_goal_fraction": 0.2608695652173913,
+      "terminal_unresolved": 111,
+      "terminal_unresolved_near_goal": 16
+    },
+    "task_only": {
+      "action_step_near_goal_fraction": 0.451766,
+      "action_steps": 500000,
+      "action_steps_near_goal": 225883,
+      "deadline_violations": 694,
+      "deadline_violations_near_goal": 237,
+      "goal_context_window_steps": 20,
+      "missed_event_to_exposure_ratio": 0.674795988468718,
+      "missed_obligation_near_goal_fraction": 0.30484988452655887,
+      "terminal_unresolved": 172,
+      "terminal_unresolved_near_goal": 27
+    }
+  },
+  "schema_version": 1,
+  "scope": "descriptive proximity diagnostic; not a causal estimate"
+}

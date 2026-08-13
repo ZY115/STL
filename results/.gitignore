@@ -82,3 +82,15 @@ post_pilot_diagnosis/*
 !post_pilot_diagnosis/figures/
 post_pilot_diagnosis/figures/*
 !post_pilot_diagnosis/figures/*.png
+!post_pilot_spatial_diagnosis/
+post_pilot_spatial_diagnosis/*
+!post_pilot_spatial_diagnosis/README.md
+!post_pilot_spatial_diagnosis/summary.json
+!post_pilot_spatial_diagnosis/replay_manifest.json
+!post_pilot_spatial_diagnosis/geometry_schema.json
+!post_pilot_spatial_diagnosis/representative_geometry.csv
+!post_pilot_spatial_diagnosis/layout_feasibility.csv
+!post_pilot_spatial_diagnosis/spatial_density_counts.npz
+!post_pilot_spatial_diagnosis/figures_manifest.json
+!post_pilot_spatial_diagnosis/goal_context_metrics.json
+!post_pilot_spatial_diagnosis/*.png

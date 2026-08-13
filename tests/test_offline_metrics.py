@@ -28,13 +28,7 @@ class OfflineMetricsTests(unittest.TestCase):
                     "predicted_event_steps": [i for i, value in enumerate(costs) if value],
                     "predicted_active_obligation": [int(state in {"pending", "overdue"}) for state in states],
                     "predicted_stl": self.specifications[0]["gold_stl"],
-                    "predicted_structure": {
-                        "formula_family": self.specifications[0]["formula_family"],
-                        **self.specifications[0]["parameter_values"],
-                        "warning_comparator": self.specifications[0]["grounding_schema"]["warning_comparator"],
-                        "recovery_comparator": self.specifications[0]["grounding_schema"]["recovery_comparator"],
-                        "deadline_inclusive": self.specifications[0]["grounding_schema"]["deadline_inclusive"],
-                    },
+                    "predicted_structure": self.specifications[0]["typed_ast"],
                 },
             )
         return rows

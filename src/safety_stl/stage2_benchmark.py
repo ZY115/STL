@@ -13,6 +13,12 @@ from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional,
 
 from safety_stl.monitor import BoundedRecoveryMonitor
 from safety_stl.oracle import evaluate_trace, rtamt_window_robustness
+from safety_stl.stage2_specifications import (
+    FAMILY_NAMES,
+    build_specifications,
+    compile_typed_ast,
+)
+from safety_stl.stage2_formula import evaluate_specification_trace
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -54,40 +60,45 @@ def _number(value: float) -> str:
 
 
 def validate_benchmark_contract(root: Path = BENCHMARK_ROOT) -> Dict[str, Any]:
-    """Validate the frozen portion of the draft contract without external schema tools."""
+    """Validate the complete frozen D37 contract without external schema tools."""
 
     benchmark = _load_json(root / "benchmark.json")
     specifications = _load_json(root / "specifications.json")
     reviews = _load_json(root / "reviews.json")
     errors: List[str] = []
-    if benchmark.get("status") != "draft_foundation_pending_o7_review":
-        errors.append("benchmark status must remain pending O7 review")
-    if benchmark.get("supported_fragment", {}).get("formula_families") != [
-        "hysteretic_bounded_recovery",
-    ]:
-        errors.append("v0 may execute only the verified bounded-recovery family")
-    if benchmark.get("draft_split_policy", {}).get("status") != "unassigned_pending_o7_review":
-        errors.append("data splits must remain unassigned before O7 review")
-    if not isinstance(specifications, list) or not specifications:
-        errors.append("specifications.json must contain at least one specification")
+    expected_families = list(FAMILY_NAMES.values())
+    if benchmark.get("status") != "d37_40_item_contract_implemented_pending_human_review":
+        errors.append("benchmark status must identify the implemented D37 contract")
+    if benchmark.get("supported_fragment", {}).get("formula_families") != expected_families:
+        errors.append("supported formula families differ from D37")
+    if benchmark.get("draft_split_policy", {}).get("status") != "d37_split_frozen":
+        errors.append("the D37 split must be frozen")
+    if not isinstance(specifications, list) or len(specifications) != 40:
+        errors.append("specifications.json must contain exactly 40 specifications")
         specifications = []
 
     seen_ids: set[str] = set()
     seen_language: set[str] = set()
     pair_splits: MutableMapping[str, set[str]] = defaultdict(set)
+    expected_records = {row["spec_id"]: row for row in build_specifications()}
+    family_counts: MutableMapping[str, int] = defaultdict(int)
+    split_counts: MutableMapping[str, int] = defaultdict(int)
     for index, spec in enumerate(specifications):
         prefix = f"specification[{index}]"
         required = {
             "spec_id",
             "canonical_natural_language",
             "paraphrases",
+            "typed_ast",
             "gold_stl",
             "formula_family",
             "grounding_schema",
             "parameter_values",
             "semantic_pair_id",
+            "contrast_group_id",
             "semantic_contrast_type",
             "allowed_online_use",
+            "online_use_status",
             "split",
             "annotation_author",
             "independent_reviewer",
@@ -105,41 +116,49 @@ def validate_benchmark_contract(root: Path = BENCHMARK_ROOT) -> Dict[str, Any]:
         if spec_id in seen_ids:
             errors.append(f"duplicate spec_id: {spec_id}")
         seen_ids.add(spec_id)
-        if spec["formula_family"] != "hysteretic_bounded_recovery":
-            errors.append(f"{spec_id} uses an unapproved formula family")
-        parameters = spec["parameter_values"]
-        if set(parameters) != {"d_warn", "d_safe", "deadline_steps"}:
-            errors.append(f"{spec_id} has invalid parameter fields")
-        warn = float(parameters["d_warn"])
-        safe = float(parameters["d_safe"])
-        deadline = parameters["deadline_steps"]
-        if not 0.2 < warn < safe < 3.0:
-            errors.append(f"{spec_id} has invalid distance thresholds")
-        if isinstance(deadline, bool) or not isinstance(deadline, int) or deadline <= 0:
-            errors.append(f"{spec_id} has invalid deadline_steps")
-        expected_formula = (
-            f"G(e(d < {_number(warn)}) -> "
-            f"F_[0,{deadline}](d >= {_number(safe)}))"
-        )
-        if spec["gold_stl"] != expected_formula:
-            errors.append(f"{spec_id} Gold STL differs from typed parameters")
+        if spec_id not in expected_records:
+            errors.append(f"unexpected D37 specification ID: {spec_id}")
+            continue
+        expected = expected_records[spec_id]
+        immutable_fields = required - {
+            "annotation_author",
+            "independent_reviewer",
+            "review_status",
+            "source_or_generation_record",
+        }
+        for field in immutable_fields:
+            if spec[field] != expected[field]:
+                errors.append(f"{spec_id} differs from D37 in {field}")
+        try:
+            compiled = compile_typed_ast(spec["typed_ast"])
+        except (KeyError, TypeError, ValueError) as error:
+            errors.append(f"{spec_id} has invalid typed AST: {error}")
+        else:
+            if compiled != spec["gold_stl"]:
+                errors.append(f"{spec_id} typed AST does not compile to Gold STL")
+        family_counts[str(spec["formula_family"])] += 1
+        split_counts[str(spec["split"])] += 1
         grounding = spec["grounding_schema"]
         if grounding.get("signal_id") != "nearest_hazard_center_distance_public":
             errors.append(f"{spec_id} does not use the public Stage I distance signal")
-        if grounding.get("trigger_mode") != "hysteretic_warning_episode":
-            errors.append(f"{spec_id} has incompatible trigger semantics")
-        if grounding.get("deadline_inclusive") is not True:
-            errors.append(f"{spec_id} must use an inclusive deadline")
+        if spec["formula_family"] in {
+            "hysteretic_bounded_recovery",
+            "recovery_plus_persistence",
+            "conjunction",
+            "disjunction",
+        }:
+            if grounding.get("trigger_mode") != "hysteretic_warning_episode":
+                errors.append(f"{spec_id} has incompatible trigger semantics")
+            if grounding.get("deadline_inclusive") is not True:
+                errors.append(f"{spec_id} must use an inclusive deadline")
         language_items = [spec["canonical_natural_language"], *spec["paraphrases"]]
-        if len(spec["paraphrases"]) < 2 or len(set(language_items)) != len(language_items):
-            errors.append(f"{spec_id} needs at least two distinct paraphrases")
+        if len(spec["paraphrases"]) != 2 or len(set(language_items)) != 3:
+            errors.append(f"{spec_id} needs exactly two distinct paraphrases")
         for language in language_items:
             normalized = " ".join(str(language).lower().split())
             if normalized in seen_language:
                 errors.append(f"duplicate language item found in {spec_id}")
             seen_language.add(normalized)
-        if spec["split"] != "draft_unassigned":
-            errors.append(f"{spec_id} was assigned to a split before review")
         pair_splits[str(spec["semantic_pair_id"])].add(str(spec["split"]))
         if spec["review_status"] not in {
             "machine_validated_pending_independent_review",
@@ -148,10 +167,24 @@ def validate_benchmark_contract(root: Path = BENCHMARK_ROOT) -> Dict[str, Any]:
             errors.append(f"{spec_id} has an invalid review status")
         if spec["review_status"] == "independently_reviewed" and not spec["independent_reviewer"]:
             errors.append(f"{spec_id} claims review without naming the reviewer")
+        if (
+            spec["independent_reviewer"] is not None
+            and spec["independent_reviewer"] == spec["annotation_author"]
+        ):
+            errors.append(f"{spec_id} reviewer is not independent from its author")
 
     leaking_pairs = sorted(pair for pair, splits in pair_splits.items() if len(splits) > 1)
     if leaking_pairs:
         errors.append(f"semantic pairs span multiple splits: {leaking_pairs}")
+    if dict(family_counts) != {family: 8 for family in expected_families}:
+        errors.append(f"formula-family counts differ from D37: {dict(family_counts)}")
+    if dict(split_counts) != {
+        "train": 20,
+        "validation": 8,
+        "parameter_test": 4,
+        "structure_test": 8,
+    }:
+        errors.append(f"split counts differ from D37: {dict(split_counts)}")
     if errors:
         raise ValueError("invalid Stage II v0 benchmark contract:\n- " + "\n- ".join(errors))
     review_by_id = {str(review.get("spec_id", "")): review for review in reviews}
@@ -198,6 +231,13 @@ def validate_benchmark_contract(root: Path = BENCHMARK_ROOT) -> Dict[str, Any]:
         "specification_count": len(specifications),
         "semantic_pair_split_leakage_count": len(leaking_pairs),
         "reviews": reviews,
+        "family_counts": dict(family_counts),
+        "split_counts": dict(split_counts),
+        "all_held_out_reviewed": all(
+            spec["review_status"] == "independently_reviewed"
+            for spec in specifications
+            if spec["split"] in {"parameter_test", "structure_test"}
+        ),
     }
 
 
@@ -206,17 +246,35 @@ def _terminal_flags(length: int) -> tuple[List[bool], List[bool]]:
 
 
 def _synthetic_cases(spec: Mapping[str, Any]) -> List[Dict[str, Any]]:
-    parameters = spec["parameter_values"]
-    warn = float(parameters["d_warn"])
-    safe = float(parameters["d_safe"])
-    deadline = int(parameters["deadline_steps"])
-    safe_high = min(safe + 0.1, 2.99)
-    mid = (warn + safe) / 2.0
-    unsafe = max(0.0, warn - 0.01)
+    """Generate at least 12 deterministic boundary/history traces per family."""
 
-    def padded(events: Mapping[int, float], final_step: int, default: float = safe_high) -> List[float]:
+    parameters = spec["parameter_values"]
+    family = str(spec["formula_family"])
+    has_recovery = family in {
+        "hysteretic_bounded_recovery",
+        "recovery_plus_persistence",
+        "conjunction",
+        "disjunction",
+    }
+    has_avoidance = family in {"bounded_avoidance", "conjunction", "disjunction"}
+    warn = float(parameters.get("d_warn", 0.45))
+    safe = float(parameters.get("d_safe", max(warn + 0.10, 0.55)))
+    deadline = int(parameters.get("deadline_steps", 40))
+    persistence = int(parameters.get("persistence_steps", 0))
+    avoidance = float(parameters.get("avoidance_threshold", 0.20))
+    avoidance_horizon = int(parameters.get("avoidance_horizon_steps", 20))
+    high = min(max(safe, avoidance) + 0.15, 2.99)
+    mid = (warn + safe) / 2.0
+    warning_low = max(0.0, warn - 0.01)
+    avoidance_low = max(0.0, avoidance - 0.01)
+    common_low = min(warning_low, avoidance_low)
+    complete_step = max(deadline + persistence + 3, avoidance_horizon + 2, 12)
+
+    def padded(events: Mapping[int, float], final_step: int, default: float = high) -> List[float]:
         values = [default] * (final_step + 1)
         for step, value in events.items():
+            if step < 0 or step > final_step:
+                raise ValueError("synthetic event step lies outside its trace")
             values[step] = value
         return values
 
@@ -233,65 +291,134 @@ def _synthetic_cases(spec: Mapping[str, Any]) -> List[Dict[str, Any]]:
             },
         )
 
-    add("vacuous", [safe_high] * 4, ["vacuous", "no_trigger"])
+    add("vacuous", [high] * (complete_step + 1), ["vacuous", "no_trigger"])
     add(
         "on_time_recovery",
-        padded({1: unsafe, 2: mid, 3: safe_high}, deadline + 2),
+        padded({1: warning_low, 2: mid}, complete_step),
         ["trigger", "on_time_recovery"],
     )
+    exact_events = {1: warning_low}
+    for step in range(2, 1 + deadline):
+        exact_events[step] = mid
     add(
         "exact_deadline_recovery",
-        [safe_high, unsafe] + [mid] * (deadline - 1) + [safe] + [safe_high],
+        padded(exact_events, complete_step),
         ["trigger", "exact_deadline", "recovery_equality"],
     )
+    late_events = dict(exact_events)
+    late_events[1 + deadline] = mid
     add(
         "one_step_late",
-        [safe_high, unsafe] + [mid] * deadline + [safe_high],
+        padded(late_events, complete_step),
         ["trigger", "deadline_violation", "one_step_late"],
     )
     add(
         "terminal_unresolved",
-        [safe_high, unsafe, mid],
+        [high, warning_low, mid],
         ["trigger", "terminal_unresolved", "finite_trace_boundary"],
     )
     add(
         "warning_equality_no_trigger",
-        [safe_high, warn, warn, safe_high],
+        [high, warn, warn, high],
         ["warning_equality", "strict_warning_comparator", "no_trigger"],
     )
     add(
         "safe_equality_recovery",
-        padded({1: unsafe, 2: safe}, deadline + 2),
+        padded({1: warning_low, 2: safe}, complete_step),
         ["trigger", "safe_equality", "inclusive_recovery_comparator"],
     )
     add(
         "repeated_entry_while_pending",
-        padded({1: unsafe, 2: unsafe, 3: unsafe, 4: safe_high}, deadline + 2),
+        padded({1: warning_low, 2: warning_low, 3: warning_low}, complete_step),
         ["single_active_obligation", "repeated_unsafe_samples", "on_time_recovery"],
     )
     add(
         "retrigger_after_recovery",
-        padded({1: unsafe, 2: safe_high, 3: unsafe, 4: safe_high}, deadline + 5),
+        padded({1: warning_low, 3: warning_low}, complete_step),
         ["multiple_obligations", "retrigger_after_recovery"],
     )
     history_pair_id = f"{spec['spec_id']}__history-state-contrast"
     anchor = 6
+    anchor_value = high if has_avoidance else mid
     add(
         "history_inactive",
-        padded({anchor: mid}, deadline + 8),
+        padded({anchor: anchor_value}, complete_step),
         ["history_contrast", "same_current_observation", "inactive_at_anchor"],
         history_pair_id=history_pair_id,
         history_anchor_step=anchor,
     )
     add(
         "history_pending",
-        [safe_high, safe_high, unsafe]
-        + [mid] * (anchor - 2)
-        + [safe_high] * (deadline + 8 - anchor),
+        padded(
+            {
+                2: common_low,
+                **(
+                    {step: mid for step in range(3, anchor + 1)}
+                    if not has_avoidance
+                    else {anchor: anchor_value}
+                ),
+            },
+            complete_step,
+        ),
         ["history_contrast", "same_current_observation", "pending_at_anchor"],
         history_pair_id=history_pair_id,
         history_anchor_step=anchor,
     )
+
+    persistence_start = 1 + deadline
+    for label, offset in (
+        ("first", 0),
+        ("middle", persistence // 2),
+        ("final", persistence),
+    ):
+        events = {1: warning_low}
+        for step in range(2, persistence_start):
+            events[step] = mid
+        for step in range(persistence_start, persistence_start + persistence + 1):
+            events[step] = safe
+        events[persistence_start + offset] = mid
+        add(
+            f"persistence_break_{label}",
+            padded(events, max(complete_step, persistence_start + persistence + 1)),
+            ["persistence_boundary", f"persistence_break_{label}", "structure_contrast"],
+        )
+
+    for label, step in (
+        ("first", 0),
+        ("middle", avoidance_horizon // 2),
+        ("final", avoidance_horizon),
+    ):
+        add(
+            f"avoidance_violation_{label}",
+            padded({step: avoidance_low}, complete_step),
+            ["avoidance_boundary", f"avoidance_violation_{label}", "structure_contrast"],
+        )
+    add(
+        "avoidance_equality",
+        padded({avoidance_horizon // 2: avoidance}, complete_step),
+        ["avoidance_equality", "comparator_equality"],
+    )
+    add(
+        "recovery_holds_avoidance_fails",
+        padded({1: common_low}, complete_step),
+        ["boolean_distinguishing_witness", "recovery_holds", "avoidance_fails"],
+    )
+    if avoidance < warn:
+        recovery_only_low = (avoidance + warn) / 2.0
+        events = {1: recovery_only_low}
+        for step in range(2, 1 + deadline + persistence + 1):
+            events[step] = mid
+        add(
+            "avoidance_holds_recovery_fails",
+            padded(events, complete_step),
+            ["boolean_distinguishing_witness", "avoidance_holds", "recovery_fails"],
+        )
+    if not has_recovery:
+        for case in cases:
+            case["case_tags"].append("recovery_tags_not_applicable_to_family")
+    if not has_avoidance:
+        for case in cases:
+            case["case_tags"].append("avoidance_tags_are_cross_family_stress_only")
     return cases
 
 
@@ -299,91 +426,14 @@ def _label_trace(
     distances: Sequence[float],
     terminated: Sequence[bool],
     truncated: Sequence[bool],
-    parameters: Mapping[str, Any],
+    specification: Mapping[str, Any],
 ) -> Dict[str, Any]:
-    warn = float(parameters["d_warn"])
-    safe = float(parameters["d_safe"])
-    deadline = int(parameters["deadline_steps"])
-    oracle = evaluate_trace(
+    return evaluate_specification_trace(
+        specification,
         distances,
-        warn,
-        safe,
-        deadline,
-        terminated=terminated,
-        truncated=truncated,
+        terminated,
+        truncated,
     )
-    monitor = BoundedRecoveryMonitor(warn, safe, deadline)
-    online_rows = []
-    for index, distance in enumerate(distances):
-        if index == 0:
-            if terminated[index] or truncated[index]:
-                raise ValueError("single-sample terminal traces are not supported")
-            output = monitor.reset(float(distance))
-        else:
-            output = monitor.step(
-                float(distance),
-                terminated=bool(terminated[index]),
-                truncated=bool(truncated[index]),
-            )
-        online_rows.append(output.as_dict())
-
-    event_fields = {
-        "trigger_steps": "stl_warning_trigger",
-        "recovery_steps": "stl_recovery",
-        "late_recovery_steps": "stl_late_recovery",
-        "violation_steps": "stl_deadline_violation",
-        "unresolved_steps": "stl_terminal_unresolved",
-    }
-    online_events = {
-        name: [int(row["sample_index"]) for row in online_rows if row[field]]
-        for name, field in event_fields.items()
-    }
-    expected_events = {
-        "trigger_steps": oracle.trigger_steps,
-        "recovery_steps": oracle.recovery_steps,
-        "late_recovery_steps": oracle.late_recovery_steps,
-        "violation_steps": oracle.violation_steps,
-        "unresolved_steps": oracle.unresolved_steps,
-    }
-    online_costs = [int(row["stl_cost"]) for row in online_rows]
-    if online_events != expected_events or online_costs != oracle.costs:
-        raise AssertionError("online monitor and independent oracle disagree")
-
-    rtamt_rows = []
-    for window in oracle.completed_windows:
-        robustness = rtamt_window_robustness(
-            distances[window.trigger_step : window.deadline_step + 1],
-            safe,
-            deadline,
-        )
-        difference = abs(robustness - window.robustness)
-        if difference > TOLERANCE:
-            raise AssertionError("RTAMT and independent robustness disagree")
-        rtamt_rows.append(
-            {
-                "episode_id": window.episode_id,
-                "trigger_step": window.trigger_step,
-                "deadline_step": window.deadline_step,
-                "direct_robustness": window.robustness,
-                "rtamt_robustness": robustness,
-                "absolute_difference": difference,
-            },
-        )
-    oracle_dict = oracle.as_dict()
-    return {
-        "agreement": True,
-        "oracle": oracle_dict,
-        "online": {
-            **online_events,
-            "costs": online_costs,
-            "states": [str(row["stl_status"]) for row in online_rows],
-        },
-        "rtamt_completed_windows": rtamt_rows,
-        "rtamt_max_robustness_difference": max(
-            (row["absolute_difference"] for row in rtamt_rows),
-            default=0.0,
-        ),
-    }
 
 
 def _make_record(
@@ -412,7 +462,7 @@ def _make_record(
         distances,
         terminated,
         truncated,
-        spec["parameter_values"],
+        spec,
     )
     samples = [
         {
@@ -603,7 +653,7 @@ def validate_trajectories(
                 [float(sample["distance"]) for sample in samples],
                 [bool(sample["terminated"]) for sample in samples],
                 [bool(sample["truncated"]) for sample in samples],
-                specification_by_id[spec_id]["parameter_values"],
+                specification_by_id[spec_id],
             )
             if recomputed_labels != record.get("gold_labels"):
                 errors.append(f"{trajectory_id} stored Gold labels are not reproducible")
@@ -650,56 +700,91 @@ def parameter_contrast_coverage(
     specifications: Sequence[Mapping[str, Any]],
     records: Sequence[Mapping[str, Any]],
 ) -> Dict[str, Any]:
-    """Require a trace-level semantic witness for every parameter-spec pair."""
+    """Check D37 adjacent-parameter and same-index structure contrasts.
+
+    Some frozen same-index combinations are logically aliased when the
+    avoidance threshold is at least the warning threshold.  These pairs are
+    reported rather than hidden or "repaired" after D37 was frozen.
+    """
+
+    by_id = {str(spec["spec_id"]): spec for spec in specifications}
+    required_pairs: List[Tuple[str, str, str]] = []
+    for prefix in ("br", "rp", "ba", "and", "or"):
+        for index in range(1, 8):
+            required_pairs.append(
+                (f"{prefix}-v0-{index:03d}", f"{prefix}-v0-{index + 1:03d}", "adjacent_parameter"),
+            )
+    for index in range(1, 9):
+        ids = [f"{prefix}-v0-{index:03d}" for prefix in ("br", "rp", "ba", "and", "or")]
+        for first_id, second_id in combinations(ids, 2):
+            required_pairs.append((first_id, second_id, "same_index_structure"))
+
+    cache: Dict[Tuple[str, str], Tuple[Any, ...]] = {}
+
+    def semantics(spec_id: str, record: Mapping[str, Any]) -> Tuple[Any, ...]:
+        key = (spec_id, str(record["trajectory_id"]))
+        if key not in cache:
+            labels = _label_trace(
+                [float(sample["distance"]) for sample in record["samples"]],
+                [bool(sample["terminated"]) for sample in record["samples"]],
+                [bool(sample["truncated"]) for sample in record["samples"]],
+                by_id[spec_id],
+            )
+            cache[key] = (
+                tuple(labels["oracle"]["violation_steps"]),
+                tuple(labels["oracle"]["unresolved_steps"]),
+                tuple(labels["oracle"]["costs"]),
+            )
+        return cache[key]
 
     witnesses = []
     missing = []
-    for first, second in combinations(specifications, 2):
+    for first_id, second_id, contrast_type in required_pairs:
         witness = None
         for record in records:
-            distances = [float(sample["distance"]) for sample in record["samples"]]
-            terminated = [bool(sample["terminated"]) for sample in record["samples"]]
-            truncated = [bool(sample["truncated"]) for sample in record["samples"]]
-            first_labels = _label_trace(
-                distances,
-                terminated,
-                truncated,
-                first["parameter_values"],
-            )
-            second_labels = _label_trace(
-                distances,
-                terminated,
-                truncated,
-                second["parameter_values"],
-            )
-            first_semantics = (
-                first_labels["oracle"]["trigger_steps"],
-                first_labels["oracle"]["recovery_steps"],
-                first_labels["oracle"]["violation_steps"],
-                first_labels["oracle"]["unresolved_steps"],
-                first_labels["oracle"]["costs"],
-            )
-            second_semantics = (
-                second_labels["oracle"]["trigger_steps"],
-                second_labels["oracle"]["recovery_steps"],
-                second_labels["oracle"]["violation_steps"],
-                second_labels["oracle"]["unresolved_steps"],
-                second_labels["oracle"]["costs"],
-            )
-            if first_semantics != second_semantics:
+            if semantics(first_id, record) != semantics(second_id, record):
                 witness = str(record["trajectory_id"])
                 break
-        pair = [str(first["spec_id"]), str(second["spec_id"])]
-        if witness is None:
-            missing.append(pair)
-        else:
-            witnesses.append({"spec_pair": pair, "witness_trajectory_id": witness})
-    if missing:
-        raise ValueError(f"parameter contrasts lack distinguishing traces: {missing}")
+        if witness is not None:
+            witnesses.append(
+                {
+                    "spec_pair": [first_id, second_id],
+                    "contrast_type": contrast_type,
+                    "witness_trajectory_id": witness,
+                },
+            )
+            continue
+        first = by_id[first_id]
+        second = by_id[second_id]
+        pair_families = {str(first["formula_family"]), str(second["formula_family"])}
+        parameters = first["parameter_values"]
+        alias_reason = None
+        if pair_families == {"bounded_avoidance", "conjunction"}:
+            companion = by_id[first_id.replace("ba-v0", "and-v0")]
+            p = companion["parameter_values"]
+            if float(p["avoidance_threshold"]) >= float(p["d_warn"]):
+                alias_reason = "avoidance_implies_no_warning_so_conjunction_equals_avoidance"
+        if pair_families == {"hysteretic_bounded_recovery", "disjunction"}:
+            companion = by_id[first_id.replace("br-v0", "or-v0")]
+            p = companion["parameter_values"]
+            if float(p["avoidance_threshold"]) >= float(p["d_warn"]):
+                alias_reason = "recovery_failure_implies_avoidance_failure_so_disjunction_equals_recovery"
+        missing.append(
+            {
+                "spec_pair": [first_id, second_id],
+                "contrast_type": contrast_type,
+                "classified_logical_alias": alias_reason,
+            },
+        )
+    unclassified = [row for row in missing if row["classified_logical_alias"] is None]
     return {
-        "pair_count": len(witnesses),
-        "all_pairs_have_distinguishing_trace": True,
+        "required_pair_count": len(required_pairs),
+        "witness_count": len(witnesses),
+        "missing_witness_count": len(missing),
+        "unclassified_missing_witness_count": len(unclassified),
+        "all_non_alias_pairs_have_distinguishing_trace": not unclassified,
         "witnesses": witnesses,
+        "missing_or_aliased": missing,
     }
 
 
@@ -724,7 +809,19 @@ def build_benchmark(
     synthetic_path = generated / "synthetic_trajectories.jsonl"
     real_path = generated / "real_trajectories.jsonl"
     label_path = generated / "gold_labels.jsonl"
-    _write_jsonl(synthetic_path, synthetic)
+    released_spec_ids = {
+        str(spec["spec_id"])
+        for spec in specifications
+        if spec["split"] in {"train", "validation"}
+    }
+    released_synthetic = [
+        record for record in synthetic if record["spec_id"] in released_spec_ids
+    ]
+    released_synthetic_validation = validate_trajectories(
+        released_synthetic,
+        specifications,
+    )
+    _write_jsonl(synthetic_path, released_synthetic)
     _write_jsonl(real_path, real)
     labels = [
         {
@@ -733,20 +830,23 @@ def build_benchmark(
             "gold_labels": record["gold_labels"],
         }
         for record in [*synthetic, *real]
+        if record["spec_id"] in released_spec_ids
     ]
     _write_jsonl(label_path, labels)
     reviewed = sum(review["status"] == "approved" for review in contract["reviews"])
     coverage = {
         "schema_version": 1,
-        "status": "machine_validated_five_item_foundation_reviewed_pending_d37_expansion",
+        "status": "d37_40_item_machine_validated_pending_independent_review",
         "scope": "offline data construction only; no model inference or training",
         "specification_count": len(specifications),
         "formula_families": sorted({spec["formula_family"] for spec in specifications}),
-        "synthetic": synthetic_validation,
+        "synthetic_machine_review_all_40_specs": synthetic_validation,
+        "synthetic_released_train_validation": released_synthetic_validation,
         "real": real_validation,
         "parameter_contrast_coverage": parameter_coverage,
         "combined": {
-            "trajectory_count": len(synthetic) + len(real),
+            "released_trajectory_count": len(released_synthetic) + len(real),
+            "machine_review_trajectory_count": len(synthetic) + len(real),
             "all_online_oracle_agree": True,
             "rtamt_max_robustness_difference": max(
                 synthetic_validation["rtamt_max_robustness_difference"],
@@ -756,17 +856,19 @@ def build_benchmark(
         "review": {
             "independently_reviewed_specifications": reviewed,
             "pending_independent_review_specifications": len(specifications) - reviewed,
-            "all_splits_frozen": False,
-            "structure_split_available": False,
+            "all_splits_frozen": True,
+            "structure_split_available": True,
             "o7_final_contract_frozen": True,
+            "held_out_gold_labels_released_to_model_code": False,
+            "released_gold_label_splits": ["train", "validation"],
         },
         "gates": {
             "stage2_v0_machine_foundation": True,
+            "stage2_v0_d37_implementation": True,
             "stage2_v0_final_dataset": False,
             "reason_final_gate_is_closed": [
-                "the D37 40-specification expansion is incomplete",
-                "the 35 future specifications have not yet undergone independent review",
-                "the current single-family fragment cannot support a structure split",
+                "35 new specifications have not yet undergone independent review",
+                "six frozen same-index Boolean contrasts are logical aliases and require owner disposition",
             ],
         },
     }

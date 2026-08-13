@@ -153,12 +153,17 @@ class OmniSafeWrapperTests(unittest.TestCase):
     def test_cost_routing_preserves_diagnostics(self) -> None:
         native = torch.tensor([2.0, 0.0])
         stl = torch.tensor([0.0, 1.0])
+        dense = torch.tensor([0.25, 1.0])
         torch.testing.assert_close(
             select_algorithm_cost(CostMode.TASK_ONLY, native, stl),
             torch.zeros(2),
         )
         torch.testing.assert_close(select_algorithm_cost(CostMode.NATIVE, native, stl), native)
         torch.testing.assert_close(select_algorithm_cost(CostMode.STL, native, stl), stl)
+        torch.testing.assert_close(
+            select_algorithm_cost(CostMode.STL_DENSE, native, stl, dense),
+            dense,
+        )
         torch.testing.assert_close(native, torch.tensor([2.0, 0.0]))
         torch.testing.assert_close(stl, torch.tensor([0.0, 1.0]))
 
@@ -227,6 +232,7 @@ class OmniSafeWrapperTests(unittest.TestCase):
             CostMode.TASK_ONLY: 0.0,
             CostMode.NATIVE: 2.0,
             CostMode.STL: 1.0,
+            CostMode.STL_DENSE: 1.0,
         }
         for mode, expected_cost in expected.items():
             with self.subTest(mode=mode.value):
@@ -250,6 +256,7 @@ class OmniSafeWrapperTests(unittest.TestCase):
                 self.assertEqual(float(reward), 0.75)
                 self.assertEqual(float(info["native_cost"]), 2.0)
                 self.assertEqual(float(info["stl_cost"]), 1.0)
+                self.assertEqual(float(info["stl_dense_cost"]), 1.0)
                 self.assertEqual(float(selected), expected_cost)
                 self.assertEqual(float(info["selected_algorithm_cost"]), expected_cost)
 

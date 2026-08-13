@@ -5,11 +5,11 @@
 This handoff package contains the durable research context required to continue the project on another computer or Codex account.
 
 It intentionally excludes LaTeX temporary files and bulk raw trajectories. The
-environment-inspection, rule-and-monitor, visualization, and OmniSafe-wrapper
-integration milestones are complete. Tested monitor/wrapper code, runnable
-visualization, frozen pilot configs, the completed full pilot's compact
-analysis/figures, and stable sanity evidence are tracked; bulk checkpoints and
-raw job logs remain local and ignored.
+environment-inspection, rule/monitor, Stage I pilot, post-pilot spatial replay,
+and D37/D38 implementation milestones are tracked. Tested monitor/wrapper code,
+runnable visualization, compact pilot/spatial figures, the 40-spec Stage II
+contract, train/validation model code and Gold diagnostic runtime are packaged;
+bulk checkpoints, full geometry and raw job logs remain local and ignored.
 
 ## Root documents
 
@@ -56,8 +56,12 @@ raw job logs remain local and ignored.
 | `docs/stage1_o8_main_study_decision_proposal.md` | Post-pilot close/longer/bounded-diagnostic decision package; no compute authorization |
 | `docs/stage2_o7_benchmark_design_proposal.md` | Candidate controlled-language schema, semantic pairs, splits, human review and offline gate |
 | `docs/stage1_trajectory_diagnosis_report.md` | Existing-checkpoint trajectory mechanism analysis and installed OmniSafe runtime contract |
-| `docs/stage2_v0_benchmark_report.md` | Machine-validated Stage II v0 single-family benchmark foundation and remaining review gates |
+| `docs/stage1_spatial_trajectory_report.md` | Full fixed-checkpoint coordinate replay, three spatial figures, aggregate interpretation and fixed real corpus |
+| `docs/stage2_v0_benchmark_report.md` | Machine-validated 40-spec/five-family D37 benchmark and remaining review gates |
 | `docs/stage2_v0_baseline_review_package.md` | Formal/current-observation/history-aware baseline contracts, fairness table and consolidated decisions |
+| `docs/stage2a_environment_and_preflight_report.md` | Isolated environment, exact versions/model revisions, CUDA preflights, tokenizer repair and MCE evidence |
+| `docs/stage2_gold_diagnostic_implementation_report.md` | D38 C0/C1, bootstrap repair, matched budget order and resumable matrix status |
+| `docs/stage2_compute_launch_readiness_report.md` | Passed software gates, repeated host-failure stop and exact recovery gate |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -101,7 +105,7 @@ raw job logs remain local and ignored.
 
 These are reference snapshots, not project implementation code.
 
-## Stage I implementation
+## Stage I and Stage II implementation
 
 | Path | Purpose |
 |---|---|
@@ -137,11 +141,18 @@ These are reference snapshots, not project implementation code.
 | `scripts/inspect_omnisafe_runtime.py` | Installed-source hashes and executable regression evidence for effective on-policy behavior |
 | `scripts/build_stage2_v0_benchmark.py` | Synthetic/real Stage II trajectory construction and three-way Gold validation |
 | `scripts/evaluate_stage2_predictions.py` | Common held-out trace-label, event-time, boundary and consistency evaluator |
+| `scripts/replay_stage1_spatial_trajectories.py` | All-checkpoint synchronized public-policy/privileged-diagnostic coordinate replay |
+| `scripts/plot_stage1_spatial_diagnosis.py` | Deterministic top-down, density, feasibility and goal-context artifacts |
+| `scripts/build_stage2_training_data.py` | Leakage-safe formal/direct train/validation corpora |
+| `scripts/build_stage2_real_corpus.py` | Fixed 60-episode real-policy selection and non-held-out label release |
+| `scripts/train_stage2a.py` / `scripts/run_stage2a_train_validation.py` | Hash-guarded three-method Stage II-A train/validation runner |
+| `scripts/run_gold_cost_diagnostic.py` / `scripts/run_gold_cost_diagnostic_matrix.py` | Single-cell and task-first D38 diagnostic launchers |
+| `configs/stage2_gold_diagnostic/protocol.yaml` | Frozen new seeds, five conditions, scale, separate-unit budget source and screening gate |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
 | `src/safety_stl/visualization.py` | Live viewer, annotated video, controller, and independent logs |
-| `src/safety_stl/omnisafe_env.py` | Three cost modes, shared temporal observation, vector monitor lifecycle, and OmniSafe registration |
+| `src/safety_stl/omnisafe_env.py` | Task/native/Gold/dense cost modes, shared temporal observation and vector monitor lifecycle |
 | `src/safety_stl/evaluation.py` | Checkpoint loading, gold oracle/RTAMT verification, and policy metrics |
 | `src/safety_stl/pilot_protocol.py` | D31 validation and OmniSafe config composition |
 | `src/safety_stl/pilot_runner.py` | Immutable attempts, hash verification, fixed checkpoint selection, training/evaluation execution |
@@ -149,10 +160,15 @@ These are reference snapshots, not project implementation code.
 | `src/safety_stl/runtime_contract.py` | Effective OmniSafe episode-window, discount, advantage and timeout-bootstrap audit |
 | `src/safety_stl/trajectory_diagnosis.py` | Existing-checkpoint replay, mechanism decomposition, exports and plots |
 | `src/safety_stl/stage2_benchmark.py` | Versioned Stage II contract validation, trace generation/import and Gold labeling |
+| `src/safety_stl/stage2_formula.py` / `stage2_specifications.py` | Five-family direct semantics, typed AST compilation and frozen 40-record construction |
+| `src/safety_stl/stage2_models.py` / `stage2_training.py` | T5 typed-AST, MiniLM current and MiniLM+GRU causal-history training |
+| `src/safety_stl/omnisafe_adapter.py` / `diagnostic_algorithm.py` | Settled terminal cost bootstrap and mechanism-instrumented PPOLag |
+| `src/safety_stl/learner_cost.py` / `gold_diagnostic_runner.py` | Frozen C0/C1 adapters, separate routing and immutable diagnostic attempts |
+| `src/safety_stl/spatial_diagnosis.py` / `spatial_plotting.py` | Coordinate replay validation and deterministic aggregate figures |
 | `src/safety_stl/offline_metrics.py` | Common Stage II prediction validation and offline metric computation |
-| `benchmarks/stage2_v0/` | Draft single-family schemas, five examples, generated traces, labels, coverage and hashes |
-| `configs/stage2_v0/baselines.yaml` | Reviewable three-method access/supervision/compute contract; not yet finally frozen |
-| `tests/` | Signal, monitor/oracle, visualization, wrapper, vector lifecycle, and stable-fixture tests |
+| `benchmarks/stage2_v0/` | D37 40-spec schemas, review packet, generated train/validation evidence, real selection and hashes |
+| `configs/stage2_v0/baselines.yaml` | Frozen three-method information-access, model, training and admission contract |
+| `tests/` | 101 signal, semantics, wrapper, replay, model, runtime, leakage and runner tests |
 
 ## Excluded files
 
@@ -173,7 +189,11 @@ The package excludes:
   `results/on_policy_sanity/`, and `results/pilot_sanity/`;
 - bulk full-pilot job attempts, checkpoints and raw progress logs under
   `results/stage1_pilot/jobs/`; they exist locally and are hash-addressed by
-  successful manifests but are intentionally not packaged.
+  successful manifests but are intentionally not packaged;
+- `results/post_pilot_spatial_diagnosis/full_geometry.csv.gz` (1,501,500 rows),
+  whose byte count and SHA-256 are retained in the tracked replay manifest;
+- Stage II bulk formal/direct/real-policy JSONL corpora and all model/RL
+  checkpoints, whose compact manifests retain exact counts and hashes.
 
 ## Generated outputs
 
@@ -225,13 +245,18 @@ selection. Stage II generated JSONL files and their local hash manifest are
 tracked under `benchmarks/stage2_v0/generated/` because they are compact,
 versioned benchmark evidence rather than raw training output.
 
+The spatial package tracks compact summaries, representative geometry, density
+counts, goal-context metrics, layout table, three inspected PNGs and manifests.
+The full geometry gzip is local/ignored. The fixed real corpus and model-training
+bulk JSONL are also local/ignored; their schemas, deterministic selections,
+record counts and SHA-256 manifests are tracked under `benchmarks/stage2_v0/`.
+
 ## Future additions
 
-The D31 protocol, three-condition sanity, resumable matrix runner, frozen
-analysis, excluded 100k preflight and full five-seed/three-condition pilot have
-passed their engineering gates. The pilot did not meet the 30% safety target
-and is not converged. The post-pilot runtime/trajectory diagnosis and Stage II
-machine foundation are now implemented without retraining; the full suite has
-68 passing tests. O8 remains open for
-the final-main-study standard; independent semantic review and the final O7
-formula/split/model/gate decisions remain open.
+The D31 pilot and complete spatial diagnosis are finished; the pilot did not
+meet the 30% target and is not converged. D37 design is implemented, but 35
+independent reviews and six-alias owner disposition still block held-out
+evaluation. D38 software is implemented to its compute gate. Repeated kernel
+MCEs trigger D41, so Stage II-A and Gold diagnostic training remain paused until
+administrator-level hardware recovery and a clean discarded epoch. A five-seed
+1M confirmatory study is not authorized.

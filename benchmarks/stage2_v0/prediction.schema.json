@@ -27,25 +27,7 @@
     "predicted_stl": {"type": ["string", "null"]},
     "predicted_structure": {
       "type": ["object", "null"],
-      "additionalProperties": false,
-      "required": [
-        "formula_family",
-        "d_warn",
-        "d_safe",
-        "deadline_steps",
-        "warning_comparator",
-        "recovery_comparator",
-        "deadline_inclusive"
-      ],
-      "properties": {
-        "formula_family": {"type": "string"},
-        "d_warn": {"type": "number"},
-        "d_safe": {"type": "number"},
-        "deadline_steps": {"type": "integer", "minimum": 1},
-        "warning_comparator": {"type": "string"},
-        "recovery_comparator": {"type": "string"},
-        "deadline_inclusive": {"type": "boolean"}
-      }
+      "description": "Complete D37 typed AST; compiled deterministically and never silently repaired."
     }
   }
 }

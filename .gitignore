@@ -5,3 +5,10 @@ __pycache__/
 build/
 dist/
 
+# Stage II bulk corpora stay local; schemas, deterministic selections and
+# content hashes are tracked separately.
+benchmarks/stage2_v0/generated/real_policy_corpus.jsonl
+benchmarks/stage2_v0/generated/real_policy_train_validation_labels.jsonl
+benchmarks/stage2_v0/generated/formal_train_pairs.jsonl
+benchmarks/stage2_v0/generated/direct_train_traces.jsonl
+benchmarks/stage2_v0/generated/direct_validation_traces.jsonl

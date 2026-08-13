@@ -52,9 +52,15 @@ train and evaluate a Safe RL agent
 3. **Stage III: Broader setting**  
    进一步研究模糊语言、缺失参数、更多 STL 结构、感知噪声、动态障碍、其他 benchmark 和真实系统。
 
-Stage I pilot 已完成。D37 已冻结 Stage II v0 benchmark 和三条 baseline 的设计。
-当前连续工作是：真实二维轨迹复现、40 条规格实现与人工复核、Stage II-A 离线比较、
-Gold learner-cost 诊断、公平 online interface 冻结和 bounded Stage II-B pilot。
+Stage I pilot 已完成。D37 的 40 条 Stage II v0 specifications、五个公式族、typed
+AST、train/validation 数据和三条 baseline 已实现并通过 machine checks；5 条历史
+记录已人工复核，35 条新记录仍待独立复核。15 个旧 checkpoint 的完整二维空间
+复放、三张图和固定 60-episode real corpus 也已完成。
+
+Stage II-A 独立 CUDA 环境和三方法最小真实 update 均通过；但 full formal cell 的
+首次运行出现 MCE 后 native-thread segfault，干净重试在完成两个 finite epochs 后又
+记录新 MCE。D41 已暂停所有新训练，partial checkpoints 不算结果。held-out evaluation
+还独立受到人工复核 gate 限制。
 
 ## 2026-08-10 研究定位更新
 
@@ -186,13 +192,23 @@ Stage I pilot 的历史问题是：
   window 和 effective cost discount；未修改 Conda `site-packages`；
 - 已实现旧 final-checkpoint 的 CPU-only per-step replay/export、机制分解和图表入口，
   不训练、不选择 checkpoint；
-- 已建立 Stage II v0 单一已验证公式族的机器可验证基础：5 条草案已由 Yuhang 人工复核通过、55 条
-  synthetic boundary/history trajectories、真实轨迹统一导入、Gold 三方一致性、
-  schema/leakage/coverage 检查和统一离线指标；
-- 已准备 formal、published-style current-observation direct 和 history-aware direct
-  的 access/supervision 公平性评审包；没有选择、调用或训练语言模型。
-- 完整自动测试现为 68 项，`pip check`、Python compile、shell syntax、JSON/YAML、
-  generated-artifact hashes 和 deterministic Stage II rebuild 全部通过。
+- 已实现 D37 完整 40 条、5 formula families 和 120 language records；全量 machine
+  review 为 791 synthetic + 6 historical real traces，online/direct/RTAMT 一致，
+  model-visible artifacts 不包含 held-out labels；
+- 已生成 10,000 formal pairs、2,000 direct train traces、400 validation traces，
+  test/OR leakage 为零，并准备 35 条 pending records 的独立人工 review packet；
+- 已实现 T5 typed-AST formal、MiniLM current-observation direct、MiniLM+GRU-128
+  history direct 和 deterministic grammar sanity；独立 `stl-stage2-offline` 环境可用
+  RTX 4090 完成三方法 forward/backward/checkpoint；
+- 已实现项目自有 terminal-cost bootstrap repair、C0/C1 learner-cost adapter、LR floor
+  和 mechanism diagnostics；预算必须来自 3 个新 task-only controls × 50 个相同 paired
+  evaluation seeds，并已实现可保留失败 attempt 的 matrix launcher；
+- 已完成 15 checkpoints × 100 evaluations 的真实二维 replay：1,500 episodes、
+  1,501,500 samples 与冻结结果一致，三张图已检查；
+- 已固定 60 条 real-policy traces；2,400 spec/trace 组合 machine review 全通过，
+  只释放 1,680 条 train/validation labels；
+- 自动测试已扩展到 101 项并全部通过；
+- 当前没有训练进程；Stage II-A 和 Gold diagnostic 等待 D41 hardware gate。
 
 ## 可视化快速启动
 
@@ -218,14 +234,14 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 Stage I full pilot 和无训练诊断已完成。D38 授权工作电脑按以下顺序连续推进：
 
-1. 用原 checkpoint/seed 补采 agent、goal 和 hazard 坐标，画真实二维轨迹；
-2. 将五条草稿扩展为 D37 的 40 条受控规格并准备独立人工复核；
-3. 实现 T5-base formal、MiniLM current-observation direct 和 MiniLM+GRU history
-   direct baseline；
-4. 通过复核后运行 Stage II-A held-out 离线比较；
-5. 并行修复 terminal cost bootstrap，并比较 binary 与 causal dense Gold learner
-   cost；
-6. gate 通过后冻结统一 online cost interface，运行 bounded Stage II-B pilot。
+1. 管理员排查重复 MCE，完成 CPU/RAM 稳定性检查和一个不计结果的 clean formal epoch；
+2. 由独立人工 reviewer 审核 35 条新规格，并由 owner 处理 6 组 frozen logical aliases；
+3. hardware gate 通过后恢复 Stage II-A 三方法 × 三 seed train/validation matrix；
+4. 运行 Gold task-only dry run 和三个新 seed 的 300k controls，以其相同 50 paired
+   evaluations 分别冻结 C0/C1 budget，再运行 C0/C1 screening matrix；
+5. 仅在复核后运行 Stage II-A held-out 离线比较；
+6. 只有 primary offline methods 与 Gold learner-cost gate 都通过，才冻结统一 online
+   interface 并运行 bounded Stage II-B pilot。
 
 完整参数、split、模型、公式、成功门槛、输出和训练监控规则见
 `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`。训练启动后只监测到真实 update、checkpoint
@@ -237,8 +253,13 @@ Stage I full pilot 和无训练诊断已完成。D38 授权工作电脑按以下
 - O8 决策包：`docs/stage1_o8_main_study_decision_proposal.md`
 - O7 benchmark 提案：`docs/stage2_o7_benchmark_design_proposal.md`
 - Stage I 轨迹/运行时诊断：`docs/stage1_trajectory_diagnosis_report.md`
+- Stage I 二维空间诊断：`docs/stage1_spatial_trajectory_report.md`
 - Stage II v0 foundation：`docs/stage2_v0_benchmark_report.md`
 - 三方法公平性与待决项：`docs/stage2_v0_baseline_review_package.md`
+- Stage II-A 环境、preflight 与 hardware stop：
+  `docs/stage2a_environment_and_preflight_report.md`
+- D38 Gold learner-cost 实现：`docs/stage2_gold_diagnostic_implementation_report.md`
+- Stage II compute readiness/stop：`docs/stage2_compute_launch_readiness_report.md`
 - 图表与机器可读结果：`results/stage1_pilot/analysis/`
 
 复现 post-pilot CPU 诊断和 Stage II 数据构建：
@@ -248,6 +269,10 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
   /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/diagnose_stage1_trajectories.py
 env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
   /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/build_stage2_v0_benchmark.py
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/replay_stage1_spatial_trajectories.py
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/plot_stage1_spatial_diagnosis.py
 ```
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
@@ -312,19 +337,23 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
 8. `docs/stage1_o8_main_study_decision_proposal.md`
 9. `docs/stage2_o7_benchmark_design_proposal.md`
 10. `docs/stage1_trajectory_diagnosis_report.md`
-11. `docs/stage2_v0_benchmark_report.md`
-12. `docs/stage2_v0_baseline_review_package.md`
-13. `DECISIONS.md`
-14. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-15. `PROJECT_CONTEXT.md`
-16. `docs/research_direction_novelty_feasibility.md`
-17. `docs/theory_and_revised_experiment_8.10.md`
-18. `docs/minimum_research_delivery_8.10.md`
-19. `docs/CURRENT_STAGE1_STATUS.md`
-20. `docs/stage1_rule_monitor_spec.md`
-21. `docs/stage1_plan.md`
-22. `docs/omnisafe_integration_report.md`
-23. `references/REFERENCES.md`
+11. `docs/stage1_spatial_trajectory_report.md`
+12. `docs/stage2_v0_benchmark_report.md`
+13. `docs/stage2_v0_baseline_review_package.md`
+14. `docs/stage2a_environment_and_preflight_report.md`
+15. `docs/stage2_gold_diagnostic_implementation_report.md`
+16. `docs/stage2_compute_launch_readiness_report.md`
+17. `DECISIONS.md`
+18. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+19. `PROJECT_CONTEXT.md`
+20. `docs/research_direction_novelty_feasibility.md`
+21. `docs/theory_and_revised_experiment_8.10.md`
+22. `docs/minimum_research_delivery_8.10.md`
+23. `docs/CURRENT_STAGE1_STATUS.md`
+24. `docs/stage1_rule_monitor_spec.md`
+25. `docs/stage1_plan.md`
+26. `docs/omnisafe_integration_report.md`
+27. `references/REFERENCES.md`
 
 ## 文件夹说明
 

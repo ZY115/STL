@@ -1,14 +1,18 @@
 {
   "benchmark_id": "safety_stl_controlled_language_v0",
   "schema_version": 1,
-  "status": "five_item_machine_foundation_pending_d37_expansion_and_human_review",
+  "status": "d37_40_item_contract_implemented_pending_human_review",
   "environment_id": "SafetyPointGoal1-v0",
   "scope": "offline_semantic_benchmark_foundation",
   "supported_fragment": {
     "formula_families": [
-      "hysteretic_bounded_recovery"
+      "hysteretic_bounded_recovery",
+      "recovery_plus_persistence",
+      "bounded_avoidance",
+      "conjunction",
+      "disjunction"
     ],
-    "note": "Only the already verified Stage I family is currently executable. D37 approves a five-family 40-item target that remains to be implemented.",
+    "note": "D37 fixes five typed-AST families. The 35 new records remain pending independent review and are offline-only pending feasibility.",
     "signal_ids": [
       "nearest_hazard_center_distance_public"
     ],
@@ -28,14 +32,14 @@
     }
   },
   "draft_split_policy": {
-    "status": "d37_assignment_frozen_implementation_pending",
+    "status": "d37_split_frozen",
     "candidate_axes": [
       "paraphrase",
       "parameter_composition",
       "formula_structure"
     ],
     "group_semantic_pair_across_splits": true,
-    "structure_split_available_in_current_fragment": false,
+    "structure_split_available_in_current_fragment": true,
     "target_counts": {"train": 20, "validation": 8, "parameter_test": 4, "structure_test_disjunction": 8}
   },
   "gold_label_policy": {

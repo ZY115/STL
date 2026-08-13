@@ -9,6 +9,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Sequence, Tuple
 
+from safety_stl.stage2_specifications import compile_typed_ast
+
 
 BOUNDARY_TAGS = {
     "exact_deadline",
@@ -17,19 +19,7 @@ BOUNDARY_TAGS = {
     "warning_equality",
     "safe_equality",
 }
-FORMULA_PATTERN = re.compile(
-    r"^G\(e\(d < -?(?:\d+(?:\.\d*)?|\.\d+)\) -> "
-    r"F_\[0,\d+\]\(d >= -?(?:\d+(?:\.\d*)?|\.\d+)\)\)$",
-)
-STRUCTURE_FIELDS = {
-    "formula_family",
-    "d_warn",
-    "d_safe",
-    "deadline_steps",
-    "warning_comparator",
-    "recovery_comparator",
-    "deadline_inclusive",
-}
+FORMULA_PATTERN = re.compile(r"^(?:G|F_|\().+")
 
 
 def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -100,7 +90,7 @@ def evaluate_predictions(
     formula_total = formula_exact = 0
     formula_syntax_valid = 0
     structure_total = structure_exact = 0
-    structure_field_correct = {field: 0 for field in sorted(STRUCTURE_FIELDS)}
+    structure_compilable = 0
     normalized: MutableMapping[str, Dict[str, List[int]]] = defaultdict(dict)
     active_predictions: MutableMapping[str, Dict[str, List[int]]] = defaultdict(dict)
     prediction_fields = {
@@ -198,41 +188,19 @@ def evaluate_predictions(
 
         predicted_structure = prediction.get("predicted_structure")
         if predicted_structure is not None:
-            if not isinstance(predicted_structure, Mapping) or set(predicted_structure) != STRUCTURE_FIELDS:
-                errors.append(f"{key} has invalid predicted_structure fields")
+            structure_total += 1
+            if not isinstance(predicted_structure, Mapping):
+                errors.append(f"{key} predicted_structure must be an object or null")
             else:
-                structure_total += 1
-                parameters = spec["parameter_values"]
-                grounding = spec["grounding_schema"]
-                gold_structure = {
-                    "formula_family": spec["formula_family"],
-                    "d_warn": parameters["d_warn"],
-                    "d_safe": parameters["d_safe"],
-                    "deadline_steps": parameters["deadline_steps"],
-                    "warning_comparator": grounding["warning_comparator"],
-                    "recovery_comparator": grounding["recovery_comparator"],
-                    "deadline_inclusive": grounding["deadline_inclusive"],
-                }
-                field_matches = {}
-                for field in sorted(STRUCTURE_FIELDS):
-                    predicted_value = predicted_structure[field]
-                    gold_value = gold_structure[field]
-                    if field in {"d_warn", "d_safe"}:
-                        valid_numeric = (
-                            not isinstance(predicted_value, bool)
-                            and isinstance(predicted_value, (int, float))
-                            and math.isfinite(float(predicted_value))
-                        )
-                        field_matches[field] = valid_numeric and math.isclose(
-                            float(predicted_value),
-                            float(gold_value),
-                            rel_tol=0.0,
-                            abs_tol=1e-9,
-                        )
-                    else:
-                        field_matches[field] = predicted_value == gold_value
-                    structure_field_correct[field] += field_matches[field]
-                structure_exact += all(field_matches.values())
+                try:
+                    compiled_structure = compile_typed_ast(predicted_structure)
+                except (KeyError, TypeError, ValueError):
+                    compiled_structure = None
+                structure_compilable += compiled_structure is not None
+                structure_exact += predicted_structure == spec["typed_ast"]
+                if predicted_stl is not None and compiled_structure is not None:
+                    if compiled_structure != str(predicted_stl).strip():
+                        errors.append(f"{key} predicted typed AST and STL string disagree")
 
     if errors:
         raise ValueError("invalid Stage II predictions:\n- " + "\n- ".join(errors))
@@ -311,11 +279,8 @@ def evaluate_predictions(
             "exact_match": _safe_ratio(formula_exact, formula_total),
         },
         "structured_meaning": {
+            "compilable_rate": _safe_ratio(structure_compilable, structure_total),
             "exact_record_accuracy": _safe_ratio(structure_exact, structure_total),
-            "field_accuracy": {
-                field: _safe_ratio(count, structure_total)
-                for field, count in structure_field_correct.items()
-            },
         },
         "coverage": {
             "boundary_prediction_records": boundary_total,
@@ -328,7 +293,7 @@ def evaluate_predictions(
         "notes": [
             "Formula exact match is diagnostic and is not semantic equivalence.",
             "History-pair accuracy requires optional predicted_active_obligation outputs.",
-            "Numerical online-admission thresholds remain prospectively unfrozen pending O7 review.",
+            "D37 admission thresholds are frozen; held-out evaluation remains review-gated.",
         ],
     }
 

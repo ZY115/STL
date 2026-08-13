@@ -1,0 +1,13 @@
+{
+  "direct_trace_length": 128,
+  "direct_train_trace_count": 2000,
+  "direct_validation_trace_count": 400,
+  "formal_pair_count": 10000,
+  "generation_seed": 20260812,
+  "held_out_or_test_content": "prohibited",
+  "schema_version": 1,
+  "supervision": {
+    "direct": "train/validation Gold cost, active and auxiliary remaining labels",
+    "formal": "train-split typed AST"
+  }
+}

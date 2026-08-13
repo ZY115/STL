@@ -528,6 +528,55 @@ minutes, it leaves the resumable job running, records PID, hashes, logs, ETA and
 resume commands, and stops continuous monitoring. This authorization does not
 cover a five-seed, one-million-transition confirmatory Stage II-B main study.
 
+### D39. The implemented D37 parameter matrix contains six documented logical aliases
+
+Machine construction of all 40 frozen specifications found distinguishing
+traces for 109 of 115 required adjacent-parameter or same-index structure
+contrasts. The remaining six cannot have a witness under the current event
+semantics and parameter values: `br-v0-006/007/008` equal their same-index OR
+records, and `ba-v0-006/007/008` equal their same-index AND records.
+
+The implementation must classify and report these aliases rather than invent a
+trace or silently alter D37. Train/validation work may continue because the
+records and splits remain frozen, but the final Stage II v0 dataset gate stays
+closed until the owner prospectively accepts the aliases as hard cases or
+records an amended parameter matrix and expected impact. This finding does not
+release held-out Gold labels.
+
+### D40. D38 diagnostic implementation details are frozen before training
+
+The bounded Gold learner-cost implementation uses new matched training seeds
+`7307`, `8419` and `9521`, which do not overlap the Stage I pilot. It contains
+five cells per seed: one task-only control and C0/C1 crossed with existing
+`lambda_init=0.001` or early-pressure `lambda_init=0.1`. C0 and C1 limits are
+derived separately as 70% of their own matched pre-diagnostic task-only mean;
+their numerical units must never be copied.
+
+The project-owned runtime preserves reward timeout bootstrap but sets cost
+bootstrap to zero when terminal-unresolved has already settled the Gold
+obligation. The actor learning-rate schedule has floor `3e-5`, and the required
+per-epoch mechanism diagnostics are frozen in
+`configs/stage2_gold_diagnostic/protocol.yaml`. This is still the non-confirmatory
+300k D38 diagnosis and does not authorize Stage II-B unless its gates and both
+primary offline gates pass.
+
+### D41. Repeated host machine-check events stop new research training
+
+The first real Stage II-A formal run encountered kernel machine-check events at
+`22:52:01` and `22:57:29`, followed by a `pt_autograd_0` segmentation fault in
+`libstdc++` at `23:03:27`. A clean from-scratch retry reproduced two finite
+epochs, but the kernel recorded another machine-check event at `23:15:31`.
+There was no logged CUDA Xid, OOM or non-finite training value.
+
+Because this satisfies the prospectively declared repeated-technical-failure
+stop condition, all new Stage II-A and Gold-diagnostic GPU training is paused.
+Partial formal checkpoints remain diagnosis-only and are not accepted results.
+This does not change D37/D38 models, data, seeds, costs or gates. Training may
+resume only after administrator-level hardware investigation and a clean
+stability gate consisting of independent CPU/RAM checks plus one discarded
+formal epoch with no new MCE, segfault, CUDA Xid, OOM or non-finite value.
+CPU-only replay, artifact generation, validation and documentation may continue.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

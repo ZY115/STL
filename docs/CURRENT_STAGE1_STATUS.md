@@ -729,3 +729,41 @@ git push origin main
 git status --short --branch
 git log --oneline --decorate -10
 ```
+
+## 13. 2026-08-12 Stage II 连续执行后的最新状态
+
+### 13.1 已完成且不再是待办
+
+- 15 个 Stage I final checkpoints × 100 paired evaluation seeds 已完成真实二维
+  coordinate replay，共 1,500 episodes、1,501,500 reset/action samples；
+- 所有 episode totals 与冻结表一致，public lidar 与 diagnostic twin geometry 一致；
+- `paired_top_down_trajectories.png`、`event_spatial_density.png` 和
+  `layout_feasibility.png` 已生成并人工检查；
+- 固定 60-episode real-policy corpus 已完成，40×60 的 2,400 个组合 machine review
+  通过，只写出 train/validation 的 1,680 条 labels；
+- D37 40-spec/五族/typed-AST、训练数据、35-record human review packet 和六个 logical
+  aliases 的审计已完成；
+- T5 formal、MiniLM current、MiniLM+GRU history 的实现、隔离环境和三方法最小 CUDA
+  update 已完成；
+- D38 terminal-cost bootstrap repair、C0/C1、dense-cost wrapper、LR floor、mechanism
+  logs、严格 3×50 matched task-control budget contract 和 resumable attempt runner 已实现。
+
+### 13.2 当前两个独立 blocker
+
+1. **硬件：** kernel 先后记录三个 MCE；第一次 full formal run 还出现
+   `pt_autograd_0` 在 `libstdc++` 的 segfault。clean retry 的两个 epoch 指标 finite，
+   但在第三个 MCE 后按 D41 停止。没有 CUDA Xid/OOM，也不能据此把故障单独归因给
+   GPU、CPU、RAM 或 motherboard。当前没有训练进程，partial checkpoints 只作诊断。
+2. **研究数据：** 35 条新规格等待独立人工 reviewer；六个 frozen Boolean aliases
+   等待 owner 接受为 hard cases 或前瞻性修改 D37。两项完成前不得运行 held-out
+   Stage II-A evaluation。
+
+### 13.3 恢复顺序
+
+管理员先收集可解码的硬件错误、检查 BIOS/microcode 和任何 XMP/overclock/undervolt，
+运行独立 CPU/RAM stability tests。随后必须完成一个不计研究结果的 formal epoch，且
+期间无新 MCE、segfault、CUDA Xid、OOM 或 non-finite value。
+
+hardware gate 通过后：恢复 Stage II-A train/validation；运行 Gold task-only dry run；
+完成三个新 seed 的 task-only controls 和相同 50 paired evaluations；分别冻结 C0/C1
+预算；再运行 12 个 C0/C1 cost cells。五种子 1M confirmatory study 仍未授权。

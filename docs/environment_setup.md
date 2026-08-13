@@ -3,7 +3,9 @@
 ## Status
 
 The Stage I environment was installed and verified on 2026-07-29. Its CUDA
-training backend was enabled and verified on 2026-08-11.
+training backend was enabled and verified on 2026-08-11. On 2026-08-12,
+`typeguard==4.4.0` was added to satisfy
+`generate-parameter-library-py==0.6.0`; `pip check` then returned clean.
 
 The environment is named `stl-stage1`. It is isolated from existing ROS and
 Isaac Python paths and now uses the official PyTorch CUDA 12.4 wheel.
@@ -58,6 +60,7 @@ not modified.
 | Safety-Gymnasium | 1.0.0 | Official PyPI release / repository tag `v1.0.0` |
 | OmniSafe | 0.5.0 | Official PyPI release / repository tag `v0.5.0` |
 | RTAMT | 0.3.5 | Official PyPI release |
+| Typeguard | 4.4.0 | Required by `generate-parameter-library-py 0.6.0` |
 
 No editable source checkout is used by this environment. Package versions, rather
 than mutable repository working trees, identify the installed code. The complete
@@ -85,7 +88,8 @@ PYTHONNOUSERSITE=1 \
   numpy==1.23.5 \
   safety-gymnasium==1.0.0 \
   omnisafe==0.5.0 \
-  rtamt==0.3.5
+  rtamt==0.3.5 \
+  typeguard==4.4.0
 
 /home/jerry/anaconda3/bin/conda env config vars set \
   -n stl-stage1 \
@@ -95,7 +99,7 @@ PYTHONNOUSERSITE=1 \
   MUJOCO_GL=egl
 ```
 
-The lock file contains 104 exact pip distributions plus the exact Conda package
+The lock file contains 105 exact pip distributions plus the exact Conda package
 versions resolved on the successful host.
 
 ## Create or activate

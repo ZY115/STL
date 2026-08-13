@@ -1,11 +1,12 @@
 """OmniSafe environment integration for the fixed Stage I STL rule.
 
-The three registered environment IDs expose exactly the same augmented policy
+The four registered environment IDs expose exactly the same augmented policy
 observation.  They differ only in the scalar cost returned to OmniSafe:
 
 * task-only: zero cost;
 * native-cost: Safety-Gymnasium's native hazard cost;
 * STL-cost: the bounded-recovery monitor's sparse binary event cost.
+* STL-dense-cost: D38's causal learner surrogate, logged separately from Gold.
 
 Safety-Gymnasium auto-resets vector environments.  On a terminal transition,
 this wrapper therefore evaluates ``info['final_observation']`` first, augments
@@ -32,6 +33,7 @@ from omnisafe.envs.core import CMDP, env_register
 from omnisafe.envs.safety_gymnasium_env import SafetyGymnasiumEnv
 
 from safety_stl.monitor import BoundedRecoveryMonitor, MonitorOutput
+from safety_stl.learner_cost import causal_dense_surrogate
 from safety_stl.signals import distance_from_observation
 
 
@@ -39,7 +41,13 @@ BASE_ENVIRONMENT_ID = "SafetyPointGoal1-v0"
 TASK_ONLY_ENV_ID = "Stage1SafetyPointGoal1TaskOnly-v0"
 NATIVE_COST_ENV_ID = "Stage1SafetyPointGoal1NativeCost-v0"
 STL_COST_ENV_ID = "Stage1SafetyPointGoal1STLCost-v0"
-REGISTERED_ENV_IDS = (TASK_ONLY_ENV_ID, NATIVE_COST_ENV_ID, STL_COST_ENV_ID)
+STL_DENSE_COST_ENV_ID = "Stage2SafetyPointGoal1STLDenseCost-v0"
+REGISTERED_ENV_IDS = (
+    TASK_ONLY_ENV_ID,
+    NATIVE_COST_ENV_ID,
+    STL_COST_ENV_ID,
+    STL_DENSE_COST_ENV_ID,
+)
 DEFAULT_RULE_CONFIG = Path(__file__).resolve().parents[2] / "configs" / "stage1_rule.yaml"
 
 TEMPORAL_OBSERVATION_FIELDS = (
@@ -51,12 +59,14 @@ TEMPORAL_OBSERVATION_FIELDS = (
 ENV_SPEC_KEYS = (
     "Metrics/NativeCost",
     "Metrics/STLCost",
+    "Metrics/STLDenseCost",
     "Metrics/SelectedAlgorithmCost",
     "Metrics/STLTriggers",
     "Metrics/STLRecoveries",
     "Metrics/STLLateRecoveries",
     "Metrics/STLDeadlineViolations",
     "Metrics/STLTerminalUnresolved",
+    "Metrics/GoalEvents",
 )
 
 
@@ -66,12 +76,14 @@ class CostMode(str, Enum):
     TASK_ONLY = "task_only"
     NATIVE = "native_cost"
     STL = "stl_cost"
+    STL_DENSE = "stl_dense_cost"
 
 
 ENV_ID_TO_COST_MODE = {
     TASK_ONLY_ENV_ID: CostMode.TASK_ONLY,
     NATIVE_COST_ENV_ID: CostMode.NATIVE,
     STL_COST_ENV_ID: CostMode.STL,
+    STL_DENSE_COST_ENV_ID: CostMode.STL_DENSE,
 }
 
 
@@ -79,6 +91,7 @@ def select_algorithm_cost(
     mode: CostMode,
     native_cost: torch.Tensor,
     stl_cost: torch.Tensor,
+    stl_dense_cost: Optional[torch.Tensor] = None,
 ) -> torch.Tensor:
     """Return the learner cost without modifying either diagnostic cost."""
 
@@ -90,6 +103,10 @@ def select_algorithm_cost(
         return native_cost.clone()
     if mode is CostMode.STL:
         return stl_cost.clone()
+    if mode is CostMode.STL_DENSE:
+        if stl_dense_cost is None or stl_dense_cost.shape != stl_cost.shape:
+            raise ValueError("STL dense mode requires a same-shaped dense cost tensor")
+        return stl_dense_cost.clone()
     raise ValueError(f"unsupported cost mode: {mode!r}")
 
 
@@ -206,6 +223,8 @@ class Stage1TemporalCostWrapper(CMDP):
         self._observation_space_dict = observation_space_dict
         self._lidar_range = float(lidar_range)
         self._device = torch.device(device)
+        self._d_warn = float(d_warn)
+        self._d_safe = float(d_safe)
         self._num_envs = int(base_env.num_envs)
         self._max_episode_steps = int(max_episode_steps)
         self._action_space = base_env.action_space
@@ -271,6 +290,7 @@ class Stage1TemporalCostWrapper(CMDP):
         outputs: Sequence[MonitorOutput],
         native_cost: torch.Tensor,
         stl_cost: torch.Tensor,
+        stl_dense_cost: torch.Tensor,
         selected_cost: torch.Tensor,
     ) -> None:
         scalar_rows = [_monitor_scalar_diagnostics(output) for output in outputs]
@@ -296,6 +316,7 @@ class Stage1TemporalCostWrapper(CMDP):
                 info[key] = self._tensor(values, dtype=torch.int64)
         info["native_cost"] = native_cost.clone()
         info["stl_cost"] = stl_cost.clone()
+        info["stl_dense_cost"] = stl_dense_cost.clone()
         info["selected_algorithm_cost"] = selected_cost.clone()
         info["stl_cost_mode"] = self._cost_mode.value
 
@@ -305,6 +326,7 @@ class Stage1TemporalCostWrapper(CMDP):
         outputs: Sequence[MonitorOutput],
         native_values: Sequence[float],
         stl_values: Sequence[float],
+        stl_dense_values: Sequence[float],
         selected_values: Sequence[float],
         done: Sequence[bool],
     ) -> None:
@@ -324,6 +346,7 @@ class Stage1TemporalCostWrapper(CMDP):
             target.update(_monitor_scalar_diagnostics(outputs[index]))
             target["native_cost"] = native_values[index]
             target["stl_cost"] = stl_values[index]
+            target["stl_dense_cost"] = stl_dense_values[index]
             target["selected_algorithm_cost"] = selected_values[index]
             target["stl_cost_mode"] = self._cost_mode.value
 
@@ -350,10 +373,12 @@ class Stage1TemporalCostWrapper(CMDP):
             if self._num_envs == 1
             else torch.zeros(self._num_envs, dtype=torch.float32, device=self._device)
         )
-        self._attach_monitor_info(info, outputs, zero, zero, zero)
+        self._attach_monitor_info(info, outputs, zero, zero, zero, zero)
         zero_values = [0.0] * self._num_envs
         self._record_episode_metrics(
             outputs,
+            zero_values,
+            zero_values,
             zero_values,
             zero_values,
             zero_values,
@@ -428,21 +453,61 @@ class Stage1TemporalCostWrapper(CMDP):
 
         stl_values = [float(output.stl_cost) for output in outputs]
         stl_cost = self._tensor(stl_values, dtype=torch.float32)
+        stl_dense_values = [
+            causal_dense_surrogate(output, self._d_warn, self._d_safe) for output in outputs
+        ]
+        stl_dense_cost = self._tensor(stl_dense_values, dtype=torch.float32)
         native_cost = native_cost.to(dtype=torch.float32, device=self._device)
-        selected_cost = select_algorithm_cost(self._cost_mode, native_cost, stl_cost)
+        selected_cost = select_algorithm_cost(
+            self._cost_mode,
+            native_cost,
+            stl_cost,
+            stl_dense_cost,
+        )
         native_values = [float(value) for value in native_cost.detach().cpu().reshape(-1)]
         selected_values = [float(value) for value in selected_cost.detach().cpu().reshape(-1)]
+        goal_met = info.get("goal_met", False)
+        if isinstance(goal_met, torch.Tensor):
+            goal_values = [float(value) for value in goal_met.detach().cpu().reshape(-1)]
+        elif isinstance(goal_met, (list, tuple, np.ndarray)):
+            goal_values = [float(value) for value in np.asarray(goal_met).reshape(-1)]
+        else:
+            goal_values = [float(goal_met)] * self._num_envs
+        final_info = info.get("final_info")
+        if final_info is not None:
+            for index, is_done in enumerate(done):
+                if not is_done:
+                    continue
+                target = final_info if self._num_envs == 1 else final_info[index]
+                if isinstance(target, Mapping) and "goal_met" in target:
+                    goal_values[index] = float(target["goal_met"])
 
-        self._attach_monitor_info(info, outputs, native_cost, stl_cost, selected_cost)
+        self._attach_monitor_info(
+            info,
+            outputs,
+            native_cost,
+            stl_cost,
+            stl_dense_cost,
+            selected_cost,
+        )
         self._attach_final_info(
             info,
             outputs,
             native_values,
             stl_values,
+            stl_dense_values,
             selected_values,
             done,
         )
-        self._record_episode_metrics(outputs, native_values, stl_values, selected_values, done)
+        self._record_episode_metrics(
+            outputs,
+            native_values,
+            stl_values,
+            stl_dense_values,
+            selected_values,
+            goal_values,
+            done,
+        )
         return augmented, reward, selected_cost, terminated, truncated, info
 
     def _record_episode_metrics(
@@ -450,19 +515,23 @@ class Stage1TemporalCostWrapper(CMDP):
         outputs: Sequence[MonitorOutput],
         native_values: Sequence[float],
         stl_values: Sequence[float],
+        stl_dense_values: Sequence[float],
         selected_values: Sequence[float],
+        goal_values: Sequence[float],
         done: Sequence[bool],
     ) -> None:
         for index, output in enumerate(outputs):
             increments = (
                 native_values[index],
                 stl_values[index],
+                stl_dense_values[index],
                 selected_values[index],
                 float(output.stl_warning_trigger),
                 float(output.stl_recovery),
                 float(output.stl_late_recovery),
                 float(output.stl_deadline_violation),
                 float(output.stl_terminal_unresolved),
+                goal_values[index],
             )
             self._episode_metrics[index] += np.asarray(increments, dtype=np.float64)
             if done[index]:
@@ -500,7 +569,7 @@ class Stage1TemporalCostWrapper(CMDP):
 
 @env_register
 class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
-    """Registered OmniSafe construction surface for the three Stage I conditions."""
+    """Registered construction surface for Stage I and the D38 dense diagnostic."""
 
     _support_envs: ClassVar[List[str]] = list(REGISTERED_ENV_IDS)
 
@@ -538,7 +607,7 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
         )
 
 
-def register_stage1_envs() -> Tuple[str, str, str]:
+def register_stage1_envs() -> Tuple[str, ...]:
     """Return registered IDs; importing this module performs registration."""
 
     return REGISTERED_ENV_IDS
@@ -550,6 +619,7 @@ __all__ = [
     "NATIVE_COST_ENV_ID",
     "REGISTERED_ENV_IDS",
     "STL_COST_ENV_ID",
+    "STL_DENSE_COST_ENV_ID",
     "Stage1SafetyPointGoalEnv",
     "Stage1TemporalCostWrapper",
     "TASK_ONLY_ENV_ID",

@@ -124,3 +124,52 @@ offline_admission_gate:
 
 remaining_external_gate:
   - independent_human_review_and_adjudication_of_all_held_out_gold_records
+
+software_environment:
+  conda_environment: stl-stage2-offline
+  python: 3.8.20
+  torch: 2.4.1+cu124
+  transformers: 4.46.3
+  sentence_transformers: 3.2.1
+  sentencepiece: 0.2.0
+  typeguard: 4.4.0
+  pytest: 8.3.5
+  note: separate clone of the verified Stage I CUDA environment; Stage I is not modified
+
+training_protocol:
+  status: frozen_initial_train_validation_protocol_before_any_held_out_evaluation
+  model_seeds: [6101, 6202, 6303]
+  device: cuda:0
+  mixed_precision: false
+  deterministic_algorithms: true
+  gradient_clip_norm: 1.0
+  checkpoint_policy: resumable_latest_and_validation_best_only
+  selection_data: validation_only
+  formal_path:
+    epochs: 5
+    batch_size: 8
+    gradient_accumulation_steps: 4
+    learning_rate: 5.0e-5
+    weight_decay: 0.01
+    max_source_tokens: 256
+    max_target_tokens: 512
+    tokenizer_json_tokens: ["{", "}", ",", "[", "]"]
+    selection_metric: typed_ast_exact_accuracy
+  published_direct_current_observation:
+    epochs: 10
+    batch_size: 16
+    encoder_learning_rate: 2.0e-5
+    head_learning_rate: 3.0e-4
+    weight_decay: 0.01
+    decision_threshold: 0.5
+    selection_metric: validation_event_f1
+  history_aware_direct:
+    epochs: 10
+    batch_size: 16
+    encoder_learning_rate: 2.0e-5
+    head_learning_rate: 3.0e-4
+    weight_decay: 0.01
+    decision_threshold: 0.5
+    active_loss_weight: 0.5
+    remaining_loss_weight: 0.2
+    selection_metric: validation_event_f1

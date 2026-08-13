@@ -1,0 +1,44 @@
+{
+  "all_held_out_reviewed": false,
+  "artifacts": {
+    "real_corpus_selection.json": {
+      "bytes": 20778,
+      "sha256": "ccb7cbcb1cb59624d4b0e941c9afd7663ff459769175475d8cdc2eace9494a1a"
+    },
+    "real_policy_corpus.jsonl": {
+      "bytes": 8935371,
+      "sha256": "ee6aaf1403123f236bc6a0e1ae0e715a14e686a313b9d2e13602b9bbf51cf7a9"
+    },
+    "real_policy_corpus_schema.json": {
+      "bytes": 488,
+      "sha256": "da8df97605b5727485de589255f964fbca3097c14ad493654ac8cecd842c4fb3"
+    },
+    "real_policy_train_validation_labels.jsonl": {
+      "bytes": 35517776,
+      "sha256": "46b7bfcd338ecb20b58133c36f60749ca74cbf5a69bada5039374074a9c2f566"
+    }
+  },
+  "held_out_labels_released": false,
+  "inputs": {
+    "episode_records.csv": {
+      "bytes": 218236,
+      "path": "results/stage1_pilot/analysis/episode_records.csv",
+      "sha256": "7eadcc589ca24e43a71aa1a7b9b54bb5008193411dc0d7ba03f626814c30e4ff"
+    },
+    "full_geometry.csv.gz": {
+      "bytes": 140953788,
+      "path": "results/post_pilot_spatial_diagnosis/full_geometry.csv.gz",
+      "sha256": "7e0fe9c2c7f5c7f227812dbd15895051767762f817124fda0958c2744e62fb30"
+    }
+  },
+  "label_record_count": 1680,
+  "labeled_splits": [
+    "train",
+    "validation"
+  ],
+  "machine_review_label_record_count": 2400,
+  "rtamt_max_robustness_difference": 0.0,
+  "sample_count": 60060,
+  "schema_version": 1,
+  "trajectory_count": 60
+}

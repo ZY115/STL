@@ -45,13 +45,20 @@ this as a valid negative pilot. The monitor is a verified trajectory evaluator,
 but the current sparse binary event cost is not a validated training baseline.
 Do not rerun the same configuration to prove that STL cost can enter PPO.
 
-Read D37, D38, docs/CURRENT_EXECUTION_DIRECTIVE.md and
+Read D37--D41, docs/CURRENT_EXECUTION_DIRECTIVE.md and
 docs/STAGE2_CONTINUOUS_WORK_ORDER.md. Follow the full work order continuously:
-produce true top-down Stage I replay figures, implement the frozen 40-item O7
-benchmark and review packet, implement the frozen Stage II-A baselines, run
-held-out evaluation only after independent human review, diagnose the two
-predeclared Gold learner costs, freeze the common online interface if its gate
-passes, and run the bounded Stage II-B pilot.
+the true top-down Stage I replay figures, frozen 40-item O7 benchmark/review
+packet, 60-episode real corpus, Stage II-A baselines and Gold learner-cost code
+are implemented. Do not repeat those completed steps. First inspect D41 and
+docs/stage2_compute_launch_readiness_report.md. Do not restart any research
+training until administrator-level host diagnosis and the clean discarded-
+epoch gate pass. Separately, held-out evaluation remains closed until the 35
+human reviews and six-alias owner disposition are complete.
+
+After both relevant gates pass, resume the frozen Stage II-A train/validation
+matrix, run the Gold task-control-first matched-budget diagnostic, freeze the
+common online interface only if its gates pass, and then run the bounded
+Stage II-B pilot.
 
 Do not use paid APIs, change Gold semantics or leak held-out labels. For any
 training process, verify one real update/epoch, finite metrics, GPU activity,
