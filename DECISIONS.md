@@ -499,7 +499,9 @@ main-study hypotheses.
 safety target was not met while goal non-inferiority passed. The proposal in
 `docs/stage1_o8_main_study_decision_proposal.md` recommends a bounded
 optimization/budget/credit-assignment diagnostic before freezing a final
-standard. Option A (close Stage I), Option B (longer same-method run), and
+standard. D36's no-training runtime/trajectory diagnosis is complete and
+confirms sparse/delayed cost plus effective-runtime risks, but does not select
+an O8 repair. Option A (close Stage I), Option B (longer same-method run), and
 Option C (bounded diagnostic) remain owner choices. No additional GPU run is
 authorized by this proposal.
 
@@ -520,9 +522,12 @@ Before Stage II implementation, fix:
 **Current status (2026-08-12):** a non-compute candidate design is recorded in
 `docs/stage2_o7_benchmark_design_proposal.md`. It proposes a 30--50-item pilot,
 typed grounding, semantic minimal pairs, causal-history fairness, leakage-safe
-splits and independent human confirmation. Formula families, exact item count,
-split, baselines and numerical offline gates remain unconfirmed until the owner
-resolves O7.
+splits and independent human confirmation. D36 has implemented a machine-
+validated foundation using only the already verified bounded-recovery family:
+five pending-review examples, 55 synthetic and six real traces, Gold checks and
+three baseline specifications. This is not an O7 freeze. Formula families,
+exact item count, split, reviewed labels, model choices, resources and numerical
+offline gates remain unconfirmed until the owner resolves O7.
 
 ## Deferred to Stage II
 

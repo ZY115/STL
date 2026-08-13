@@ -471,12 +471,28 @@ remaining deadline = 154 - 130 = 24 steps
 | Exact-scale throughput preflight | 已完成 | excluded 100k，335.68 transitions/s，90 MiB reserved VRAM |
 | Full pilot RL training | 已完成 | 5 seeds × 3 conditions × 1M transitions；15/15 success |
 | Evaluation and statistical report | 已完成 | 1,500 episodes、10,000 bootstrap、WP1 report 和四组图表 |
-| Post-pilot code diagnosis | 已完成 | metric/objective、delayed credit、budget/optimizer 和 OmniSafe runtime 风险已分级记录 |
-| P0 adapter/runtime audit | 尚未实施 | cost truncation bootstrap regression、effective-runtime contract、gradient/value diagnostics |
+| Post-pilot code diagnosis | 已完成 | metric/objective、delayed credit、budget/optimizer、旧 checkpoint per-step replay 和机制图已分级记录 |
+| P0 adapter/runtime audit | 已完成当前无训练范围 | executable timeout-bootstrap、advantage scaling、rolling window、discount、LR/lambda source/hash tests；未来 run 的 gradient/value logging 尚未执行 |
 | GPU training environment | 已完成 | RTX 4090、Torch cu124、wrapper/PPOLag/full-horizon cost path 已验证 |
-| Checkpoint visualization | 部分完成 | 已有训练/评估图；MuJoCo checkpoint rollout video 仍未实现 |
+| Checkpoint visualization | 已完成诊断图 | 两组预先选定 case × 三条件的 per-step distance/event 图；未额外生成 MuJoCo rollout video |
 | O8 final standard | 等待负责人决定 | close/longer/diagnostic 三个选项，当前推荐 bounded diagnostic |
-| Stage II benchmark | 提案已完成 | O7 仍需确认 formula fragment、split、baselines 和 gates |
+| Stage II benchmark | 机器基础已实现、最终 gate 未通过 | 5 条草案/55 synthetic/6 real 统一 schema、Gold/coverage/evaluator；独立人工复核及 O7 final families/splits/models/gates 仍待确认 |
+
+### 8.1 D36 无训练诊断与离线 benchmark 状态
+
+15 个 final checkpoints 的 1,500 条 deterministic CPU replay 已完成，全部复现冻结
+episode 表且 Gold/RTAMT checks 通过。Gold 相对 task-only 的 trigger frequency 只下降
+1.16%，on-time recovery rate 下降 0.18 percentage point；positive event cost 只占
+0.1724% action steps。当前失败符合 sparse/delayed credit、budget/objective mismatch 和
+optimizer/runtime risk，但不能归因于单一 bug。完整表、两张图和 supported/rejected
+explanations 见 [`stage1_trajectory_diagnosis_report.md`](stage1_trajectory_diagnosis_report.md)。
+
+Stage II v0 机器包含 61 条统一 schema trajectories（55 synthetic、6 existing-policy
+real），9,208 samples，monitor/oracle/RTAMT 最大差异 0；5 个 history pairs 和全部 10
+个 parameter-spec pairs 有机器证据。当前 final gate 明确为 false：5 条 example 尚无
+独立人工 reviewer，O7 final formula family、split、model 和 numerical gate 未确认。
+没有调用或训练语言模型。完整 suite 为 68 tests，依赖、compile、schema、hash 和
+deterministic rebuild 验收通过。
 
 ## 9. 已完成里程碑：OmniSafe wrapper 与 integration smoke test
 

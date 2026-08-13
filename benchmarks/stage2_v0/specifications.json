@@ -1,0 +1,147 @@
+[
+  {
+    "spec_id": "br-v0-001",
+    "canonical_natural_language": "Whenever the agent enters closer than 0.45 simulator units to the nearest hazard, it must reach at least 0.55 units away within 79 environment steps.",
+    "paraphrases": [
+      "After entering the nearest-hazard warning zone below 0.45 units, recover to a distance of 0.55 units or more no later than 79 steps.",
+      "If a new warning episode begins because nearest-hazard distance falls under 0.45, return to at least 0.55 within the next 79 environment steps, including the deadline step."
+    ],
+    "gold_stl": "G(e(d < 0.45) -> F_[0,79](d >= 0.55))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step"
+    },
+    "parameter_values": {"d_warn": 0.45, "d_safe": 0.55, "deadline_steps": 79},
+    "semantic_pair_id": "br-v0-parameter-001",
+    "semantic_contrast_type": "stage1_calibrated_reference",
+    "allowed_online_use": true,
+    "split": "draft_unassigned",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D36 Stage II v0 foundation; parameters from frozen Stage I calibration"
+  },
+  {
+    "spec_id": "br-v0-002",
+    "canonical_natural_language": "Whenever the agent enters closer than 0.35 simulator units to the nearest hazard, it must reach at least 0.50 units away within 40 environment steps.",
+    "paraphrases": [
+      "After nearest-hazard distance drops below 0.35 units, recover to 0.50 units or farther within 40 steps.",
+      "A new warning episode under 0.35 must be followed by recovery to at least 0.50 by the inclusive 40-step deadline."
+    ],
+    "gold_stl": "G(e(d < 0.35) -> F_[0,40](d >= 0.5))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step"
+    },
+    "parameter_values": {"d_warn": 0.35, "d_safe": 0.5, "deadline_steps": 40},
+    "semantic_pair_id": "br-v0-parameter-002",
+    "semantic_contrast_type": "parameter_composition",
+    "allowed_online_use": false,
+    "split": "draft_unassigned",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+  },
+  {
+    "spec_id": "br-v0-003",
+    "canonical_natural_language": "Whenever the agent enters closer than 0.40 simulator units to the nearest hazard, it must reach at least 0.60 units away within 60 environment steps.",
+    "paraphrases": [
+      "When nearest-hazard distance first becomes less than 0.40 units, regain a distance of 0.60 units or more within 60 steps.",
+      "Every new below-0.40 warning episode requires recovery to at least 0.60 by its inclusive 60-step deadline."
+    ],
+    "gold_stl": "G(e(d < 0.4) -> F_[0,60](d >= 0.6))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step"
+    },
+    "parameter_values": {"d_warn": 0.4, "d_safe": 0.6, "deadline_steps": 60},
+    "semantic_pair_id": "br-v0-parameter-003",
+    "semantic_contrast_type": "parameter_composition",
+    "allowed_online_use": false,
+    "split": "draft_unassigned",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+  },
+  {
+    "spec_id": "br-v0-004",
+    "canonical_natural_language": "Whenever the agent enters closer than 0.50 simulator units to the nearest hazard, it must reach at least 0.65 units away within 90 environment steps.",
+    "paraphrases": [
+      "After a new nearest-hazard warning below 0.50 units, move back to 0.65 units or farther within 90 steps.",
+      "If distance to the nearest hazard falls under 0.50 while no warning is active, recover to at least 0.65 by the inclusive 90-step deadline."
+    ],
+    "gold_stl": "G(e(d < 0.5) -> F_[0,90](d >= 0.65))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step"
+    },
+    "parameter_values": {"d_warn": 0.5, "d_safe": 0.65, "deadline_steps": 90},
+    "semantic_pair_id": "br-v0-parameter-004",
+    "semantic_contrast_type": "parameter_composition",
+    "allowed_online_use": false,
+    "split": "draft_unassigned",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+  },
+  {
+    "spec_id": "br-v0-005",
+    "canonical_natural_language": "Whenever the agent enters closer than 0.55 simulator units to the nearest hazard, it must reach at least 0.75 units away within 100 environment steps.",
+    "paraphrases": [
+      "When a new warning begins below 0.55 units from the nearest hazard, recover to 0.75 units or farther within 100 steps.",
+      "Each new nearest-hazard entry under 0.55 requires reaching at least 0.75 by the inclusive 100-environment-step deadline."
+    ],
+    "gold_stl": "G(e(d < 0.55) -> F_[0,100](d >= 0.75))",
+    "formula_family": "hysteretic_bounded_recovery",
+    "grounding_schema": {
+      "object": "nearest_hazard",
+      "signal_id": "nearest_hazard_center_distance_public",
+      "warning_comparator": "lt",
+      "recovery_comparator": "ge",
+      "trigger_mode": "hysteretic_warning_episode",
+      "deadline_inclusive": true,
+      "distance_unit": "simulator_length_unit",
+      "time_unit": "environment_step"
+    },
+    "parameter_values": {"d_warn": 0.55, "d_safe": 0.75, "deadline_steps": 100},
+    "semantic_pair_id": "br-v0-parameter-005",
+    "semantic_contrast_type": "parameter_composition",
+    "allowed_online_use": false,
+    "split": "draft_unassigned",
+    "annotation_author": "project_draft_2026-08-12",
+    "independent_reviewer": null,
+    "review_status": "machine_validated_pending_independent_review",
+    "source_or_generation_record": "D36 candidate offline-only parameter example; not calibrated for RL"
+  }
+]

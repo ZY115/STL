@@ -1,0 +1,110 @@
+{
+  "advantage_transform": {
+    "declared_cost_standardized": true,
+    "declared_reward_standardized": true,
+    "effective_cost_mean_center_only": true,
+    "effective_reward_zscore": true
+  },
+  "delayed_credit": {
+    "deadline_steps": 79,
+    "gamma_power_k": 0.45204365026647536,
+    "gamma_times_lam_c_power_k": 0.007858600128967387
+  },
+  "discount": {
+    "current_numeric_difference": 0.0,
+    "declared_cost_gamma": 0.99,
+    "declared_reward_gamma": 0.99,
+    "effective_cost_gamma": 0.99,
+    "onpolicy_init_reads_cost_gamma": false,
+    "onpolicy_init_uses_shared_gamma": true
+  },
+  "episode_cost_window": {
+    "declaration_matches_runtime": false,
+    "declared_logger_window_lens": 100,
+    "effective_metrics_epcost_window": 50
+  },
+  "interpretation": {
+    "causal_effect_on_pilot": "not isolated by this audit",
+    "confirmed_runtime_differences": [
+      "Metrics/EpCost uses a hard-coded 50-episode window, not declared 100",
+      "cost advantage is mean-centered but not divided by its standard deviation",
+      "the on-policy buffer receives algo_cfgs.gamma rather than cost_gamma",
+      "actor learning rate is linearly scheduled to zero by the final pilot epoch",
+      "the Lagrange update reads the same rolling-50 Metrics/EpCost statistic"
+    ],
+    "confirmed_semantic_risk": "terminal-unresolved is settled with event cost 1, while OmniSafe also bootstraps a nonzero cost value from the active final state"
+  },
+  "optimization_schedule": {
+    "actor_lr_after_final_scheduler_step": 0.0,
+    "actor_lr_after_first_scheduler_step": 0.00029699999999999996,
+    "actor_lr_initial": 0.0003,
+    "epoch_count": 100,
+    "lagrange_effective_episode_window": 50,
+    "lagrange_update_reads_metrics_epcost": true,
+    "lagrangian_multiplier_init": 0.001,
+    "lambda_lr": 0.035,
+    "lambda_optimizer": "Adam",
+    "linear_lr_decay_declared": true,
+    "linear_scheduler_effective": true,
+    "nonzero_lr_floor": null,
+    "scheduler_steps_after_each_epoch_update": true
+  },
+  "package_versions": {
+    "omnisafe": "0.5.0",
+    "torch": "2.4.1+cu124"
+  },
+  "protocol": {
+    "path": "/home/jerry/Desktop/STL/configs/stage1_pilot/protocol.yaml",
+    "sha256": "6e9845f7dc4b696b2751f58f4c1c2bb17e8db129a344192a92c4550f0c2bed9e"
+  },
+  "schema_version": 1,
+  "scope": "installed-runtime diagnosis; no package patch and no new training",
+  "source_files": {
+    "actor_critic": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/models/actor_critic/actor_critic.py",
+      "sha256": "3493cbfb44b31c074f8c31d2c9ed119ef30b5199ba896b5c62775584ad7b5c87"
+    },
+    "lagrange": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/common/lagrange.py",
+      "sha256": "e4383e348758ee09fbda31e7e87879d71fa18da0a172b87c2db60b67641c85c3"
+    },
+    "onpolicy_adapter": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/adapter/onpolicy_adapter.py",
+      "sha256": "81179fc1f9ef59391956fab0307fd5999cc9a3f942664c98f49ffa966411bd99"
+    },
+    "onpolicy_buffer": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/common/buffer/onpolicy_buffer.py",
+      "sha256": "4985836ba7008c2c46efc32e6e18dc67da1317dacd9dcdf5c09f1ae68e4a3537"
+    },
+    "pdo_lagrange": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/algorithms/on_policy/naive_lagrange/pdo.py",
+      "sha256": "bd655b648711f15d00bd6264b0a0045a700d823f87fc4806aea33f647471cb41"
+    },
+    "policy_gradient": {
+      "path": "/home/jerry/anaconda3/envs/stl-stage1/lib/python3.8/site-packages/omnisafe/algorithms/on_policy/base/policy_gradient.py",
+      "sha256": "48b8f894a6d329f97ea711bafa5380d0c3c89e7d8bb75973b462c38ede2281ad"
+    }
+  },
+  "timeout_bootstrap": {
+    "executable_probe": {
+      "fake_final_cost_value": 7.0,
+      "observed_last_value_c": 7.0,
+      "observed_last_value_r": 0.25,
+      "omnisafe_timeout_bootstraps_cost_value": true,
+      "project_episode_settlement_requires_last_value_c": 0.0,
+      "semantic_mismatch": true,
+      "terminal_unresolved": true
+    },
+    "installed_source_bootstraps_reward_and_cost_on_timeout": true,
+    "monitor_episode_settlement": {
+      "policy_state_after_final_sample": [
+        1.0,
+        0.0,
+        0.9873417721518988
+      ],
+      "state_after_final_sample": "pending",
+      "stl_cost": 1,
+      "terminal_unresolved": true
+    }
+  }
+}

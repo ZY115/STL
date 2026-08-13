@@ -180,6 +180,18 @@ Stage I pilot 的历史问题是：
 - 已完成 pilot 后代码级失败分析：确认 metric/learner-objective、稀疏延迟 credit、
   budget/optimizer 时序及 OmniSafe runtime contract 风险，并形成分层修复建议；该
   文档不修改 D31，也不授权追加 GPU training。
+- 已实现 installed OmniSafe runtime contract 和项目自有 regression tests，确认
+  terminal-unresolved timeout cost bootstrap、cost-advantage scaling、实际 EpCost
+  window 和 effective cost discount；未修改 Conda `site-packages`；
+- 已实现旧 final-checkpoint 的 CPU-only per-step replay/export、机制分解和图表入口，
+  不训练、不选择 checkpoint；
+- 已建立 Stage II v0 单一已验证公式族的机器可验证基础：5 条待人工复核草案、55 条
+  synthetic boundary/history trajectories、真实轨迹统一导入、Gold 三方一致性、
+  schema/leakage/coverage 检查和统一离线指标；
+- 已准备 formal、published-style current-observation direct 和 history-aware direct
+  的 access/supervision 公平性评审包；没有选择、调用或训练语言模型。
+- 完整自动测试现为 68 项，`pip check`、Python compile、shell syntax、JSON/YAML、
+  generated-artifact hashes 和 deterministic Stage II rebuild 全部通过。
 
 ## 可视化快速启动
 
@@ -208,14 +220,15 @@ Stage I full pilot、统计 analysis 和 WP1 report 已完成。当前连续工�
 1. 保留当前 negative pilot，不重复证明 STL cost 可以进入 PPO；
 2. 使用已有 checkpoint 和轨迹诊断 79-step binary cost 的稀疏、延迟、budget 与
    optimizer 行为，不启动新训练；
-3. 建立 Stage II v0 离线 benchmark 的 schema、五个 reviewed examples、synthetic
+3. 建立 Stage II v0 离线 benchmark 的 schema、五个待独立复核 examples、synthetic
    boundary traces、真实轨迹导入和 Gold label 验证；
 4. 准备 formal、published-style direct 和 history-aware direct 三条 baseline 的统一
    评审包；
 5. 在离线语义比较通过预设 gate 后，再冻结公平的 online cost interface 并申请 GPU
    实验授权。
 
-完整执行顺序、输出、通过条件和停止边界见
+Steps 1--3 的机器实现和 Step 4 评审包现已形成；最终 O7 数据集仍等待独立人工语义
+复核、公式族/划分和 numerical gate 的负责人决定。完整执行顺序、输出、通过条件和停止边界见
 `docs/CURRENT_EXECUTION_DIRECTIVE.md`。工作电脑应连续完成其中 Steps 1--3，并准备
 Step 4；不要在每个文件或小测试后暂停询问。
 
@@ -224,7 +237,19 @@ Step 4；不要在每个文件或小测试后暂停询问。
   `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
 - O8 决策包：`docs/stage1_o8_main_study_decision_proposal.md`
 - O7 benchmark 提案：`docs/stage2_o7_benchmark_design_proposal.md`
+- Stage I 轨迹/运行时诊断：`docs/stage1_trajectory_diagnosis_report.md`
+- Stage II v0 foundation：`docs/stage2_v0_benchmark_report.md`
+- 三方法公平性与待决项：`docs/stage2_v0_baseline_review_package.md`
 - 图表与机器可读结果：`results/stage1_pilot/analysis/`
+
+复现 post-pilot CPU 诊断和 Stage II 数据构建：
+
+```bash
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/diagnose_stage1_trajectories.py
+env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
+  /home/jerry/anaconda3/envs/stl-stage1/bin/python scripts/build_stage2_v0_benchmark.py
+```
 
 wrapper 的接口、测试、真实 positive-cost probe 和 PPO-Lagrangian smoke 结果见
 `docs/omnisafe_integration_report.md`。
@@ -286,20 +311,20 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
 6. `docs/stage1_code_failure_analysis_and_repair_recommendations.md`
 7. `docs/stage1_o8_main_study_decision_proposal.md`
 8. `docs/stage2_o7_benchmark_design_proposal.md`
-9. `DECISIONS.md`
-10. `EXPERIMENT_PROGRESS_CHANGELOG.md`
-11. `PROJECT_CONTEXT.md`
-12. `docs/research_direction_novelty_feasibility.md`
-13. `docs/theory_and_revised_experiment_8.10.md`
-14. `docs/minimum_research_delivery_8.10.md`
-15. `docs/CURRENT_STAGE1_STATUS.md`
-16. `docs/stage1_rule_monitor_spec.md`
-17. `docs/stage1_plan.md`
-18. `docs/omnisafe_integration_report.md`
-19. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
-20. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
-21. `references/REFERENCES.md`
-22. `docs/slides/research_direction_formal_vs_direct_slides.pptx`（当前研究问题汇报版）
+9. `docs/stage1_trajectory_diagnosis_report.md`
+10. `docs/stage2_v0_benchmark_report.md`
+11. `docs/stage2_v0_baseline_review_package.md`
+12. `DECISIONS.md`
+13. `EXPERIMENT_PROGRESS_CHANGELOG.md`
+14. `PROJECT_CONTEXT.md`
+15. `docs/research_direction_novelty_feasibility.md`
+16. `docs/theory_and_revised_experiment_8.10.md`
+17. `docs/minimum_research_delivery_8.10.md`
+18. `docs/CURRENT_STAGE1_STATUS.md`
+19. `docs/stage1_rule_monitor_spec.md`
+20. `docs/stage1_plan.md`
+21. `docs/omnisafe_integration_report.md`
+22. `references/REFERENCES.md`
 
 ## 文件夹说明
 

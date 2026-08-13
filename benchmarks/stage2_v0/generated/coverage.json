@@ -1,0 +1,153 @@
+{
+  "combined": {
+    "all_online_oracle_agree": true,
+    "rtamt_max_robustness_difference": 0.0,
+    "trajectory_count": 61
+  },
+  "formula_families": [
+    "hysteretic_bounded_recovery"
+  ],
+  "gates": {
+    "reason_final_gate_is_closed": [
+      "independent human semantic review is incomplete",
+      "O7 formula-family and split decisions are not frozen",
+      "the current single-family fragment cannot support a structure split"
+    ],
+    "stage2_v0_final_dataset": false,
+    "stage2_v0_machine_foundation": true
+  },
+  "parameter_contrast_coverage": {
+    "all_pairs_have_distinguishing_trace": true,
+    "pair_count": 10,
+    "witnesses": [
+      {
+        "spec_pair": [
+          "br-v0-001",
+          "br-v0-002"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-001",
+          "br-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-001",
+          "br-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__exact_deadline_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-001",
+          "br-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-002",
+          "br-v0-003"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-002__exact_deadline_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-002",
+          "br-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-002",
+          "br-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-003",
+          "br-v0-004"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-003",
+          "br-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      },
+      {
+        "spec_pair": [
+          "br-v0-004",
+          "br-v0-005"
+        ],
+        "witness_trajectory_id": "synthetic__br-v0-001__on_time_recovery"
+      }
+    ]
+  },
+  "real": {
+    "all_online_oracle_agree": true,
+    "case_tags": [
+      "existing_final_checkpoint",
+      "frozen_representative_case",
+      "gold_stl_cost",
+      "largest_gold_minus_task_missed",
+      "largest_task_minus_gold_missed",
+      "native_cost",
+      "task_only"
+    ],
+    "history_pairs_checked": 0,
+    "rtamt_max_robustness_difference": 0.0,
+    "sample_count": 6006,
+    "trajectory_count": 6
+  },
+  "review": {
+    "all_splits_frozen": false,
+    "independently_reviewed_specifications": 0,
+    "o7_final_contract_frozen": false,
+    "pending_independent_review_specifications": 5,
+    "structure_split_available": false
+  },
+  "schema_version": 1,
+  "scope": "offline data construction only; no model inference or training",
+  "specification_count": 5,
+  "status": "machine_validated_foundation_pending_independent_review_and_o7_freeze",
+  "synthetic": {
+    "all_online_oracle_agree": true,
+    "case_tags": [
+      "deadline_violation",
+      "exact_deadline",
+      "finite_trace_boundary",
+      "history_contrast",
+      "inactive_at_anchor",
+      "inclusive_recovery_comparator",
+      "multiple_obligations",
+      "no_trigger",
+      "on_time_recovery",
+      "one_step_late",
+      "pending_at_anchor",
+      "recovery_equality",
+      "repeated_unsafe_samples",
+      "retrigger_after_recovery",
+      "safe_equality",
+      "same_current_observation",
+      "single_active_obligation",
+      "strict_warning_comparator",
+      "terminal_unresolved",
+      "trigger",
+      "vacuous",
+      "warning_equality"
+    ],
+    "history_pairs_checked": 5,
+    "rtamt_max_robustness_difference": 0.0,
+    "sample_count": 3202,
+    "trajectory_count": 55
+  }
+}

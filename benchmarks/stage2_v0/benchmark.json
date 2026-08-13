@@ -1,0 +1,51 @@
+{
+  "benchmark_id": "safety_stl_controlled_language_v0",
+  "schema_version": 1,
+  "status": "draft_foundation_pending_o7_review",
+  "environment_id": "SafetyPointGoal1-v0",
+  "scope": "offline_semantic_benchmark_foundation",
+  "supported_fragment": {
+    "formula_families": [
+      "hysteretic_bounded_recovery"
+    ],
+    "note": "Only the already verified Stage I family is executable in v0. Additional O7 families remain unapproved.",
+    "signal_ids": [
+      "nearest_hazard_center_distance_public"
+    ],
+    "temporal_unit": "environment_step",
+    "finite_trace_terminal_semantics": "pending_terminal_unresolved_with_binary_gold_event"
+  },
+  "grounding_registry": {
+    "nearest_hazard_center_distance_public": {
+      "observation_field": "hazards_lidar",
+      "transform": "3 * (1 - max(hazards_lidar))",
+      "range": [
+        0.0,
+        3.0
+      ],
+      "unit": "simulator_length_unit",
+      "privileged_state_allowed": false
+    }
+  },
+  "draft_split_policy": {
+    "status": "unassigned_pending_o7_review",
+    "candidate_axes": [
+      "paraphrase",
+      "parameter_composition",
+      "formula_structure"
+    ],
+    "group_semantic_pair_across_splits": true,
+    "structure_split_available_in_current_fragment": false
+  },
+  "gold_label_policy": {
+    "online_monitor": "safety_stl.monitor.BoundedRecoveryMonitor",
+    "independent_oracle": "safety_stl.oracle.evaluate_trace",
+    "reference_monitor": "RTAMT 0.3.5 on every completed obligation window",
+    "agreement_tolerance": 1e-09
+  },
+  "review_policy": {
+    "author_required": true,
+    "independent_human_reviewer_required_for_freeze": true,
+    "current_examples_are_final": false
+  }
+}

@@ -54,6 +54,9 @@ raw job logs remain local and ignored.
 | `docs/stage1_code_failure_analysis_and_repair_recommendations.md` | Post-pilot code-level diagnosis, evidence grading, OmniSafe runtime risks, and prioritized non-compute/diagnostic/confirmatory repair plan |
 | `docs/stage1_o8_main_study_decision_proposal.md` | Post-pilot close/longer/bounded-diagnostic decision package; no compute authorization |
 | `docs/stage2_o7_benchmark_design_proposal.md` | Candidate controlled-language schema, semantic pairs, splits, human review and offline gate |
+| `docs/stage1_trajectory_diagnosis_report.md` | Existing-checkpoint trajectory mechanism analysis and installed OmniSafe runtime contract |
+| `docs/stage2_v0_benchmark_report.md` | Machine-validated Stage II v0 single-family benchmark foundation and remaining review gates |
+| `docs/stage2_v0_baseline_review_package.md` | Formal/current-observation/history-aware baseline contracts, fairness table and consolidated decisions |
 | `docs/problem-definition/safety_stl_problem_definition.pdf` | One-page formal problem definition |
 | `docs/problem-definition/safety_stl_problem_definition.tex` | TeX source for the problem definition |
 
@@ -129,6 +132,10 @@ These are reference snapshots, not project implementation code.
 | `scripts/run_stage1_pilot.sh` | Deterministic CUDA launcher for pilot runner and preflight |
 | `scripts/analyze_stage1_pilot.py` | Complete-matrix frozen analysis CLI |
 | `scripts/plot_stage1_pilot.py` | Reproducible PNG/SVG evaluation, primary-comparison, learning-curve and constraint figures |
+| `scripts/diagnose_stage1_trajectories.py` | CPU-only deterministic replay and per-step mechanism diagnosis of existing final checkpoints |
+| `scripts/inspect_omnisafe_runtime.py` | Installed-source hashes and executable regression evidence for effective on-policy behavior |
+| `scripts/build_stage2_v0_benchmark.py` | Synthetic/real Stage II trajectory construction and three-way Gold validation |
+| `scripts/evaluate_stage2_predictions.py` | Common held-out trace-label, event-time, boundary and consistency evaluator |
 | `src/safety_stl/signals.py` | Public hazard-lidar distance extraction |
 | `src/safety_stl/monitor.py` | Causal online bounded-recovery monitor |
 | `src/safety_stl/oracle.py` | Independent direct enumerator and RTAMT window check |
@@ -138,6 +145,12 @@ These are reference snapshots, not project implementation code.
 | `src/safety_stl/pilot_protocol.py` | D31 validation and OmniSafe config composition |
 | `src/safety_stl/pilot_runner.py` | Immutable attempts, hash verification, fixed checkpoint selection, training/evaluation execution |
 | `src/safety_stl/pilot_analysis.py` | Pooled metrics, paired hierarchical bootstrap, non-inferiority and curve review |
+| `src/safety_stl/runtime_contract.py` | Effective OmniSafe episode-window, discount, advantage and timeout-bootstrap audit |
+| `src/safety_stl/trajectory_diagnosis.py` | Existing-checkpoint replay, mechanism decomposition, exports and plots |
+| `src/safety_stl/stage2_benchmark.py` | Versioned Stage II contract validation, trace generation/import and Gold labeling |
+| `src/safety_stl/offline_metrics.py` | Common Stage II prediction validation and offline metric computation |
+| `benchmarks/stage2_v0/` | Draft single-family schemas, five examples, generated traces, labels, coverage and hashes |
+| `configs/stage2_v0/baselines.yaml` | Reviewable three-method access/supervision/compute contract; not yet finally frozen |
 | `tests/` | Signal, monitor/oracle, visualization, wrapper, vector lifecycle, and stable-fixture tests |
 
 ## Excluded files
@@ -203,10 +216,21 @@ The completed full pilot tracks `results/stage1_pilot/README.md` and the compact
 1,500 episode records, learning-curve summaries, PNG/SVG figures and a figure
 hash manifest. The 15 raw job/checkpoint trees remain ignored.
 
+The post-pilot diagnosis tracks `results/post_pilot_diagnosis/`: effective
+runtime evidence, replay/checkpoint summaries, representative per-step public
+signals, exact checkpoint/seed provenance and two PNG mechanism plots. It
+reuses fixed final checkpoints and performs no training or checkpoint
+selection. Stage II generated JSONL files and their local hash manifest are
+tracked under `benchmarks/stage2_v0/generated/` because they are compact,
+versioned benchmark evidence rather than raw training output.
+
 ## Future additions
 
 The D31 protocol, three-condition sanity, resumable matrix runner, frozen
-analysis, 54 tests, excluded 100k preflight and full five-seed/three-condition
-pilot have passed their engineering gates. The pilot did not meet the 30%
-safety target and is not converged. O8 remains open for the final-main-study
-standard, and O7 remains open for Stage II benchmark implementation.
+analysis, excluded 100k preflight and full five-seed/three-condition pilot have
+passed their engineering gates. The pilot did not meet the 30% safety target
+and is not converged. The post-pilot runtime/trajectory diagnosis and Stage II
+machine foundation are now implemented without retraining; the full suite has
+68 passing tests. O8 remains open for
+the final-main-study standard; independent semantic review and the final O7
+formula/split/model/gate decisions remain open.

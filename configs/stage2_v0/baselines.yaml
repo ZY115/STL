@@ -1,0 +1,104 @@
+schema_version: 1
+status: review_package_not_finally_frozen
+benchmark_id: safety_stl_controlled_language_v0
+common_contract:
+  environment: SafetyPointGoal1-v0
+  language_inputs: same controlled-language item and split
+  public_signals:
+    - nearest_hazard_center_distance_public
+  causal_only: true
+  future_trajectory_access: prohibited
+  test_gold_label_access: prohibited
+  final_truth: human-reviewed Gold STL evaluated by the verified oracle
+  report_separately:
+    - annotation_count
+    - supervision_type
+    - pretrained_resources
+    - model_parameter_count
+    - training_compute
+    - inference_compute
+    - API_use_and_cost
+
+methods:
+  formal_path:
+    method_id: formal_nl_to_stl_v0
+    implementation_classification: adaptation
+    input:
+      language: controlled natural language
+      signal_registry: public typed grounding registry
+      trajectory_history: none_during_translation
+    output: candidate_STL_and_typed_parameters
+    downstream: verified causal monitor
+    supervision: gold_formula_and_typed_grounding_on_training_split_only
+    prohibited:
+      - held_out_gold_STL
+      - held_out_gold_labels
+    unresolved_model_choice:
+      - RESTL_or_ReasonSTL_style_local_adaptation
+      - constrained_structured_prediction_without_a_language_model
+
+  published_direct_current_observation:
+    method_id: lou_style_current_observation_direct_v0
+    implementation_classification: idea_level_adaptation_pending_paper_reproduction_audit
+    role: published_style_structural_ablation_not_sole_primary_opponent
+    input:
+      language: controlled natural language
+      trajectory_history: current_public_observation_only
+    output: binary_cost_or_violation_label
+    supervision: Gold_trace_labels_on_training_split_only
+    prohibited:
+      - gold_STL
+      - gold_monitor_state
+      - future_trajectory
+      - test_gold_labels
+    unresolved_model_choice:
+      - implementation_to_be_selected_after_reproduction_audit
+
+  history_aware_direct:
+    method_id: causal_history_direct_v0
+    implementation_classification: new_project_adaptation
+    role: primary_direct_opponent
+    input:
+      language: controlled natural language
+      trajectory_history: same_causal_public_prefix_available_to_formal_monitor
+    output: binary_cost_or_violation_label
+    supervision: Gold_trace_labels_on_training_split_only
+    memory_candidates:
+      - GRU
+      - causal_Transformer
+    prohibited:
+      - gold_STL
+      - gold_monitor_state
+      - handcrafted_monitor_timer
+      - future_trajectory
+      - test_gold_labels
+    unresolved_model_choice:
+      - GRU_or_causal_Transformer
+
+offline_metrics:
+  script: scripts/evaluate_stage2_predictions.py
+  metrics:
+    - formula_syntax_validity
+    - structured_meaning_field_accuracy
+    - structured_meaning_exact_record_accuracy
+    - precision
+    - recall
+    - f1
+    - false_negative_rate
+    - false_positive_rate
+    - event_time_mean_absolute_error_steps
+    - deadline_boundary_accuracy
+    - terminal_unresolved_accuracy
+    - minimal_pair_consistency
+    - paraphrase_consistency
+  numerical_online_admission_gate: unresolved_must_be_frozen_before_test_evaluation
+
+unresolved_review_decisions:
+  - approve_final_O7_formula_families_and_40_item_composition
+  - approve_split_axes_and_exact_assignment
+  - complete_independent_human_review
+  - choose_formal_translator_implementation
+  - choose_history_aware_direct_architecture
+  - audit_published_method_and_fix_reproduction_classification
+  - freeze_model_capacity_pretraining_compute_and_API_budget
+  - freeze_numerical_offline_admission_thresholds_before_test_evaluation

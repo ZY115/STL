@@ -470,13 +470,13 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 ## 15. 当前状态与下一动作
 
-截至 2026-08-11：
+截至 2026-08-12：
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
-| WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report 和 post-pilot code diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | 先完成建议的 P0 非 GPU adapter/runtime tests；O8 决定 close、longer same-method 或 bounded diagnostic；决定前不启动额外 GPU run |
-| WP2 Controlled benchmark | O7 non-compute proposal prepared | 负责人确认 formula fragment、40-item candidate composition、split、human review 和 offline gates 后实现 schema/examples |
-| WP3 Offline methods | not started | 选择 translator、published direct 和 history-aware direct baselines |
+| WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report、P0 runtime regression 和 existing-checkpoint trajectory diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | O8 决定 close、longer same-method 或 bounded diagnostic；决定前不启动额外 GPU run，也不改 frozen pilot |
+| WP2 Controlled benchmark | 单一已验证 bounded-recovery family 的 v0 schema、5 条待人工复核草案、synthetic/real common schema、Gold relabel/RTAMT/coverage tools 已实现 | 独立人工复核；负责人冻结最终 formula families、30--50 item composition、semantic-pair grouping 和 exact splits |
+| WP3 Offline methods | formal、published-style current-observation direct、history-aware direct 的 access/supervision spec 与 evaluator 已准备；未调用或训练模型 | 一次性确认 translator、direct architecture、reproduction level、pretrained/compute allowance 和 prospective numerical gate |
 | WP4 Online comparison | not started | 等 WP3 trace gate |
 | WP5 Contribution decision | not started | 按预定义 Branch A--E 处理 |
 | WP6 Method/benchmark extension | deferred | 由 WP5 failure mode 决定 |

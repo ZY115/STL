@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://safety-stl.local/schema/stage2-v0-trajectory.json",
+  "title": "Stage II v0 synthetic or real trajectory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trajectory_id",
+    "spec_id",
+    "source_type",
+    "source",
+    "case_tags",
+    "history_pair_id",
+    "history_anchor_step",
+    "samples",
+    "gold_labels"
+  ],
+  "properties": {
+    "trajectory_id": {"type": "string"},
+    "spec_id": {"type": "string"},
+    "source_type": {"enum": ["synthetic", "real_policy_checkpoint"]},
+    "source": {"type": "object"},
+    "case_tags": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "history_pair_id": {"type": ["string", "null"]},
+    "history_anchor_step": {"type": ["integer", "null"]},
+    "samples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sample_index", "distance", "reward", "native_cost", "stl_cost", "terminated", "truncated"],
+        "properties": {
+          "sample_index": {"type": "integer", "minimum": 0},
+          "distance": {"type": "number", "minimum": 0.0, "maximum": 3.0},
+          "reward": {"type": ["number", "null"]},
+          "native_cost": {"type": ["number", "null"]},
+          "stl_cost": {"type": "integer", "enum": [0, 1]},
+          "terminated": {"type": "boolean"},
+          "truncated": {"type": "boolean"}
+        }
+      }
+    },
+    "gold_labels": {"type": "object"}
+  }
+}

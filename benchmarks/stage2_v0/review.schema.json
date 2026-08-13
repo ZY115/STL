@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://safety-stl.local/schema/stage2-v0-review.json",
+  "title": "Stage II v0 independent semantic review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_id", "reviewer", "status", "checks", "disagreement_notes", "reviewed_at"],
+  "properties": {
+    "spec_id": {"type": "string"},
+    "reviewer": {"type": ["string", "null"]},
+    "status": {"enum": ["pending", "approved", "changes_requested"]},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object", "signal", "operator", "comparator", "threshold", "deadline", "equality", "terminal_semantics", "paraphrase_equivalence"],
+      "properties": {
+        "object": {"type": ["boolean", "null"]},
+        "signal": {"type": ["boolean", "null"]},
+        "operator": {"type": ["boolean", "null"]},
+        "comparator": {"type": ["boolean", "null"]},
+        "threshold": {"type": ["boolean", "null"]},
+        "deadline": {"type": ["boolean", "null"]},
+        "equality": {"type": ["boolean", "null"]},
+        "terminal_semantics": {"type": ["boolean", "null"]},
+        "paraphrase_equivalence": {"type": ["boolean", "null"]}
+      }
+    },
+    "disagreement_notes": {"type": ["string", "null"]},
+    "reviewed_at": {"type": ["string", "null"]}
+  }
+}

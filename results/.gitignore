@@ -70,3 +70,15 @@ stage1_pilot/analysis/figures/*
 !stage1_pilot/analysis/figures/*.json
 !stage1_pilot/analysis/figures/*.png
 !stage1_pilot/analysis/figures/*.svg
+!post_pilot_diagnosis/
+post_pilot_diagnosis/*
+!post_pilot_diagnosis/README.md
+!post_pilot_diagnosis/runtime_contract.json
+!post_pilot_diagnosis/summary.json
+!post_pilot_diagnosis/checkpoint_diagnostics.csv
+!post_pilot_diagnosis/replayed_episode_diagnostics.csv
+!post_pilot_diagnosis/representative_per_step_trajectories.csv
+!post_pilot_diagnosis/representative_provenance.json
+!post_pilot_diagnosis/figures/
+post_pilot_diagnosis/figures/*
+!post_pilot_diagnosis/figures/*.png

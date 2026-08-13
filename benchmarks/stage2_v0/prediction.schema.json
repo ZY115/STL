@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://safety-stl.local/schema/stage2-v0-prediction.json",
+  "title": "Stage II v0 offline baseline prediction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "method_id",
+    "trajectory_id",
+    "language_variant",
+    "predicted_costs",
+    "predicted_event_steps",
+    "predicted_active_obligation",
+    "predicted_stl",
+    "predicted_structure"
+  ],
+  "properties": {
+    "method_id": {"type": "string"},
+    "trajectory_id": {"type": "string"},
+    "language_variant": {"type": "string", "pattern": "^(canonical|paraphrase_[0-9]+)$"},
+    "predicted_costs": {"type": "array", "items": {"type": "integer", "enum": [0, 1]}},
+    "predicted_event_steps": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 0}},
+    "predicted_active_obligation": {
+      "type": ["array", "null"],
+      "items": {"type": "integer", "enum": [0, 1]}
+    },
+    "predicted_stl": {"type": ["string", "null"]},
+    "predicted_structure": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "formula_family",
+        "d_warn",
+        "d_safe",
+        "deadline_steps",
+        "warning_comparator",
+        "recovery_comparator",
+        "deadline_inclusive"
+      ],
+      "properties": {
+        "formula_family": {"type": "string"},
+        "d_warn": {"type": "number"},
+        "d_safe": {"type": "number"},
+        "deadline_steps": {"type": "integer", "minimum": 1},
+        "warning_comparator": {"type": "string"},
+        "recovery_comparator": {"type": "string"},
+        "deadline_inclusive": {"type": "boolean"}
+      }
+    }
+  }
+}

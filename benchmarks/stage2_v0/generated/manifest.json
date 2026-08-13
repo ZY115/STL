@@ -1,0 +1,21 @@
+{
+  "artifacts": {
+    "generated/coverage.json": {
+      "bytes": 4067,
+      "sha256": "4e9cbfe91e6359b028c3af01998afe1f9bbe5fda4a646d0b0f6c961b99898001"
+    },
+    "generated/gold_labels.jsonl": {
+      "bytes": 231675,
+      "sha256": "363149f141e882af577aa523f044679ee32c8eca072cfe3435c6543e6ba4a91a"
+    },
+    "generated/real_trajectories.jsonl": {
+      "bytes": 1109232,
+      "sha256": "c33289520df7a4bd22212fa3c61be779f8e4f1b183f9d22069f10203697acd68"
+    },
+    "generated/synthetic_trajectories.jsonl": {
+      "bytes": 548761,
+      "sha256": "903727e44bfe4d935d68f0e20208542bfdf1b8b3c7538f5432297a894213b576"
+    }
+  },
+  "schema_version": 1
+}

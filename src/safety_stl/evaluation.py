@@ -115,6 +115,59 @@ def _boolean(value: Any) -> bool:
     return bool(value)
 
 
+def _optional_monitor_int(value: Any) -> Optional[int]:
+    parsed = int(_scalar(value))
+    return None if parsed < 0 else parsed
+
+
+def _trajectory_row(
+    info: Mapping[str, Any],
+    *,
+    action_index: int,
+    action: Optional[torch.Tensor],
+    reward: float,
+    native_cost: float,
+    selected_algorithm_cost: float,
+    terminated: bool,
+    truncated: bool,
+    goal_met: bool,
+) -> Dict[str, Any]:
+    """Build one complete public-signal/monitor record for diagnostic replay."""
+
+    action_values: List[Optional[float]] = [None, None]
+    if action is not None:
+        flattened = action.detach().cpu().reshape(-1).tolist()
+        for index, value in enumerate(flattened[:2]):
+            action_values[index] = float(value)
+    return {
+        "action_index": int(action_index),
+        "sample_index": int(_scalar(info["stl_sample_index"])),
+        "action_forward": action_values[0],
+        "action_turn": action_values[1],
+        "distance": _scalar(info["stl_distance"]),
+        "unsafe": _boolean(info["stl_unsafe"]),
+        "safe": _boolean(info["stl_safe"]),
+        "monitor_state": str(info["stl_status"]),
+        "warning_trigger": _boolean(info["stl_warning_trigger"]),
+        "recovery": _boolean(info["stl_recovery"]),
+        "late_recovery": _boolean(info["stl_late_recovery"]),
+        "deadline_violation": _boolean(info["stl_deadline_violation"]),
+        "terminal_unresolved": _boolean(info["stl_terminal_unresolved"]),
+        "trigger_step": _optional_monitor_int(info["stl_trigger_step"]),
+        "deadline_step": _optional_monitor_int(info["stl_deadline_step"]),
+        "elapsed_steps": _optional_monitor_int(info["stl_elapsed_steps"]),
+        "remaining_steps": _optional_monitor_int(info["stl_remaining_steps"]),
+        "warning_episode_id": int(_scalar(info["stl_episode_id"])),
+        "reward": float(reward),
+        "native_cost": float(native_cost),
+        "stl_cost": int(_scalar(info["stl_cost"])),
+        "selected_algorithm_cost": float(selected_algorithm_cost),
+        "goal_met": bool(goal_met),
+        "terminated": bool(terminated),
+        "truncated": bool(truncated),
+    }
+
+
 def _goal_met(info: Mapping[str, Any], done: bool) -> bool:
     if done and isinstance(info.get("final_info"), Mapping):
         final_info = info["final_info"]
@@ -182,6 +235,21 @@ def verify_gold_oracle(
         "deadline_violation_count": len(oracle.violation_steps),
         "terminal_unresolved_count": len(oracle.unresolved_steps),
         "stl_event_cost_total": int(sum(oracle.costs)),
+        "on_time_recovery_latency_sum": sum(
+            event.outcome_step - event.trigger_step
+            for event in oracle.events
+            if event.outcome == "recovery"
+        ),
+        "deadline_violation_delay_sum": sum(
+            event.outcome_step - event.trigger_step
+            for event in oracle.events
+            if event.outcome == "deadline_violation"
+        ),
+        "terminal_unresolved_delay_sum": sum(
+            event.outcome_step - event.trigger_step
+            for event in oracle.events
+            if event.outcome == "terminal_unresolved"
+        ),
         "completed_window_count": len(oracle.completed_windows),
         "trace_robustness": (
             min(window.robustness for window in oracle.completed_windows)
@@ -219,10 +287,22 @@ def summarize_episodes(episodes: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
         "deadline_violation_count",
         "terminal_unresolved_count",
     )
+    optional_diagnostic_fields = (
+        "on_time_recovery_latency_sum",
+        "deadline_violation_delay_sum",
+        "terminal_unresolved_delay_sum",
+        "positive_cost_step_count",
+    )
     metrics = {
         field: _metric_summary([float(episode[field]) for episode in episodes])
         for field in scalar_fields
     }
+    metrics.update(
+        {
+            field: _metric_summary([float(episode.get(field, 0.0)) for episode in episodes])
+            for field in optional_diagnostic_fields
+        },
+    )
     triggers = sum(int(episode["trigger_count"]) for episode in episodes)
     recoveries = sum(int(episode["recovery_count"]) for episode in episodes)
     violations = sum(int(episode["deadline_violation_count"]) for episode in episodes)
@@ -305,18 +385,17 @@ def evaluate_checkpoint(
             torch.manual_seed(int(seed))
             observation, reset_info = environment.reset(seed=int(seed))
             rows: List[Dict[str, Any]] = [
-                {
-                    "sample_index": int(_scalar(reset_info["stl_sample_index"])),
-                    "distance": _scalar(reset_info["stl_distance"]),
-                    "warning_trigger": _boolean(reset_info["stl_warning_trigger"]),
-                    "recovery": _boolean(reset_info["stl_recovery"]),
-                    "late_recovery": _boolean(reset_info["stl_late_recovery"]),
-                    "deadline_violation": _boolean(reset_info["stl_deadline_violation"]),
-                    "terminal_unresolved": _boolean(reset_info["stl_terminal_unresolved"]),
-                    "stl_cost": int(_scalar(reset_info["stl_cost"])),
-                    "terminated": False,
-                    "truncated": False,
-                },
+                _trajectory_row(
+                    reset_info,
+                    action_index=-1,
+                    action=None,
+                    reward=0.0,
+                    native_cost=0.0,
+                    selected_algorithm_cost=0.0,
+                    terminated=False,
+                    truncated=False,
+                    goal_met=False,
+                ),
             ]
             episode_return = 0.0
             native_cost_total = 0.0
@@ -328,7 +407,9 @@ def evaluate_checkpoint(
                 actor_observation = policy.policy_observation(observation)
                 with torch.no_grad():
                     action = policy.actor.predict(actor_observation, deterministic=deterministic)
-                observation, reward, _, terminated, truncated, info = environment.step(action)
+                observation, reward, selected_cost, terminated, truncated, info = environment.step(
+                    action,
+                )
                 term = _boolean(terminated)
                 trunc = _boolean(truncated)
                 done = term or trunc
@@ -336,19 +417,19 @@ def evaluate_checkpoint(
                 episode_return += _scalar(reward)
                 native_cost_total += _scalar(info["native_cost"])
                 online_stl_cost_total += _scalar(info["stl_cost"])
-                goal_events += int(_goal_met(info, done))
-                row = {
-                    "sample_index": int(_scalar(info["stl_sample_index"])),
-                    "distance": _scalar(info["stl_distance"]),
-                    "warning_trigger": _boolean(info["stl_warning_trigger"]),
-                    "recovery": _boolean(info["stl_recovery"]),
-                    "late_recovery": _boolean(info["stl_late_recovery"]),
-                    "deadline_violation": _boolean(info["stl_deadline_violation"]),
-                    "terminal_unresolved": _boolean(info["stl_terminal_unresolved"]),
-                    "stl_cost": int(_scalar(info["stl_cost"])),
-                    "terminated": term,
-                    "truncated": trunc,
-                }
+                goal_met = _goal_met(info, done)
+                goal_events += int(goal_met)
+                row = _trajectory_row(
+                    info,
+                    action_index=action_count - 1,
+                    action=action,
+                    reward=_scalar(reward),
+                    native_cost=_scalar(info["native_cost"]),
+                    selected_algorithm_cost=_scalar(selected_cost),
+                    terminated=term,
+                    truncated=trunc,
+                    goal_met=goal_met,
+                )
                 rows.append(row)
                 if action_count > max_episode_steps + 1:
                     raise RuntimeError("evaluation episode exceeded its declared horizon")
@@ -382,6 +463,10 @@ def evaluate_checkpoint(
                 "late_recovery_count": int(oracle["late_recovery_count"]),
                 "deadline_violation_count": int(oracle["deadline_violation_count"]),
                 "terminal_unresolved_count": int(oracle["terminal_unresolved_count"]),
+                "on_time_recovery_latency_sum": int(oracle["on_time_recovery_latency_sum"]),
+                "deadline_violation_delay_sum": int(oracle["deadline_violation_delay_sum"]),
+                "terminal_unresolved_delay_sum": int(oracle["terminal_unresolved_delay_sum"]),
+                "positive_cost_step_count": sum(int(row["stl_cost"]) for row in rows),
                 "completed_window_count": int(oracle["completed_window_count"]),
                 "trace_robustness": oracle["trace_robustness"],
                 "online_oracle_agreement": bool(oracle["agreement"]),

@@ -529,3 +529,76 @@ unchanged gold oracle 评价。
 
 本次只新增诊断文档和索引记录，没有修改 D31、没有冻结任何 O8 参数、没有运行新的
 GPU training。O8-A/B/C 仍等待负责人明确决定。
+
+## 20. 2026-08-12 D36：旧 checkpoint 轨迹诊断与 Stage II v0 离线基础
+
+### 20.1 执行边界
+
+按 D36 和 `docs/CURRENT_EXECUTION_DIRECTIVE.md` 连续完成无 GPU package。没有修改
+冻结的 D31 protocol、Gold monitor/oracle、已有 checkpoint 或统计结果；没有启动 RL
+training、调用语言模型、使用付费 API、选择 O7 final splits 或事后 shaping。
+
+### 20.2 旧 checkpoint 完整复放
+
+新增 `trajectory_diagnosis.py` 和 CLI，对 15 个 fixed `epoch-100.pt` 使用原 5 个
+training seeds、每个 100 个 paired evaluation seeds 做 CPU deterministic replay。
+1,500/1,500 episode 的长度、return、native cost、minimum distance 和 Gold event counts
+与冻结 CSV 一致；online/oracle 全部一致，RTAMT 最大 robustness difference 为 0。
+
+新增 per-step export，字段包括 action、public distance、unsafe/safe、monitor state、
+trigger/deadline/remaining、recovery/late/violation/unresolved、reward、native/STL/selected
+cost、goal 和 terminal metadata。两个 preselected opposite-direction case × 三条件共
+6,006 samples 形成统一 provenance；生成两张人工检查过布局的 PNG。
+
+机制汇总表明：task/native/Gold triggers per episode 为 `6.700/4.654/6.622`，
+missed/trigger 为 `25.85%/29.65%/26.03%`，positive STL cost/action step 为
+`0.1732%/0.1380%/0.1724%`。native 主要减少 entry frequency，但 conditional recovery
+更差；Gold 相对 task-only 在 entry 和 recovery 上都没有 material change。deadline
+cost 固定延迟 79 steps，Gold terminal-unresolved 平均延迟 28.96 steps。
+
+### 20.3 Installed runtime contract 与 tests
+
+新增源码/hash audit 和 executable regressions，确认：
+
+- OmniSafe `0.5.0` 的 `Metrics/EpCost` 实际 hard-code rolling 50，不是 config 100；
+- reward advantage 做 z-score，cost advantage 只去均值；
+- on-policy buffer 读取共享 `gamma` 而不是 `cost_gamma`，但 pilot 两者都为 0.99；
+- actor LR 从 `3e-4` 线性降到 epoch 100 的 0，没有非零 floor；
+- Lagrange update 使用 rolling-50 EpCost；
+- terminal-unresolved 已产生 event cost 1 后，timeout branch 仍把 active final cost
+  value bootstrap 给 buffer。fake value 7 的 probe 观察到 `last_value_c=7`，而 settled
+  episode convention 要求 0。
+
+该 audit 不 patch `site-packages`，也不把 semantic risk 宣称为 pilot 的已隔离根因。
+
+### 20.4 Stage II v0 benchmark foundation
+
+新增 `benchmarks/stage2_v0/`：version metadata、specification/trajectory/prediction/review
+schemas、5 条 bounded-recovery 草案、每条两个 paraphrases、typed public grounding、
+Gold STL、9-field independent-review checklist 和明确 pending review 状态。
+
+当前只执行已验证 family，不批准 O7 其他 family。四条新参数 spec 仅供 offline，不能
+自动进入 RL。每条 spec 生成 11 类 synthetic boundary/history cases，共 55 traces 和
+3,202 samples；五个 same-observation history pairs 均在 anchor 具有不同 causal state；
+10 个参数 spec pairs 均找到 semantic witness。
+
+从旧 task/native/Gold checkpoint 预选 case 导入 6 条 real traces、6,006 samples，
+checkpoint/source CSV hashes 均验证。61 条轨迹使用统一 schema，stored Gold labels 会
+被 validator 从 distance/terminal metadata 重新计算；所有 online/oracle/RTAMT checks
+通过，最大差异 0。生成 JSONL、coverage 和 artifact manifest。
+
+### 20.5 Baseline review package 与停止 gate
+
+新增 formal NL-to-STL、published-style current-observation direct 和 history-aware
+direct 三方法 machine-readable spec、公平性表和 prediction evaluator。evaluator 已实现
+formula syntax、typed structure fields、trace precision/recall/F1/FNR/FPR、event-time、
+boundary、terminal unresolved、paraphrase 和 causal-history pair metrics。
+
+最终 dataset gate 保持关闭，因为 5 条草案仍需独立人工 reviewer，O7 final formula
+families/30--50 composition/splits/model/compute/numerical gate 均未冻结，single-family
+fragment 也不能支持 structure split。这是当前真实 review blocker，不以自动生成内容
+冒充人工复核。
+
+完整 suite 增至 68 tests 并全部通过；`pip check`、全 Python compile、shell syntax、
+JSON/YAML parsing、diagnosis/benchmark artifact hashes、第二次 deterministic benchmark
+rebuild 和 `git diff --check` 全部通过。
