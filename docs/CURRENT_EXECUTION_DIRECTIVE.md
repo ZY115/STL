@@ -1,262 +1,290 @@
 # Current Execution Directive
 
-- **Directive ID:** `WP1-PILOT-EXECUTION-PREP-2026-08-11`
-- **Current WP:** WP1 Gold-STL downstream control
-- **Status:** authorized full pilot, frozen analysis, WP1 report and follow-on proposals completed
+- **Directive ID:** `POST-PILOT-OFFLINE-BENCHMARK-2026-08-12`
+- **Current work:** Gold-STL baseline diagnosis plus Stage II offline benchmark
+- **Status:** non-GPU work authorized; no additional long RL run authorized
 - **Long-term map:** `docs/END_TO_END_RESEARCH_PIPELINE.md`
-- **Scientific protocol:** D31 and `configs/stage1_pilot/`
+- **Current evidence:** `docs/stage1_pilot_result_report.md`
 
-## 1. Why this file exists
+## 1. Current research position
 
-The end-to-end pipeline defines the complete research program. This directive
-defines the current bounded execution package. An agent must complete every
-unblocked item in the package before stopping; it must not treat each file or
-small test as a separate user decision.
+The project no longer asks whether an STL monitor can technically send a cost
+to PPO-Lagrangian. Prior work already establishes that general route, and this
+repository has independently verified the complete local implementation:
 
-The previous handoff stopped after the 10k sanity because two explicit rules
-required it to stop: D31 did not authorize the full 1M runs, and the repository
-did not yet contain a resumable full-pilot runner or the declared hierarchical
-analysis. That pause was appropriate. The correction is to make the next
-continuous work package explicit, not to remove scientific and compute gates.
+- the online monitor, direct oracle and RTAMT agree;
+- raw STL events are routed to the selected learner cost;
+- PPO-Lagrangian can update from a positive STL cost;
+- the completed 15-run pilot produced reproducible policy-level evidence.
 
-## 2. Current verified state
+The pilot did not produce the expected behavioral improvement. Task-only and
+Gold-STL policies missed 25.85% and 26.03% of triggered obligations,
+respectively. This is a valid negative pilot, not an integration failure.
 
-The following gates are closed:
-
-- environment, signal, monitor/oracle and RTAMT agreement;
-- OmniSafe wrapper and exact three-condition cost routing;
-- real on-policy positive STL event cost;
-- common final-checkpoint gold-STL evaluator;
-- D31 frozen Stage I pilot protocol;
-- RTX 4090 `cuda:0` and deterministic cuBLAS validation;
-- three-condition 10k-per-condition CUDA sanity;
-- 43 repository tests, dependency check and packaged-file checks.
-
-The 10k sanity is engineering evidence only. Its three evaluation episodes per
-condition are not evidence for or against the Stage I hypothesis.
-
-This paragraph described the pre-launch state. The owner subsequently approved
-the full package, and all 15 jobs completed on 2026-08-12; see Section 8 and
-`docs/stage1_pilot_result_report.md`.
-
-The complete Sections 4.1--4.5 package passed on 2026-08-11. The runner,
-analysis module and 11 focused tests are present; the complete suite has 54
-passing tests; the excluded 100k exact-scale preflight and ten-episode gold
-evaluation passed; and `docs/stage1_pilot_launch_readiness.md` records the
-resource projection and recovery procedure. The full compute gate remains
-closed.
-
-## 3. Historical pre-launch rationale
-
-The frozen matrix contains 15 training jobs:
+The long-term scientific question is now:
 
 ```text
-3 conditions x 5 training seeds x 1,000,000 transitions = 15,000,000 transitions
+Formal path: NL -> STL -> verified monitor -> cost -> Safe RL
+Direct path: NL + causal trajectory history -> learned cost -> Safe RL
 ```
 
-The current 10k sanity processed 30,000 transitions in approximately 121
-seconds across the three sequential conditions, about 248 transitions/second.
-A direct extrapolation is roughly 16.8 training hours before 1,500 final
-evaluation episodes and analysis. The exact-scale configuration uses 10 vector
-environments rather than the sanity's 2, so this estimate must be replaced by
-the preflight measurement.
+Under matched data, environment and Safe RL backends, does the explicit formal
+path preserve temporal safety semantics more faithfully, expose more
+diagnosable errors, and ultimately produce better policy behavior?
 
-The repository currently has a sanity runner but no full matrix runner,
-resume/skip contract, run manifest, or paired hierarchical analysis module.
-Launching fifteen jobs manually would make partial failure, duplicate runs,
-checkpoint identity and statistical aggregation unnecessarily fragile.
+## 2. Why the next work is offline first
 
-## 4. Authorized continuous implementation package
+The existing Gold-STL pilot separates two facts:
 
-The work computer is authorized to complete all items in Sections 4.1--4.5
-without requesting another step-by-step instruction.
+1. **Evaluator validity:** the Gold-STL monitor correctly labels completed
+   trajectories. This has passed.
+2. **Training-signal efficacy:** the current delayed binary event cost did not
+   measurably change policy behavior. This has not passed.
 
-### 4.1 Full-pilot matrix runner
+Starting another large run with the same settings would only repeat the same
+question. Starting the language comparison immediately would also be premature,
+because translation error, label error and cost-optimization failure would be
+mixed together.
 
-Implement:
+Therefore the work computer must now proceed through the following route. It
+must complete all unblocked non-GPU items before requesting another instruction.
 
-```text
-scripts/run_stage1_pilot.py
-scripts/run_stage1_pilot.sh
-```
+## 3. Step 1 - Close the current pilot as evidence
 
-The runner must:
+### Work
 
-- load and validate `configs/stage1_pilot/protocol.yaml` and all three overlays;
-- enumerate the exact 15 condition/seed jobs in deterministic order;
-- run one training job at a time on the single RTX 4090;
-- set `CUBLAS_WORKSPACE_CONFIG=:4096:8` before Python/Torch initialization;
-- support `--dry-run`, condition/seed selection, `--resume`, `--train-only` and
-  `--evaluate-only`;
-- write one immutable manifest entry per job containing Git commit, config
-  hashes, condition, seed, start/end time, status, run directory, final
-  checkpoint and progress hashes;
-- never overwrite an existing successful run;
-- skip a completed run only when commit/config/checkpoint hashes match;
-- mark interrupted/failed jobs explicitly and resume only the missing job;
-- use the fixed final checkpoint, not a post-hoc best checkpoint;
-- evaluate each successful job immediately on the 100 paired seeds so a later
-  failure cannot leave all evaluation until the end;
-- avoid full trajectory JSONL by default; retain episode CSV and aggregate JSON.
+1. Preserve the frozen configs, checkpoints, evaluation files and statistical
+   report without changing or relabeling them.
+2. Treat the result as a diagnostic pilot, not as a final comparison and not as
+   evidence that STL is generally ineffective.
+3. Confirm that every claim in the status and presentation uses the distinction
+   between a correct evaluator and an ineffective current training signal.
 
-The runner must not silently change D31, D32, rule semantics, seeds, budgets,
-network settings or evaluation mode.
+### Output
 
-### 4.2 Pilot analysis module
+- existing reproducible Stage I result package;
+- one concise statement of what passed, what failed and what remains unknown.
 
-Implement:
+### Gate
 
-```text
-src/safety_stl/pilot_analysis.py
-scripts/analyze_stage1_pilot.py
-```
+This step is complete when no document describes the pilot as a test of whether
+STL can be connected to PPO. It tested one specific sparse binary cost design.
 
-The analysis must:
+## 4. Step 2 - Diagnose the Gold-STL training baseline without retraining
 
-- require all 15 final-checkpoint evaluations for a complete primary report;
-- preserve per-training-seed and per-episode records;
-- calculate pooled missed obligations per trigger and its absolute/relative
-  gold-STL-vs-task-only reduction;
-- apply the task-only-zero fallback exactly as D31 defines;
-- separately report deadline violations, terminal unresolved, trigger rate,
-  missed obligations per episode, native cost, STL cost, return and goal events;
-- calculate the 10-percentage-point goal-success non-inferiority result;
-- perform 10,000 paired hierarchical bootstrap replicates by resampling
-  training seeds first and matched evaluation episodes within seed second;
-- use a fixed analysis RNG seed recorded in the output;
-- report point estimates and 95% intervals without replacing N/A values by 0;
-- output machine-readable JSON/CSV and a concise Markdown result table;
-- inspect learning-curve stability without claiming formal convergence.
+### Work
 
-### 4.3 Automated tests
+Use the existing task-only, native-cost and Gold-STL checkpoints and matched
+evaluation seeds. Do not launch new training.
 
-Add focused tests for:
+1. Replay representative successful and failed trajectories.
+2. Export per-step distance, warning trigger, monitor state, remaining deadline,
+   recovery event, violation event, terminal-unresolved event, reward, native
+   cost and STL cost.
+3. Produce trajectory plots or videos showing what the agent actually does
+   before and after a warning trigger.
+4. Quantify trigger count, recovery latency, deadline violations,
+   terminal-unresolved cases, positive-cost frequency and the delay from trigger
+   to cost.
+5. Check whether policies primarily change hazard-entry frequency, recovery
+   behavior after entry, or neither.
+6. Add project-owned regression tests for the known runtime risks, especially
+   cost-value bootstrap after a terminal-unresolved obligation, effective
+   advantage scaling, rolling-window length and actual cost discount.
+7. Record the effective runtime contract and diagnostic quantities needed by
+   any future RL run.
 
-- exact 15-job matrix enumeration;
-- frozen-config and hash mismatch rejection;
-- completed-job skip and interrupted-job resume behavior;
-- no accidental overwrite;
-- zero-trigger and zero-task-baseline metric handling;
-- paired hierarchical resampling preserving the seed hierarchy;
-- deterministic bootstrap output;
-- goal-success non-inferiority sign and margin;
-- incomplete-matrix analysis rejection;
-- final-checkpoint-only selection.
+### Output
 
-Tests must use synthetic fixtures or mocks; they must not require 15 real GPU
-runs.
+- a Gold-STL trajectory diagnosis report;
+- representative plots or videos linked to exact checkpoints and seeds;
+- machine-readable per-step trajectory exports;
+- runtime-contract and regression-test evidence;
+- a short list of supported and rejected explanations for the negative pilot.
 
-### 4.4 Exact-scale throughput preflight
+### Gate
 
-After code/tests pass, run one excluded engineering job using:
+Step 2 passes when the project can explain where and when the current cost is
+generated and whether the observed failure is consistent with signal sparsity,
+delay, budget mismatch or optimizer behavior. It does not need to prove that a
+particular repair will work.
 
-- condition: `gold_stl_cost`;
-- seed: `20260811`, excluded from pilot inference;
-- exact 10-vector, 10,000-steps-per-epoch CUDA configuration;
-- 100,000 transitions;
-- final-checkpoint evaluation on 10 excluded paired seeds;
-- separate output under `results/pilot_preflight/`.
+## 5. Step 3 - Build the Stage II offline benchmark foundation
 
-Record:
+This step may proceed in parallel with Step 2 and does not require a GPU.
 
-- transitions/second and wall-clock time;
-- peak GPU memory if available;
-- disk use per training run and evaluation output;
-- projected wall-clock and disk for all 15 jobs;
-- all routing/oracle/RTAMT checks;
-- resume behavior from a deliberately interrupted synthetic or bounded test.
+### Work
 
-The preflight is not part of Stage I inference and must never be pooled with the
-five frozen training seeds.
+1. Convert the O7 proposal into a versioned v0 benchmark contract.
+2. Define the supported controlled-language fragment, grounding schema and STL
+   formula families. Begin with bounded temporal requirements over public
+   SafetyPointGoal1-v0 signals.
+3. Create five independently reviewed end-to-end examples containing natural
+   language, typed grounding, Gold STL and distinguishing traces.
+4. Create synthetic boundary traces for on-time recovery, exact-deadline
+   recovery, one-step-late recovery, terminal unresolved, equality boundaries,
+   repeated triggers and identical current observations with different history.
+5. Add real trajectories exported from task-only, native-cost and Gold-STL
+   policies. Synthetic and real traces must share one schema.
+6. Label every trace using the frozen Gold-STL oracle and preserve monitor,
+   oracle and RTAMT agreement evidence.
+7. Implement schema validation, split-leakage checks and a coverage report.
 
-### 4.5 Launch-readiness report
+### Output
 
-Create `docs/stage1_pilot_launch_readiness.md` containing:
+- benchmark schema and versioned metadata;
+- five reviewed examples;
+- synthetic trace generators and real-trajectory import path;
+- Gold labels and agreement checks;
+- candidate paraphrase, parameter-composition and formula-structure splits;
+- coverage and data-quality report.
 
-- exact command for the full matrix and resume command;
-- dry-run 15-job manifest;
-- test/checksum results;
-- measured time, VRAM and disk projection;
-- remaining risks and recovery procedure;
-- confirmation that no full pilot job has started;
-- one explicit launch decision request.
+### Gate
 
-Do not stop after writing the runner, analysis module or tests individually.
-Continue through the preflight and readiness report unless a real technical
-failure prevents progress.
+Step 3 passes when another researcher can add a specification and trajectory,
+validate them, reproduce their Gold labels and understand which test split they
+belong to without reading the original conversation.
 
-## 5. Full-pilot compute gate — authorized and completed
+## 6. Step 4 - Freeze the two representation baselines
 
-The expensive 15-job full pilot was a deliberate owner gate. The owner gave the
-required explicit launch authorization, and the package completed on
-2026-08-12. The text below remains the historical post-approval work order.
+Do not train or call language models before the benchmark contract and examples
+from Step 3 exist.
 
-After explicit launch approval, the work computer must execute the following as
-one continuous package without further step-by-step questions:
+### Work
 
-1. run/resume all 15 frozen training jobs sequentially;
-2. evaluate each final checkpoint on the same 100 paired seeds;
-3. run the frozen hierarchical analysis;
-4. inspect learning curves and label instability or non-convergence;
-5. create the Stage I pilot result report with failures and limitations;
-6. update the WP1 status, decision log, changelog, manifest and checksums;
-7. prepare the O8 final-main-study decision package;
-8. begin the non-compute WP2/O7 benchmark-design proposal described in the
-   long-term pipeline while O8 is reviewed.
+Define three implementations:
 
-## 6. Continuation and stopping policy
+1. **Formal path:** controlled NL to a candidate STL formula, followed by the
+   verified monitor.
+2. **Published-style direct baseline:** natural language plus current public
+   observation to a predicted cost or violation label.
+3. **History-aware direct baseline:** natural language plus the same causal
+   trajectory prefix available to the formal monitor.
 
-### Continue automatically when
+For each implementation, record whether it is a strict reproduction, an
+adaptation or an idea-level reimplementation. Freeze training supervision,
+pretrained resources, input history, model access, compute and test-set access.
+The direct baselines must not receive Gold STL or Gold monitor state.
 
-- the next item is already specified by this directive;
-- the work is code, tests, documentation, dry-run or the bounded 100k preflight;
-- a previous item passes its declared gate;
-- a failure has a local fix that does not alter scientific semantics.
+### Output
 
-### Stop and request one decision only when
+- baseline implementation specifications;
+- a fairness table showing exactly what each method receives;
+- frozen offline metrics and evaluation scripts;
+- one combined decision request for any unresolved model or dataset choices.
 
-- authorization for the 15M-transition full pilot is required;
-- a proposed fix changes D31/D32, STL semantics, the benchmark, primary metric,
-  seeds, budget, baseline or evaluation protocol;
-- the measured resource projection is materially larger than documented;
-- repeated technical failure remains after diagnosis and documented attempts.
+### Gate
 
-When blocked, prepare the decision package and continue every other unblocked
-item. Do not end with only “please tell me what to do next.”
+The methods are ready only when differences in information access and
+supervision are explicit. A current-observation-only direct model cannot be the
+sole opponent for a history-dependent STL requirement.
 
-## 7. What comes after WP1
+## 7. Step 5 - Run the offline semantic comparison
 
-The project does not end after the Stage I pilot. The next scientific work is
-already defined:
+### Work
 
-- O8 decides whether a larger Stage I final study is necessary;
-- WP2 defines controlled NL/gold-STL specifications and semantic minimal pairs;
-- WP3 reproduces an NL-to-STL method, Lou et al.-style direct cost and a
-  history-aware direct-cost baseline on the same saved trajectories;
-- WP4 performs the matched online representation comparison;
-- WP5 follows predefined Branch A--E to determine whether the contribution is
-  an empirical formal-representation advantage, a negative result, a hybrid
-  method, a cost-learning fix or a benchmark expansion.
+Evaluate both routes on the same held-out language and trajectory cases.
+Separate three levels of correctness:
 
-The authoritative details remain in `docs/END_TO_END_RESEARCH_PIPELINE.md`.
+1. formula or structured-meaning accuracy;
+2. trajectory violation-label and event-time accuracy;
+3. robustness to paraphrase, parameter changes, negation and temporal-scope
+   minimal pairs.
 
-## 8. Completion record
+Report precision, recall, false-negative rate, false-positive rate, event-time
+error, boundary accuracy, minimal-pair consistency and error categories. Gold
+STL remains the evaluation oracle, not a competing learned method.
 
-This directive's authorized preparation package completed on 2026-08-11.
-Measured exact-scale throughput was 335.68 transitions/second. PyTorch peak
-reserved CUDA memory was 90 MiB. Linear projection for fifteen 1M jobs and
-1,500 evaluations is approximately 13.13 hours and 14.24 MB. All cost routing,
-fixed-checkpoint, direct-oracle and RTAMT checks passed. The successful
-preflight resume returned `skipped_verified_success` without retraining.
+### Output
 
-The owner subsequently authorized Section 5. All 15 one-million-transition jobs
-and 1,500 paired deterministic evaluations completed without failure. Frozen
-analysis found task-only/gold-STL missed-obligation rates of 25.85%/26.03%, a
-relative reduction of -0.71% with 95% interval [-24.92%, +21.88%]; the 30%
-target was not met. Both primary conditions had 100% goal success and passed
-the 10-point non-inferiority criterion. Rising multipliers and costs above both
-condition-specific budgets preclude a convergence claim.
+- reproducible offline comparison report;
+- per-example predictions and error taxonomy;
+- evidence showing whether either representation has a measurable semantic
+  advantage and under which requirement types.
 
-The WP1 report, reproducible figures, O8 decision proposal and non-compute O7
-benchmark proposal are complete. The active boundary is now owner resolution
-of O8 before more GPU work and O7 before Stage II dataset implementation.
+### Gate
+
+Proceed to online Safe RL only if both routes achieve a predeclared minimum
+offline quality and the remaining errors are understood. If one route fails
+offline, diagnose or revise it before spending RL compute.
+
+## 8. Step 6 - Freeze a fair online training interface
+
+The offline experiment compares semantic correctness. The online experiment
+must not accidentally compare different cost density, scale or information.
+
+### Work
+
+1. Keep the frozen Gold-STL evaluator unchanged for final policy evaluation.
+2. Define a common causal training-cost interface for formal and direct routes.
+3. Declare cost units, timing, scale, budget, terminal treatment and history
+   access for both routes.
+4. Decide whether the primary control uses binary violation events or one
+   semantics-preserving causal shaping rule applied consistently.
+5. Use the Step 2 diagnosis to choose, but freeze the choice before observing
+   new online results.
+6. Define matched seeds, transition budget, evaluation episodes, task-performance
+   tolerance and statistical analysis.
+
+### Output
+
+- frozen online comparison protocol;
+- Gold evaluation protocol separated from learner cost;
+- bounded sanity matrix and compute estimate;
+- one explicit authorization request for GPU execution.
+
+### Gate
+
+No online comparison begins until a cost difference can be attributed to the
+representation rather than an avoidable difference in scale, delay or access to
+history.
+
+## 9. Step 7 - Run matched online Safe RL experiments
+
+After explicit compute authorization:
+
+1. run a bounded routing and learning sanity for every condition;
+2. inspect trajectories and cost dynamics before the main run;
+3. run matched formal, direct and required control conditions from
+   initialization;
+4. evaluate every final policy with the same Gold-STL oracle;
+5. compare temporal safety, task success, return and error propagation from
+   language to labels to policy behavior.
+
+The current 2026-08-12 pilot cannot be reused as independent confirmatory
+evidence for a newly selected training interface.
+
+## 10. Step 8 - Decide the actual research contribution
+
+The result determines the contribution; the project must not assume that the
+formal route wins.
+
+- If the formal path is more accurate offline and safer online, report the
+  conditions and mechanism of that advantage.
+- If it is more accurate offline but not safer online, study the training-cost
+  interface and error propagation.
+- If the direct path performs better, report where explicit formalization loses
+  information or creates supervision and grounding costs.
+- If both are similar, the benchmark, controlled protocol and negative result
+  may be the contribution.
+- If neither is adequate, use the error taxonomy to motivate a hybrid or repair
+  method rather than inventing one in advance.
+
+## 11. Current stopping and compute policy
+
+The work computer should now complete Steps 1--3 as one continuous non-GPU
+package. It should prepare Step 4 and consolidate all unresolved choices into
+one decision request rather than stopping after each file.
+
+It must stop before:
+
+- selecting final formula families or dataset splits without review;
+- committing to a particular proprietary model or paid API;
+- changing the Gold STL semantics;
+- launching any new long RL training;
+- selecting a shaping rule after observing its final evaluation performance.
+
+The immediate deliverable is therefore not another policy checkpoint. It is a
+teacher-reviewable package containing the negative-pilot interpretation,
+trajectory diagnosis, benchmark contract, reviewed examples, Gold trace labels
+and the exact decisions needed to begin the formal-versus-direct comparison.

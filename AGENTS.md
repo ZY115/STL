@@ -3,12 +3,15 @@
 ## Project objective
 
 This repository records the complete staged study on language-grounded Signal
-Temporal Logic (STL) for Safe Reinforcement Learning and currently implements
-its Stage I gold-STL control.
+Temporal Logic (STL) for Safe Reinforcement Learning. Its Stage I gold-STL
+pilot is complete; current work diagnoses that baseline and builds the Stage II
+offline benchmark foundation.
 
 The long-term project translates natural-language safety requirements into STL and uses STL monitoring results during Safe RL training.
 
-Stage I does not contain a language model. It tests the downstream chain with one manually verified STL rule.
+Stage I does not contain a language model. The next authorized work remains
+offline and non-GPU: diagnose existing trajectories, build Gold-labelled data,
+and prepare the formal-versus-direct baseline specifications.
 
 ## Required reading
 
@@ -118,24 +121,28 @@ convergence claim. D35 and `docs/stage1_pilot_result_report.md` are
 authoritative.
 
 The post-pilot code diagnosis and candidate repair hierarchy are recorded in
-`docs/stage1_code_failure_analysis_and_repair_recommendations.md`. Its P0
-adapter/runtime tests are non-compute engineering proposals; its P1/P2 training
-ideas are not approved protocols. The immediate compute boundary is O8. Do not
-launch additional GPU training until the owner chooses whether to close Stage
-I, prepare a longer same-method standard, or freeze the proposed bounded
-optimization/budget/credit diagnostic in
-`docs/stage1_o8_main_study_decision_proposal.md`. The non-compute O7 Stage II
-benchmark proposal is ready but its formula fragment, dataset composition,
-split, baselines and gates remain unconfirmed.
+`docs/stage1_code_failure_analysis_and_repair_recommendations.md`. D36 and
+`docs/CURRENT_EXECUTION_DIRECTIVE.md` now authorize one continuous non-GPU
+package: preserve the pilot, diagnose existing checkpoint trajectories and
+runtime semantics, build the Stage II v0 benchmark foundation, and prepare the
+three representation baselines as one review package. Complete all unblocked
+parts of Steps 1--3 before requesting another instruction.
+
+Do not launch additional GPU training. Do not rerun the same sparse binary-cost
+configuration to prove that cost can enter PPO; that integration is already
+verified. O8 remains the later online-training decision, while O7's final
+formula families, splits, baseline implementations and numerical gates still
+require review after the benchmark foundation is available.
 
 D32 fixes the matched training backend to the verified RTX 4090 `cuda:0` device
 with PyTorch 2.4.1+cu124. Launch deterministic CUDA training with
 `CUBLAS_WORKSPACE_CONFIG=:4096:8`. Do not mix historical CPU sanity outputs with
 CUDA pilot results.
 
-Do not add the Stage II language model during this milestone, but the benchmark
-schema and O7 decision proposal may begin after the WP1 pilot report as the
-long-term pipeline directs.
+Do not add or train the Stage II language models during the current package.
+Build the benchmark schema, reviewed examples, distinguishing traces, Gold
+labels, coverage checks and baseline specifications first. The complete order,
+outputs and gates are authoritative in `docs/CURRENT_EXECUTION_DIRECTIVE.md`.
 After completing the current gate, continue with the next unfinished work
 package in `docs/END_TO_END_RESEARCH_PIPELINE.md`; do not reduce the handoff to
 one isolated next-step instruction.

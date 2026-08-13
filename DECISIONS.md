@@ -459,6 +459,24 @@ change the rule, establish formal safety, prove that STL is generally
 ineffective, or authorize a post-hoc best checkpoint. Full evidence is in
 `docs/stage1_pilot_result_report.md`.
 
+### D36. Post-pilot execution moves offline before another RL run
+
+On 2026-08-12 the project owner requested a complete post-pilot route rather
+than another one-step handoff. The current authorized package is therefore:
+
+1. preserve the completed Stage I pilot as a negative diagnostic result;
+2. diagnose the Gold-STL baseline using existing checkpoints and trajectories,
+   without new training;
+3. build the Stage II v0 offline benchmark foundation, Gold trace labels and
+   validation tools;
+4. prepare the formal, published-style direct and history-aware direct baseline
+   specifications as one combined review package.
+
+This decision does not authorize another long GPU run, select a final shaping
+method, freeze the final O7 dataset, or resolve the final online comparison
+protocol. The exact continuous work order, outputs and gates are defined in
+`docs/CURRENT_EXECUTION_DIRECTIVE.md`.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

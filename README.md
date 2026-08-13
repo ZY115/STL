@@ -52,7 +52,8 @@ train and evaluate a Safe RL agent
 3. **Stage III: Broader setting**  
    进一步研究模糊语言、缺失参数、更多 STL 结构、感知噪声、动态障碍、其他 benchmark 和真实系统。
 
-当前只开展 **Stage I**。
+Stage I pilot 已完成。当前进入 **Stage I 诊断收尾 + Stage II 离线 benchmark
+基础建设**；尚未加入语言模型，也不启动新的长 RL 训练。
 
 ## 2026-08-10 研究定位更新
 
@@ -102,7 +103,7 @@ G(e_t -> F_[0,K](d_t >= d_safe))
 warning episode。旧版 slides 中直接以 `d_t < d_warn` 作为前件的公式只作为
 直观简写；`docs/stage1_rule_monitor_spec.md` 给出规范语义。
 
-当前研究问题是：
+Stage I pilot 的历史问题是：
 
 > 在一个已知静态障碍的简单导航环境中，一条人工确认正确的 bounded-recovery STL 规则能否被正确监测并转换成 Safe RL cost，从而减少超时恢复失败，同时不造成不可接受的目标完成能力下降？
 
@@ -202,12 +203,21 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 ## 下一里程碑
 
-Stage I full pilot、统计 analysis 和 WP1 report 已完成。当前不应直接启动更多 GPU
-训练。下一 gate 是 O8：在“以当前 negative pilot 关闭 Stage I”“扩大相同设置”与
-“先运行 bounded optimization/budget/credit-assignment diagnostic”之间做决定；当前
-报告推荐第三项，但仍需负责人确认。与此同时，O7 的非 compute Stage II controlled
-benchmark proposal 已准备，formula families、split、baseline 和 offline gates 仍需
-确认。
+Stage I full pilot、统计 analysis 和 WP1 report 已完成。当前连续工作包已经更新为：
+
+1. 保留当前 negative pilot，不重复证明 STL cost 可以进入 PPO；
+2. 使用已有 checkpoint 和轨迹诊断 79-step binary cost 的稀疏、延迟、budget 与
+   optimizer 行为，不启动新训练；
+3. 建立 Stage II v0 离线 benchmark 的 schema、五个 reviewed examples、synthetic
+   boundary traces、真实轨迹导入和 Gold label 验证；
+4. 准备 formal、published-style direct 和 history-aware direct 三条 baseline 的统一
+   评审包；
+5. 在离线语义比较通过预设 gate 后，再冻结公平的 online cost interface 并申请 GPU
+   实验授权。
+
+完整执行顺序、输出、通过条件和停止边界见
+`docs/CURRENT_EXECUTION_DIRECTIVE.md`。工作电脑应连续完成其中 Steps 1--3，并准备
+Step 4；不要在每个文件或小测试后暂停询问。
 
 - 正式结果：`docs/stage1_pilot_result_report.md`
 - 代码失败分析与修复建议：
@@ -289,6 +299,7 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
 19. `docs/slides/stage1_current_progress_slides.pdf`（wrapper 前的 2026-08-10 快照）
 20. `docs/slides/stage1_experiment_plan_slides.pdf`（早期计划版，供追溯）
 21. `references/REFERENCES.md`
+22. `docs/slides/research_direction_formal_vs_direct_slides.pptx`（当前研究问题汇报版）
 
 ## 文件夹说明
 

@@ -32,7 +32,7 @@ raw job logs remain local and ignored.
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
 | `docs/END_TO_END_RESEARCH_PIPELINE.md` | Authoritative long-term map: revised objective, benchmark role, method baselines, WP1--WP7 inputs/outputs/gates, result branches, references, and status |
-| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Current bounded-autonomy package: full-pilot runner, analysis, tests, 100k preflight, compute gate, and automatic continuation after approval |
+| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Current post-pilot route: Gold-STL diagnosis, offline benchmark, representation baselines, offline comparison, online gate, and result branches |
 | `docs/research_direction_novelty_feasibility.md` | 2026-08-10 novelty correction, closest prior work, revised research question, theoretical feasibility, and staged experiment path |
 | `docs/theory_and_revised_experiment_8.10.md` | 8.10 Chinese theory analysis and revised matched experiment design for explicit NL-to-STL versus direct learned cost |
 | `docs/minimum_research_delivery_8.10.md` | Minimum teacher-facing research delivery: purpose, required artifacts, acceptance gates, and work-computer sequence |
@@ -70,6 +70,8 @@ raw job logs remain local and ignored.
 | `docs/slides/literature_review_three_papers_slides_6p.tex` | TeX source for the condensed slides |
 | `docs/slides/literature_review_three_papers_slides_9p.pdf` | Earlier 9-page detailed literature narrative |
 | `docs/slides/literature_review_three_papers_slides_9p.tex` | TeX source for the detailed slides |
+| `docs/slides/research_timeline_revised_direction_slides.pptx` | Editable research-timeline deck showing the novelty correction and revised comparison |
+| `docs/slides/research_direction_formal_vs_direct_slides.pptx` | Condensed editable deck for the formal-path versus direct-cost research question and current pilot role |
 
 ## Core papers
 
