@@ -1,0 +1,37 @@
+{
+  "cost_limit": {
+    "c1_surrogate_mass_per_episode": 67.70211462123395,
+    "native_cost_per_episode": 34.23
+  },
+  "episode_count": 20,
+  "evaluation_seeds": [
+    29173,
+    29174,
+    29175,
+    29176,
+    29177,
+    29178,
+    29179,
+    29180,
+    29181,
+    29182,
+    29183,
+    29184,
+    29185,
+    29186,
+    29187,
+    29188,
+    29189,
+    29190,
+    29191,
+    29192
+  ],
+  "fraction": 0.7,
+  "status": "frozen_before_cost_cells",
+  "task_checkpoint_sha256": "61489de4ba69b7d97f4eebc43f8eb101cdbf1d0c1991b147f1ca648b904a0c59",
+  "task_control_mean": {
+    "c1_surrogate_mass_per_episode": 96.71730660176279,
+    "native_cost_per_episode": 48.9
+  },
+  "unit_guard": "native and C1 units are different and were derived separately"
+}

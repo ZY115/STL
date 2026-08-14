@@ -1,0 +1,18 @@
+environment_id: SafetyPointGoal1-v0
+distance_source: hazards_lidar
+lidar_range: 3.0
+d_warn: 0.25
+d_safe: 0.28
+deadline_steps: 25
+warning_comparison: lt
+safe_comparison: ge
+trigger_mode: hysteretic_warning_episode
+deadline_inclusive: true
+pending_terminal: unresolved_with_binary_cost
+cost_mode: binary_deadline_event
+robustness_cost_enabled: false
+agreement_tolerance: 1.0e-9
+scenario_id: safety_point_goal1_fixed_route_v1
+calibration_evidence: results/fixed_route_v1/calibration/summary.json
+calibration_selection_rule: max(5,ceil(1.25*empirical_linear_q95_recovery_steps))
+

@@ -1,0 +1,139 @@
+{
+  "aggregates": {
+    "native_safety": {
+      "episodes": 100.0,
+      "goal_events_mean": 10.98,
+      "goal_success_rate": 1.0,
+      "minimum_distance_mean": 0.2155334794521332,
+      "missed": 0.0,
+      "missed_rate": 0.0,
+      "native_cost_mean": 0.02,
+      "return_mean": 31.694058274293578,
+      "triggers": 345.0
+    },
+    "stl_dense_safety": {
+      "episodes": 100.0,
+      "goal_events_mean": 6.27,
+      "goal_success_rate": 1.0,
+      "minimum_distance_mean": 0.19048384130001067,
+      "missed": 31.0,
+      "missed_rate": 0.22302158273381295,
+      "native_cost_mean": 8.73,
+      "return_mean": 17.477288490457937,
+      "triggers": 139.0
+    },
+    "task_only": {
+      "episodes": 100.0,
+      "goal_events_mean": 12.97,
+      "goal_success_rate": 1.0,
+      "minimum_distance_mean": 0.20049482345581054,
+      "missed": 0.0,
+      "missed_rate": 0.0,
+      "native_cost_mean": 2.42,
+      "return_mean": 35.67438991959938,
+      "triggers": 268.0
+    }
+  },
+  "agreement": {
+    "native_safety": {
+      "all_online_oracle_agree": true,
+      "rtamt_max_robustness_difference": 0.0
+    },
+    "stl_dense_safety": {
+      "all_online_oracle_agree": true,
+      "rtamt_max_robustness_difference": 0.0
+    },
+    "task_only": {
+      "all_online_oracle_agree": true,
+      "rtamt_max_robustness_difference": 0.0
+    }
+  },
+  "evaluation_episode_count_per_condition": 100,
+  "interpretation_guard": "one matched training seed; not confirmatory or a safety guarantee",
+  "learning_curve_tail": {
+    "native_safety": {
+      "lagrange_last": 0.998293399810791,
+      "lagrange_last_20_mean": 1.0144836544990539,
+      "positive_cost_fraction_last_20_mean": 0.00012499999575084076,
+      "return_last_20_mean": 31.515305995941162,
+      "return_previous_20_mean": 31.000401878356932,
+      "selected_cost_last_20_mean": 0.1250000014901161,
+      "selected_cost_previous_20_mean": 0.11000000275671482
+    },
+    "stl_dense_safety": {
+      "lagrange_last": 1.4897778034210205,
+      "lagrange_last_20_mean": 1.4444502353668214,
+      "positive_cost_fraction_last_20_mean": 0.022744999593123795,
+      "return_last_20_mean": 13.717085313796996,
+      "return_previous_20_mean": 11.585283565521241,
+      "selected_cost_last_20_mean": 16.535181188583373,
+      "selected_cost_previous_20_mean": 19.04347434043884
+    },
+    "task_only": {
+      "lagrange_last": 0.10000000149011612,
+      "lagrange_last_20_mean": 0.10000000149011612,
+      "positive_cost_fraction_last_20_mean": 0.0,
+      "return_last_20_mean": 35.601915168762204,
+      "return_previous_20_mean": 34.45197353363037,
+      "selected_cost_last_20_mean": 0.0,
+      "selected_cost_previous_20_mean": 0.0
+    }
+  },
+  "paired_bootstrap": {
+    "native_safety": {
+      "baseline_zero_absolute_difference_rule_used": true,
+      "descriptive_noninferiority_pass": true,
+      "goal_success_difference": 0.0,
+      "goal_success_difference_ci95": [
+        0.0,
+        0.0
+      ],
+      "goal_success_noninferiority_margin": -0.1,
+      "missed_rate_absolute_reduction": 0.0,
+      "missed_rate_absolute_reduction_ci95": [
+        0.0,
+        0.0
+      ],
+      "missed_rate_relative_reduction": null,
+      "native_cost_difference_ci95": [
+        -3.12,
+        -1.77
+      ],
+      "paired_seed": 8102026,
+      "replicates": 10000,
+      "return_difference_ci95": [
+        -4.081735179418256,
+        -3.88545356655859
+      ]
+    },
+    "stl_dense_safety": {
+      "baseline_zero_absolute_difference_rule_used": true,
+      "descriptive_noninferiority_pass": true,
+      "goal_success_difference": 0.0,
+      "goal_success_difference_ci95": [
+        0.0,
+        0.0
+      ],
+      "goal_success_noninferiority_margin": -0.1,
+      "missed_rate_absolute_reduction": -0.22302158273381295,
+      "missed_rate_absolute_reduction_ci95": [
+        -0.31343283582089554,
+        -0.1386861313868613
+      ],
+      "missed_rate_relative_reduction": null,
+      "native_cost_difference_ci95": [
+        1.8300000000000005,
+        12.700249999999995
+      ],
+      "paired_seed": 8102026,
+      "replicates": 10000,
+      "return_difference_ci95": [
+        -18.943387493408697,
+        -17.501207546823846
+      ]
+    }
+  },
+  "schema_version": 1,
+  "status": "single_seed_exploratory_analysis_complete",
+  "training_seed": 12647
+}

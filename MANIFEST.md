@@ -251,12 +251,40 @@ The full geometry gzip is local/ignored. The fixed real corpus and model-trainin
 bulk JSONL are also local/ignored; their schemas, deterministic selections,
 record counts and SHA-256 manifests are tracked under `benchmarks/stage2_v0/`.
 
+The fixed-route v1 package tracks its separately calibrated executable rule,
+30-trial compact calibration summary, reset/goal/render lifecycle summary, and
+the planned and realized route PNGs. Raw calibration and route CSVs remain
+local/ignored; their generator and hashes are retained. The D42 report records
+the resulting `0.25/0.28/K=25` contract.
+
+The D43 launch package adds a fail-closed phased runner, fixed-route evaluator,
+replay/plot entry points, focused tests and a launch-readiness report. D45 then
+authorized this bounded package only. It tracks compact run/preflight/training
+manifests, task-control budgets, aggregated stochastic episodes, deterministic
+trajectory samples and three PNGs; raw OmniSafe attempts, progress logs and
+checkpoints remain local and ignored. D46 records its exploratory result.
+
 ## Future additions
 
 The D31 pilot and complete spatial diagnosis are finished; the pilot did not
 meet the 30% target and is not converged. D37 design is implemented, but 35
 independent reviews and six-alias owner disposition still block held-out
 evaluation. D38 software is implemented to its compute gate. Repeated kernel
-MCEs trigger D41, so Stage II-A and Gold diagnostic training remain paused until
-administrator-level hardware recovery and a clean discarded epoch. A five-seed
-1M confirmatory study is not authorized.
+MCEs still gate Stage II-A, D38 and future confirmatory training. The one-seed
+D43 quick-turn completed under the scoped administrator override; it does not
+clear D41. Fixed-route geometry, lifecycle, rendering, K=25 calibration and the
+bounded 70k three-condition execution passed. A five-seed 1M confirmatory study
+is not authorized.
+
+D47 adds a separately frozen single-seed long fixed-route round. It uses C1
+causal dense learner cost for the STL condition, three matched 1M-transition
+cells, 100 paired final evaluations, a scoped hardware-risk override and a
+background launcher. Raw checkpoints, progress files, trajectories and launch
+logs under `results/fixed_route_v1/full_dense_round/` remain local and ignored.
+This unit is exploratory and is not the five-seed confirmatory study.
+
+D48 retains the original post-run failure manifest and separately tracks the
+scale-aware completed-checkpoint validation, combined 300-episode table,
+analysis JSON, figure hash manifest, four inspected PNG figures and result
+report for the D47 round. Bulk checkpoints, per-step stochastic trajectories,
+raw progress and launch logs remain local/ignored.

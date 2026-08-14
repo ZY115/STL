@@ -462,7 +462,7 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 
 ## 15. 当前状态与下一动作
 
-截至 2026-08-12：
+截至 2026-08-13：
 
 | Work package | 状态 | 下一动作 |
 |---|---|---|
@@ -473,6 +473,13 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 | WP5 Contribution decision | not started | 按预定义 Branch A--E 处理 |
 | WP6 Method/benchmark extension | deferred | 由 WP5 failure mode 决定 |
 | WP7 External validity | deferred | 由前述内部有效性决定 |
+
+D42 fixed-route v1 的 geometry/lifecycle/render 和 deadline gate 已通过；独立规则为
+`0.25/0.28/K=25`。负责人按 D45 只对 bounded D43 接受硬件风险后，该 quick-turn 已
+以每条件 70k transitions 完成。STL-dense 的 Gold missed/trigger 点估计相对 task-only
+下降 39.5%，三组 goal success 均为 100%；但它只有一个训练 seed/20 evaluations，
+仅作为 early visible-separation signal。D41 对 D38、Stage II-A 和任何 confirmatory
+训练仍未解除；下一研究动作必须先完成管理员硬件恢复 gate，不能从 D43 自动外推。
 
 新成员完成当前 gate 后，不应停下来问“然后做什么”。应回到本表，进入下一个未完成
 WP；只有遇到 `DECISIONS.md` 明确标记的 blocking decision 才暂停实施，并提交包含

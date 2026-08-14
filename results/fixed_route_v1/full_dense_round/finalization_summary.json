@@ -1,0 +1,19 @@
+{
+  "evaluation": {
+    "native_safety": {
+      "deterministic": "generated",
+      "stochastic": "generated"
+    },
+    "stl_dense_safety": {
+      "deterministic": "generated",
+      "stochastic": "generated"
+    },
+    "task_only": {
+      "deterministic": "generated",
+      "stochastic": "reused_hash_and_seed_matched"
+    }
+  },
+  "schema_version": 1,
+  "status": "training_validated_and_fixed_checkpoint_evaluation_complete",
+  "training_validation": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/validated_training_completion.json"
+}

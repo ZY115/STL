@@ -1,0 +1,21 @@
+{
+  "figures": {
+    "full_dense_constraint_diagnostics.png": {
+      "bytes": 263907,
+      "sha256": "0710ce463eab718e47b25db85d6940d35de7bfd2b4198f06fe321723e39da086"
+    },
+    "full_dense_deterministic_trajectories.png": {
+      "bytes": 518836,
+      "sha256": "c9a80365bb71ee0a0c9344cf0b45a5ec9357d72468138fa4836eb2bbe939cf5d"
+    },
+    "full_dense_final_outcomes.png": {
+      "bytes": 186005,
+      "sha256": "7ded495c8b71aad6852e49508043cb6fa733e0896c481424e3f6339abe27c9cf"
+    },
+    "full_dense_learning_curves.png": {
+      "bytes": 385987,
+      "sha256": "05765fb9d3facf7897d4851204056067179d4f082d9289a1981d319d4c6eaf60"
+    }
+  },
+  "schema_version": 1
+}

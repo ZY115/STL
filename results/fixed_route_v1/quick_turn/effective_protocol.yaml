@@ -1,0 +1,27 @@
+deterministic_trajectory_seed: 39173
+effective_transitions_per_condition: 70000
+source_protocol: /home/jerry/Desktop/STL/configs/fixed_route_v1/quick_turn.yaml
+source_protocol_sha256: 60a1691f7e18f5a959762f8b5c6dab54149d884105236bb0ba947a745b3d8887
+stochastic_evaluation_seeds:
+- 29173
+- 29174
+- 29175
+- 29176
+- 29177
+- 29178
+- 29179
+- 29180
+- 29181
+- 29182
+- 29183
+- 29184
+- 29185
+- 29186
+- 29187
+- 29188
+- 29189
+- 29190
+- 29191
+- 29192
+training_seed: 9173
+transition_selection_uses_policy_outcomes: false

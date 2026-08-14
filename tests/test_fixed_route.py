@@ -16,6 +16,7 @@ from safety_stl.fixed_route import install_fixed_route, load_fixed_route_scenari
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPOSITORY_ROOT / "configs" / "fixed_route_v1" / "scenario.yaml"
 QUICK_TURN_PATH = REPOSITORY_ROOT / "configs" / "fixed_route_v1" / "quick_turn.yaml"
+RULE_PATH = REPOSITORY_ROOT / "configs" / "fixed_route_v1" / "rule.yaml"
 
 
 class FakeTask:
@@ -93,6 +94,16 @@ class FixedRouteTests(unittest.TestCase):
             protocol["required_outputs"]["trajectory_figure"],
             "fixed_route_quick_turn_trajectories.png",
         )
+
+    def test_executable_rule_matches_scenario_and_calibrated_deadline(self) -> None:
+        scenario = load_fixed_route_scenario(CONFIG_PATH)
+        rule = yaml.safe_load(RULE_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(rule["scenario_id"], scenario.scenario_id)
+        self.assertEqual(rule["d_warn"], scenario.d_warn)
+        self.assertEqual(rule["d_safe"], scenario.d_safe)
+        self.assertEqual(rule["deadline_steps"], 25)
+        self.assertEqual(rule["trigger_mode"], "hysteretic_warning_episode")
+        self.assertTrue(rule["deadline_inclusive"])
 
 
 if __name__ == "__main__":

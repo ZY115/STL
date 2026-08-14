@@ -765,3 +765,101 @@ STL cell 使用已有 C1 causal dense learner cost；Gold binary event 继续作
 70% provisional limits。三组完成后立即各做一条 deterministic 真实轨迹和 20 条
 stochastic summary，输出三栏 trajectory、learning curves、CSV/JSON 和 quick report，
 然后停止，不自动启动长实验。D41 硬件 gate 和新 K 校准仍是训练前置条件。
+
+## 26. 2026-08-13 fixed-route 校准与 lifecycle gate
+
+新增真实动力学校准脚本、lifecycle/render 验证脚本和独立 rule config。30/30 次
+`0.25 -> 0.28` trial 均恢复，Q95 为 20 steps，按冻结规则确定 `K=25`；
+online/oracle/RTAMT 在 30 个完整窗口上零差异。
+
+两个 reset seed 的固定布局、初始 cost 和 lidar/geometry agreement 通过；验证控制器
+在 408 steps 完成四目标循环。三个 cost 环境均以两个同步 vector slots、63 维
+observation 成功加载同一 scenario/rule。D41 尚未解除，因此未启动 GPU preflight
+或 D43 training；短 CPU 检查没有新 MCE 不能替代管理员稳定性 gate。
+
+随后补齐 D43 的 phased runner、固定场景 checkpoint evaluator、task-control 独立单位
+预算、replay 和 plot/report 入口。三条件 10k dry-run config 通过；实际调用 preflight
+时 runner 因 D41 summary 缺失而在 Agent/rollout 前 fail closed，确认没有残留训练进程。
+最终完整回归为 108 tests passed；两个 Conda 环境 `pip check`、全 Python compile 和
+`git diff --check` 均通过。
+
+## 27. 2026-08-13 D43 管理员授权训练、吞吐修复和图表交付
+
+负责人以本机管理员身份明确批准 modified Stage I fixed-route training 和绘图；D45
+将该风险接受严格限制在 D43。第一次三组 10k preflight 虽通过路由和 finite gate，
+但执行中发现它只运行 1 次 optimizer update，而 reported epoch 运行 40 次。由此得到
+的 150k 容量预测不成立。task-only 150k attempt 在 40k transitions 后停止，失败
+attempt 与 232.46 秒均保留。
+
+runner 改为 preflight 与正式 epoch 使用相同 40 次更新，并将 update count 纳入 cell
+identity。三组新 10k preflight 的耗时为 66.01/65.45/65.53 秒，按冻结 D43 公式选择
+70k matched transitions。task-only 先完成并用 20 stochastic episodes 冻结 Native
+limit=34.23 与 C1 limit=67.7021；二者单位独立。三组正式 cells 随后全部完成，含失败
+attempt 的累计 reported training 为 1,395.16 秒，低于 1,800 秒。checkpoint、progress、
+routing、finite metrics、positive cost 和 kernel stop checks 均通过。
+
+统一 fixed-scenario Gold evaluator 对每组 final checkpoint 完成 20 paired stochastic
+episodes 和一条 deterministic trajectory。missed/trigger 分别为 task-only 27/29、
+Native 27/40、STL-dense 31/55；STL-dense 的描述性相对下降为 39.5%，Native 为
+27.5%，三组 goal success 均为 100%。online/direct oracle 全一致且 RTAMT 最大差为
+0。生成 outcomes、learning curves 和三栏 trajectory 三张 PNG、聚合 CSV、manifest
+及 `docs/fixed_route_v1_quick_turn_report.md`。
+
+该结果只有一个训练 seed 和 20 evaluations，学习曲线仍上升，不能作 convergence、
+significance、superiority 或 generalization claim。D43 已停止，没有自动运行 D38、
+Stage II-A、full 1M 或 confirmatory study；D41 对其他训练保持有效。
+
+收尾完整 unittest discovery 为 109 tests passed；`stl-stage1` 与
+`stl-stage2-offline` 的 `pip check` 均 clean，全 Python compile、artifact gate 和
+`git diff --check` 通过。D43 运行后未残留训练进程。
+
+## 28. 2026-08-13 D47 长程 C1-dense 训练包冻结
+
+负责人授权新 seed `12647` 的 fixed-route 三条件完整 round，每条件 1M transitions，
+并明确要求 STL 训练 cost 不能只在最终 violation 时产生。新增冻结 protocol、单独
+D41 风险 override、可恢复 phase runner、后台 launcher 和 focused contract tests。
+
+STL 条件绑定 `Stage2SafetyPointGoal1STLDenseCost-v0`，其 selected cost 必须逐 epoch
+等于 C1 dense 列；预检还必须观察到 dense accumulated cost 严格高于 raw binary STL
+event cost。最终评估保持 unchanged Gold binary evaluator。Task control 将用 100 条
+trajectory 分别冻结 Native 和 C1 的 70% budget，避免跨单位复制 cost limit。
+
+该工作包只是一轮 single-seed long exploratory training。它不宣称收敛，也没有获得
+五 seed confirmatory、D38 或 Stage II compute 权限。由于 D41 尚未通过，D47 的风险
+接受只对该 protocol 生效，所有 hardware stop rules 保持有效。
+
+### 28.1 启动证据与人工监控交接
+
+完整 111-test regression、Stage I `pip check`、Python compile、launcher shell syntax
+和 `git diff --check` 通过。三组 10k/40-update CUDA preflight 分别耗时
+66.46/65.46/65.44 秒，routing 与 finite gate 全通过。STL preflight 的 raw binary
+cost 为 1.10，而 dense/selected cost 均为 103.72075，positive-cost step fraction 为
+11.28%，因此当前实际训练接口不是 violation-only `+1`。
+
+第一次 `nohup` 进程在产生 update/checkpoint 前随调用 terminal 被回收，空 attempt
+保留。改用 user systemd service 后 PID 432905 稳定运行；正式 task-only 1M cell 已
+落盘两行 finite progress（20k transitions）和 `epoch-0.pt`。交接时 RTX 4090 进程
+显存约 602 MiB，抽样 utilization 24%，service 启动后无新 kernel stop event。按负责
+人要求，至此停止持续监管但不终止训练，由其在本机人工观察。
+
+## 29. 2026-08-14 D47 训练完成、评估与四张图
+
+三条件均完成 100 个 10k epochs 和 1M-transition final checkpoint。原 runner 在 STL
+cell 后验 gate 退出：100 行中仅一行 selected 与 dense logger reduction 相差
+`3.8147e-6`（scale `42.2763`），属于约 `9.0e-8` relative 的 float32 accumulation
+差，而非 wrapper 路由错误。新增 scale-aware routing diagnostics 与 regression test，
+保留原 failed manifest，并写出独立 validated-completion record 后采用既有 checkpoint；
+没有重训、选择 checkpoint 或修改 research metric。
+
+补齐 Native/STL 各 100 条 matched stochastic evaluation 和三条 deterministic
+trajectory。Gold missed/trigger 为 Task `0/268`、Native `0/345`、STL `31/139`；
+三者 goal success 均 100%，return mean 为 `35.674/31.694/17.477`，native cost mean
+为 `2.420/0.020/8.730`。Task baseline 为零，STL absolute reduction 为 `-0.223`，
+描述性 paired episode-bootstrap 95% interval `[-0.313,-0.139]`。所有 online/oracle
+一致且 RTAMT 最大 robustness 差为 0。
+
+输出 learning curves、constraint diagnostics、final outcomes 和三栏 deterministic
+trajectory 四张 PNG，并逐张检查。C1 明确提供非稀疏 feedback，但 STL final policy
+安全、return 和 physical contact 均劣于 Task；其最后 20-epoch selected cost 仍高于
+budget 且 lambda 上升，因此记录为 single-seed negative exploratory result，不声称
+收敛或一般性失败。

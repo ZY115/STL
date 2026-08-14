@@ -1,0 +1,25 @@
+{
+  "aggregate_training_wall_clock_limit_minutes": 30,
+  "command": [
+    "/home/jerry/anaconda3/envs/stl-stage1/bin/python",
+    "scripts/run_fixed_route_quick_turn.py",
+    "--phase",
+    "all"
+  ],
+  "completed_at_unix": 1786661863.537615,
+  "condition_order": [
+    "task_only",
+    "native_safety",
+    "stl_dense_safety"
+  ],
+  "effective_transitions_per_condition": 70000,
+  "git_commit": "6b61e06d0e8a35b245c3b3d1ad83b3d6e37c6d4d",
+  "phase": "all",
+  "protocol": "/home/jerry/Desktop/STL/configs/fixed_route_v1/quick_turn.yaml",
+  "protocol_sha256": "60a1691f7e18f5a959762f8b5c6dab54149d884105236bb0ba947a745b3d8887",
+  "rule_sha256": "86e811a8e3ddecb7a1d8d083064ac096f908ce7b88707379de816017e9b6041c",
+  "scenario_sha256": "1cbca57efba01212688124faf672107bca7b603fb29f22a5026b130b68645e70",
+  "schema_version": 1,
+  "started_at_unix": 1786660355.88499,
+  "status": "success"
+}

@@ -168,6 +168,23 @@ def _trajectory_row(
     }
 
 
+def _fixed_route_geometry(environment: Any) -> Dict[str, Any]:
+    """Return privileged geometry used only by fixed-route diagnostic plots."""
+
+    task = environment._base_env._env.unwrapped.task  # pylint: disable=protected-access
+    row: Dict[str, Any] = {
+        "agent_x": float(task.agent.pos[0]),
+        "agent_y": float(task.agent.pos[1]),
+        "goal_index": int(getattr(task, "fixed_route_goal_index", -1)),
+        "goal_x": float(task.goal.pos[0]),
+        "goal_y": float(task.goal.pos[1]),
+    }
+    for index, hazard in enumerate(task.hazards.pos):
+        row[f"hazard_{index}_x"] = float(hazard[0])
+        row[f"hazard_{index}_y"] = float(hazard[1])
+    return row
+
+
 def _goal_met(info: Mapping[str, Any], done: bool) -> bool:
     if done and isinstance(info.get("final_info"), Mapping):
         final_info = info["final_info"]
@@ -357,6 +374,7 @@ def evaluate_checkpoint(
     max_episode_steps: int = 1000,
     deterministic: bool = True,
     rule_config_path: Path = DEFAULT_RULE_CONFIG,
+    scenario_config_path: Optional[Path] = None,
     save_trajectories: bool = False,
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Evaluate a checkpoint with the same gold monitor and offline oracle."""
@@ -366,12 +384,20 @@ def evaluate_checkpoint(
     if max_episode_steps <= 0:
         raise ValueError("max_episode_steps must be positive")
     rule = _load_rule(rule_config_path)
-    environment = make(
-        STL_COST_ENV_ID,
-        num_envs=1,
-        device=torch.device("cpu"),
-        max_episode_steps=max_episode_steps,
-    )
+    environment_kwargs: Dict[str, Any] = {
+        "num_envs": 1,
+        "device": torch.device("cpu"),
+        "max_episode_steps": max_episode_steps,
+        "rule_config_path": str(rule_config_path.resolve()),
+    }
+    if scenario_config_path is not None:
+        environment_kwargs.update(
+            {
+                "scenario_config_path": str(scenario_config_path.resolve()),
+                "asynchronous": False,
+            },
+        )
+    environment = make(STL_COST_ENV_ID, **environment_kwargs)
     episodes: List[Dict[str, Any]] = []
     trajectory_records: List[Dict[str, Any]] = []
     try:
@@ -397,6 +423,8 @@ def evaluate_checkpoint(
                     goal_met=False,
                 ),
             ]
+            if scenario_config_path is not None:
+                rows[0].update(_fixed_route_geometry(environment))
             episode_return = 0.0
             native_cost_total = 0.0
             online_stl_cost_total = 0.0
@@ -430,6 +458,17 @@ def evaluate_checkpoint(
                     truncated=trunc,
                     goal_met=goal_met,
                 )
+                if scenario_config_path is not None:
+                    if done:
+                        row.update(
+                            {
+                                key: value
+                                for key, value in rows[-1].items()
+                                if key.startswith(("agent_", "goal_", "hazard_"))
+                            },
+                        )
+                    else:
+                        row.update(_fixed_route_geometry(environment))
                 rows.append(row)
                 if action_count > max_episode_steps + 1:
                     raise RuntimeError("evaluation episode exceeded its declared horizon")

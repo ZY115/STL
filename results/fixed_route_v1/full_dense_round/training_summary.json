@@ -1,0 +1,99 @@
+{
+  "cells": [
+    {
+      "attempt_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/reported-1000000/attempts/attempt-0001",
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-59-22/torch_save/epoch-100.pt",
+      "checkpoint_sha256": "a5f534ea8b76c9d2e846b8f5458c06bbaa738ec1ac8ba55237ec56b1b34a18ea",
+      "checks": {
+        "all_progress_values_finite": true,
+        "cost_routing_within_declared_float_tolerance": true,
+        "final_checkpoint_exists": true,
+        "final_total_env_steps_is_1m": true,
+        "progress_has_100_epochs": true
+      },
+      "condition_id": "task_only",
+      "cost_limit": 0.0,
+      "original_manifest": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/reported-1000000/manifest.json",
+      "original_manifest_status": "success",
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-59-22/progress.csv",
+      "progress_sha256": "8ff706743a6a0b575425269c77e8397c44a21c090035834912714a8b8cb92936",
+      "routing_diagnostics": {
+        "absolute_tolerance": 1e-06,
+        "maximum_absolute_error": 0.0,
+        "maximum_error_epoch_index": 99,
+        "maximum_error_expected": 0.0,
+        "maximum_error_selected": 0.0,
+        "maximum_relative_error": 0.0,
+        "passed": true,
+        "relative_tolerance": 1e-07,
+        "row_count": 100
+      },
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-59-22",
+      "transitions": 1000000
+    },
+    {
+      "attempt_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/reported-1000000/attempts/attempt-0001",
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-18-16-17/torch_save/epoch-100.pt",
+      "checkpoint_sha256": "acdae094eea0e2869ffe4c5c23966addf7d8663e256c2d13fe2a0232e69ae8db",
+      "checks": {
+        "all_progress_values_finite": true,
+        "cost_routing_within_declared_float_tolerance": true,
+        "final_checkpoint_exists": true,
+        "final_total_env_steps_is_1m": true,
+        "progress_has_100_epochs": true
+      },
+      "condition_id": "native_safety",
+      "cost_limit": 1.694,
+      "original_manifest": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/reported-1000000/manifest.json",
+      "original_manifest_status": "success",
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-18-16-17/progress.csv",
+      "progress_sha256": "905e0eeee5d61b3e6fcdc09a4829917e96b35c8718d0bb77a7c1d06200404459",
+      "routing_diagnostics": {
+        "absolute_tolerance": 1e-06,
+        "maximum_absolute_error": 0.0,
+        "maximum_error_epoch_index": 99,
+        "maximum_error_expected": 0.0,
+        "maximum_error_selected": 0.0,
+        "maximum_relative_error": 0.0,
+        "passed": true,
+        "relative_tolerance": 1e-07,
+        "row_count": 100
+      },
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-18-16-17",
+      "transitions": 1000000
+    },
+    {
+      "attempt_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001",
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12/torch_save/epoch-100.pt",
+      "checkpoint_sha256": "049d8f8c28eb2b4be8bac2ad7bdf0cbe848ce8cb2a9f99223d69ba40c072ebc2",
+      "checks": {
+        "all_progress_values_finite": true,
+        "cost_routing_within_declared_float_tolerance": true,
+        "final_checkpoint_exists": true,
+        "final_total_env_steps_is_1m": true,
+        "progress_has_100_epochs": true
+      },
+      "condition_id": "stl_dense_safety",
+      "cost_limit": 10.99518818696976,
+      "original_manifest": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/manifest.json",
+      "original_manifest_status": "failed",
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12/progress.csv",
+      "progress_sha256": "b439ce3111f3cca2ac6d8aae99c7e57c9f41bb0c0a59df01750c0a7156c3b69f",
+      "routing_diagnostics": {
+        "absolute_tolerance": 1e-06,
+        "maximum_absolute_error": 3.814697265625e-06,
+        "maximum_error_epoch_index": 53,
+        "maximum_error_expected": 42.276275634765625,
+        "maximum_error_selected": 42.27627944946289,
+        "maximum_relative_error": 9.023256812807033e-08,
+        "passed": true,
+        "relative_tolerance": 1e-07,
+        "row_count": 100
+      },
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12",
+      "transitions": 1000000
+    }
+  ],
+  "status": "validated_training_complete",
+  "transitions_per_condition": 1000000
+}

@@ -1,0 +1,60 @@
+{
+  "effective_transitions_per_condition": 70000,
+  "minimum_tps": 151.48737394559302,
+  "preflights": [
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-32-47/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "bf23fb852478457a9d538c9ca109a3b12cc275b59bcd9294e19eb42efadcd713",
+      "condition_id": "task_only",
+      "cost_limit": 0.0,
+      "elapsed_seconds": 66.01210212800652,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-32-47/progress.csv",
+      "progress_sha256": "33fa2065c9652de09ccafa8a15af841db98135ca496f81c2ce0737d44cebcabf",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-32-47",
+      "transitions": 10000,
+      "transitions_per_second": 151.48737394559302
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-33-53/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "1126715c39d916c5a867a903feba7dba1ef8a707b6b474c0899c04e6362fcde0",
+      "condition_id": "native_safety",
+      "cost_limit": 0.0,
+      "elapsed_seconds": 65.4503814750351,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-33-53/progress.csv",
+      "progress_sha256": "86d4bda5e8f6de45b30bec728afd96f0d7bdc48a33b4b4a024efef3317c77eae",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-33-53",
+      "transitions": 10000,
+      "transitions_per_second": 152.78749756125293
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-34-58/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "eefd7b9890ac2b059f34043184424693e33e2f1490e61c64a1c09af8e0511d10",
+      "condition_id": "stl_dense_safety",
+      "cost_limit": 0.0,
+      "elapsed_seconds": 65.52727137319744,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-34-58/progress.csv",
+      "progress_sha256": "0d5cea6743f3cdbedcc51d6c1b88391263c319dfe547829ad967f9320d50492c",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-34-58",
+      "transitions": 10000,
+      "transitions_per_second": 152.6082162501015
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+schema_version: 1
+status: administrator_risk_override
+authority: repository_owner_and_machine_administrator
+authorized_at: '2026-08-13'
+scope:
+  protocol_id: fixed_route_v1_full_dense_round
+  allowed:
+    - three_condition_10k_preflight
+    - one_new_seed_three_condition_1m_training_round
+    - task_control_budget_derivation
+    - fixed_final_checkpoint_evaluation
+  prohibited:
+    - five_seed_confirmatory_main_study
+    - stage2a_full_training
+    - d38_long_matrix
+acknowledgements:
+  cpu_stability_test_completed: false
+  ram_stability_test_completed: false
+  discarded_formal_epoch_completed: false
+  prior_mce_and_segfault_risk_accepted_for_this_bounded_run: true
+stop_on:
+  - new_MCE
+  - segfault
+  - CUDA_Xid
+  - OOM
+  - non_finite_metric
+source: explicit administrator instruction in the active Codex session

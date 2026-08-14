@@ -73,6 +73,38 @@ D43 将第一次 fixed-route 训练限制为 30 分钟 quick-turn：一个 match
 三栏真实轨迹图和短报告并停止。该结果只用于检查运行和早期行为差异，不作为收敛、
 显著性或方法优越性证据。
 
+在负责人以 D45 明确接受本次 bounded D43 风险后，quick-turn 已完成。修正 preflight
+与正式 epoch 优化负载不一致的问题后，吞吐公式前瞻性选择每条件 70k transitions；
+三条件 checkpoint、20 条 paired stochastic evaluations、单条 deterministic 轨迹及
+三张图均已生成。Gold missed/trigger 为 task-only `27/29=0.931`、Native
+`27/40=0.675`、STL-dense `31/55=0.564`；STL-dense 相对 task-only 的描述性下降为
+39.5%，三组 goal success 均为 100%。这是单 seed/20 episodes 的探索性 screening
+signal，不是显著性、收敛或方法优越性结论。详见
+`docs/fixed_route_v1_quick_turn_report.md`。
+
+负责人随后以 D47 授权一次新的 long fixed-route matched round：新 seed `12647`，
+task-only / Native / STL-dense 三条件均从零训练 1M transitions。STL 条件明确使用
+C1 causal dense surrogate；启动预检不仅检查 selected-cost 路由，还要求 C1 累积量
+严格大于 binary missed-event 累积量，从执行证据上排除“只有违反后 +1”的旧稀疏
+接口。最终安全真值仍是独立 Gold binary evaluator。该单-seed round 是探索性长程
+复现，不是五种子 confirmatory study，也不表示 D41 已通过。
+
+D47 启动门已经实际通过：三组 10k preflight 均完成真实 40-update CUDA epoch，
+STL 条件观测到 binary cost `1.10`、C1 dense/selected cost `103.72075`、positive-cost
+step fraction `11.28%`。后台 service 已进入 task-only 的正式 1M cell，并在人工监控
+交接前写出 20k transitions 和首个 checkpoint。按负责人要求，此后不再持续轮询且
+没有终止健康训练；完整启动记录见
+`docs/fixed_route_v1_full_dense_launch_report.md`。
+
+D47 三组训练后来均实际到达 1M final checkpoint。post-run runner 因一行 logger
+float 聚合产生 `3.81e-6` 差值而误判 STL routing；D48 保留原 failed manifest，用
+尺度相关容差验证完成 artifact 后补齐相同 100 seeds 的 Gold evaluation 和图表。
+最终 missed/trigger 为 Task `0/268`、Native `0/345`、STL-dense `31/139=0.223`；
+return 为 35.674/31.694/17.477，native cost 为 2.420/0.020/8.730。C1 确实非稀疏，
+但本轮 STL 结果更差且仍未满足自身 cost budget，因此是单-seed negative exploratory
+result，不支持方法优越性或收敛。详见
+`docs/fixed_route_v1_full_dense_result_report.md`。
+
 ## 2026-08-10 研究定位更新
 
 最新文献核查确认，`STL monitor/state -> cost -> Lagrangian Safe RL` 已被多项
@@ -482,6 +514,19 @@ safety-stl-stage1-handoff/
 ```
 
 ## 重要边界
+
+### 2026-08-13 fixed-route v1 pre-training status
+
+固定布局、双 reset、四目标循环、EGL 渲染和新规则校准已经通过。30/30 个受控恢复
+trial 的恢复时间为 20 steps，按冻结 Q95×1.25 规则得到独立的
+`d_warn=0.25, d_safe=0.28, K=25`；online/oracle/RTAMT 零差异。三种同步 vector
+environment 均可加载该 scenario/rule。详细证据见
+`docs/fixed_route_v1_calibration_and_lifecycle_report.md`。
+
+D41 硬件恢复证据仍缺失，所以本次没有启动 GPU preflight 或 quick-turn training。
+这不是 CUDA 不可用，而是重复 MCE 后的研究完整性 stop gate 尚未完成。
+runner、replay、预算冻结、fixed-checkpoint evaluator 和绘图入口已经完成 dry-run；
+launch 状态见 `docs/fixed_route_v1_launch_readiness_report.md`。
 
 Stage I 的成功只表示下游 STL-to-Safe-RL 链路在一个受控 benchmark 中成立。它不表示：
 

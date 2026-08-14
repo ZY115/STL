@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/home/jerry/anaconda3/envs/stl-stage1/bin/python",
+    "scripts/run_fixed_route_full_dense_round.py",
+    "--phase",
+    "all"
+  ],
+  "condition_order": [
+    "task_only",
+    "native_safety",
+    "stl_dense_safety"
+  ],
+  "error": "D43 cell gate failed: {'condition_id': 'stl_dense_safety', 'preflight': False, 'transitions': 1000000, 'cost_limit': 10.99518818696976, 'elapsed_seconds': 4225.137192675378, 'transitions_per_second': 236.67870518703677, 'run_dir': '/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12', 'progress': '/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12/progress.csv', 'progress_sha256': 'b439ce3111f3cca2ac6d8aae99c7e57c9f41bb0c0a59df01750c0a7156c3b69f', 'checkpoint': '/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/reported-1000000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-19-33-12/torch_save/epoch-100.pt', 'checkpoint_sha256': '049d8f8c28eb2b4be8bac2ad7bdf0cbe848ce8cb2a9f99223d69ba40c072ebc2', 'routing_exact': False, 'positive_selected_source_observed': True, 'dense_exceeds_binary_event_cost': True, 'last_epoch_cost_metrics': {'binary_stl_cost': 0.5, 'dense_stl_cost': 18.321414947509766, 'selected_algorithm_cost': 18.321414947509766, 'positive_cost_step_fraction': 0.026200000196695328}, 'all_finite': True, 'peak_gpu_memory_allocated_bytes': 92584448, 'new_kernel_stop_events': []}",
+  "error_type": "RuntimeError",
+  "git_commit": "6b61e06d0e8a35b245c3b3d1ad83b3d6e37c6d4d",
+  "override": "/home/jerry/Desktop/STL/configs/fixed_route_v1/d41_full_dense_admin_override.yaml",
+  "override_sha256": "6c1bb38eda352ee580dc41bcea820eee40183d4f8d0a4c5681a275eea7cb35ee",
+  "phase": "all",
+  "pid": 432905,
+  "protocol": "/home/jerry/Desktop/STL/configs/fixed_route_v1/full_dense_round.yaml",
+  "protocol_sha256": "d1e4a1454cd3a1cda88db4f8441e37510c98d6c047ed1ca56de9c5dbe7b8e7da",
+  "rule_sha256": "86e811a8e3ddecb7a1d8d083064ac096f908ce7b88707379de816017e9b6041c",
+  "scenario_sha256": "1cbca57efba01212688124faf672107bca7b603fb29f22a5026b130b68645e70",
+  "schema_version": 1,
+  "started_at_unix": 1786665353.449514,
+  "status": "failed",
+  "stopped_at_unix": 1786679006.9122736,
+  "training_seed": 12647,
+  "transitions_per_condition": 1000000
+}

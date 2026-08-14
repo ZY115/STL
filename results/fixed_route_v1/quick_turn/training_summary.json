@@ -1,0 +1,60 @@
+{
+  "aggregate_training_seconds": 1395.1605741013773,
+  "cells": [
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-36-04/torch_save/epoch-7.pt",
+      "checkpoint_sha256": "61489de4ba69b7d97f4eebc43f8eb101cdbf1d0c1991b147f1ca648b904a0c59",
+      "condition_id": "task_only",
+      "cost_limit": 0.0,
+      "elapsed_seconds": 391.76398008223623,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": false,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-36-04/progress.csv",
+      "progress_sha256": "2cf8cbfd4dbdd164f535330688763c674f99d69f9906bb814ce3dd44045587fe",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/task_only/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-9173-2026-08-13-15-36-04",
+      "transitions": 70000,
+      "transitions_per_second": 178.67900970708465
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-43-11/torch_save/epoch-7.pt",
+      "checkpoint_sha256": "0f1c19ec9ed0124934361b5f39c90c077a8d1f3340723477e386fe829bf27cfb",
+      "condition_id": "native_safety",
+      "cost_limit": 34.23,
+      "elapsed_seconds": 390.5532434922643,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": false,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-43-11/progress.csv",
+      "progress_sha256": "25325c48074cb05e35443c52e88feb1bee57efff377af1b8993cd200cd801c42",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/native_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-9173-2026-08-13-15-43-11",
+      "transitions": 70000,
+      "transitions_per_second": 179.23292448955553
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-49-42/torch_save/epoch-7.pt",
+      "checkpoint_sha256": "e122f528de13cf2bdd9279931cb47e05f51690ef3110234a99461207920b993e",
+      "condition_id": "stl_dense_safety",
+      "cost_limit": 67.70211462123395,
+      "elapsed_seconds": 380.3846397968009,
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": false,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-49-42/progress.csv",
+      "progress_sha256": "5085ffafbba13eadf191285131d9577e2cd94816b591762aa1c55ddc3e080df0",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/quick_turn/stl_dense_safety/reported-70000/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-9173-2026-08-13-15-49-42",
+      "transitions": 70000,
+      "transitions_per_second": 184.02425512605757
+    }
+  ],
+  "effective_transitions_per_condition": 70000
+}

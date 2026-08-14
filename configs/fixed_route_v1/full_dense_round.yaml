@@ -1,0 +1,116 @@
+schema_version: 1
+protocol_id: fixed_route_v1_full_dense_round
+status: owner_authorized_long_exploratory_round
+authority: D47
+
+purpose:
+  question: does_longer_training_with_c1_dense_cost_preserve_or_improve_the_quick_turn_signal
+  not_for:
+    - confirmatory_main_study
+    - five_seed_inference
+    - convergence_claim_without_learning_curve_review
+    - formal_safety_guarantee
+
+prerequisites:
+  scenario_config: configs/fixed_route_v1/scenario.yaml
+  executable_rule_config: configs/fixed_route_v1/rule.yaml
+  require_calibrated_integer_deadline: true
+  require_online_oracle_rtamt_agreement: true
+  require_fixed_route_lifecycle_and_render_gate: true
+  require_d41_hardware_recovery_gate_or_scoped_administrator_override: true
+
+training:
+  backend: project_owned_DiagnosticPPOLag
+  training_seed: 12647
+  condition_order:
+    - task_only
+    - native_safety
+    - stl_dense_safety
+  transitions_per_condition: 1000000
+  transitions_must_match_across_conditions: true
+  preflight_transitions_per_condition: 10000
+  preflight_is_not_part_of_reported_training: true
+  final_checkpoint_only: true
+  checkpoint_selection: no_best_checkpoint_selection
+  vector_env_nums: 10
+  asynchronous_vector_env: false
+  steps_per_epoch: 10000
+  update_iters: 40
+  batch_size: 64
+  lagrangian_multiplier_init: 0.1
+  actor_learning_rate_initial: 0.0003
+  actor_learning_rate_floor: 0.00003
+
+conditions:
+  task_only:
+    environment_id: Stage1SafetyPointGoal1TaskOnly-v0
+    selected_learner_cost: identically_zero
+    cost_limit: 0.0
+  native_safety:
+    environment_id: Stage1SafetyPointGoal1NativeCost-v0
+    selected_learner_cost: native_hazard_cost
+    cost_limit_from: full_task_control.native_cost_per_episode
+  stl_dense_safety:
+    environment_id: Stage2SafetyPointGoal1STLDenseCost-v0
+    selected_learner_cost: c1_causal_dense_surrogate
+    gold_truth: binary_bounded_recovery_events
+    cost_limit_from: full_task_control.c1_surrogate_mass_per_episode
+
+c1_dense_cost:
+  applies_while_obligation_active: true
+  actual_missed_obligation_cost: 1.0
+  q_distance: clip((d_safe-distance)/(d_safe-d_warn),0,1)
+  q_urgency: clip(1-remaining_steps/K,0,1)
+  active_non_miss_cost: clip(0.5*q_distance+0.5*q_urgency,0,1)
+  inactive_cost: 0.0
+  unit: accumulated_c1_surrogate_mass_per_episode
+  is_gold_truth: false
+
+budget_derivation:
+  source: final_task_only_checkpoint_from_this_round
+  stochastic_evaluation_episodes: 100
+  native_limit_fraction_of_task_control_mean: 0.70
+  c1_limit_fraction_of_task_control_mean: 0.70
+  derive_units_separately: true
+  freeze_before_native_or_stl_training: true
+
+evaluation:
+  common_gold_evaluator: true
+  stochastic_summary_episodes_per_condition: 100
+  stochastic_seed_start: 49201
+  deterministic_trajectory_episodes_per_condition: 1
+  deterministic_trajectory_seed: 59301
+  horizon_steps: 1000
+  same_fixed_geometry: true
+  use_final_checkpoint: true
+  trajectory_policy_mode: deterministic
+  summary_policy_mode: stochastic
+
+startup_gate:
+  - exact_selected_cost_routing_all_three_conditions
+  - positive_native_cost_in_native_preflight
+  - positive_dense_cost_in_stl_preflight
+  - dense_cost_strictly_exceeds_binary_event_cost_in_stl_preflight
+  - at_least_one_real_optimizer_epoch_per_condition
+  - finite_metrics
+  - cuda_checkpoint_and_progress_present
+  - no_new_kernel_stop_event
+
+required_outputs:
+  root: results/fixed_route_v1/full_dense_round
+  run_manifest: run_manifest.json
+  effective_protocol: effective_protocol.yaml
+  preflight_summary: preflight_summary.json
+  task_control_budgets: task_control_budgets.json
+  training_summary: training_summary.json
+  evaluation_root: evaluation
+
+stop_rules:
+  - stop_if_cost_routing_is_not_exact
+  - stop_if_dense_cost_does_not_exceed_binary_event_cost_in_preflight
+  - stop_if_monitor_oracle_rtamt_disagree
+  - stop_if_no_positive_native_or_dense_cost_occurs_in_preflight
+  - stop_on_new_MCE_segfault_CUDA_Xid_OOM_or_non_finite_metric
+  - preserve_partial_attempts_as_diagnostic_only
+  - do_not_auto_promote_to_five_seed_confirmatory_study
+  - do_not_launch_D38_or_Stage_II_training

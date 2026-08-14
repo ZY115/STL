@@ -767,3 +767,94 @@ git log --oneline --decorate -10
 hardware gate 通过后：恢复 Stage II-A train/validation；运行 Gold task-only dry run；
 完成三个新 seed 的 task-only controls 和相同 50 paired evaluations；分别冻结 C0/C1
 预算；再运行 12 个 C0/C1 cost cells。五种子 1M confirmatory study 仍未授权。
+
+## 14. 2026-08-13 fixed-route v1 当前状态
+
+D42 的固定 geometry、双 reset、四目标 cycle、render 和新 deadline calibration 已
+通过。30/30 个真实动力学恢复均为 20 steps，按冻结 Q95×1.25 规则得到独立
+`d_warn=0.25, d_safe=0.28, K=25`；online/oracle/RTAMT 零差异。
+
+D43 phased runner、task-control 独立单位预算、fixed-scenario checkpoint evaluator、
+replay 和 plot/report 入口已完成。D45 记录管理员仅对本次 D43 接受 D41 未清除风险；
+这不等于 CPU/RAM stability tests 或 discarded formal epoch 通过。
+
+第一次执行暴露吞吐 preflight 只做 1 次 update、正式 epoch 做 40 次 update 的执行器
+缺陷。错误选出的 150k task-only attempt 在 40k 后停止并保留；其 232.46 秒继续计入
+上限。修复为同负载 preflight 后，三组 10k 分别耗时 66.01/65.45/65.53 秒，按冻结
+公式得到每条件 70k transitions。三组正式训练分别耗时 391.76/390.55/380.38 秒；
+含失败 attempt 的 aggregate 为 1,395.16 秒，未超过 30 分钟。
+
+task-only 的 20-episode control 将独立单位预算冻结为 Native `34.23`、C1
+`67.7021`。三份 final checkpoint 均满足 exact routing、finite metrics、positive-cost
+preflight、checkpoint/hash 和零新增 kernel stop event。统一 Gold evaluation 的结果为：
+
+| Condition | Gold missed/trigger | Return mean | Goal success | Native mean |
+|---|---:|---:|---:|---:|
+| Task-only | 27/29 = 0.931 | 5.781 | 100% | 48.90 |
+| Native | 27/40 = 0.675 | 7.882 | 100% | 38.55 |
+| STL-dense | 31/55 = 0.564 | 8.595 | 100% | 46.20 |
+
+STL-dense 相对 task-only 为 0.367 absolute、39.5% relative reduction；这只满足
+quick-turn 的 visible-separation 目的。它来自一个训练 seed 和 20 paired episodes，
+且学习曲线仍上升、cost oscillatory、两个 constrained multipliers 在短程内归零，不能
+作收敛、显著性、优越性或 generalization claim。三张已检查图和完整解释见
+`docs/fixed_route_v1_quick_turn_report.md`。D43 已停止；没有启动 D38、Stage II-A、
+full 1M 或 confirmatory study。最终 109 tests、两个环境 `pip check`、compile、artifact
+gate 和 diff check 全部通过，未残留训练进程。D41 对其他训练仍未解除。
+
+## 15. 2026-08-13 D47 long C1-dense round
+
+负责人已授权在 fixed-route v1 上再运行一个完整长程 matched round。冻结执行单位为
+一个新训练 seed `12647`，Task-only、Native-safety、STL-dense-safety 各自从零运行
+`1,000,000` transitions；100 个相同 stochastic evaluation seeds 用于 fixed final
+checkpoint 比较，另保留每条件一条 deterministic trajectory。
+
+本轮没有恢复 C0 稀疏成本。STL learner cost 固定为 C1：active obligation 中按
+`0.5*q_distance + 0.5*q_urgency` 逐步产生 `[0,1]` 连续 cost，实际 miss 为 1，inactive
+为 0。Gold evaluator 仍按 binary deadline violation / terminal unresolved 计数；C1
+不能作为 Gold truth。Native 与 C1 cost limit 均由本轮最终 Task-only checkpoint 的
+100 条 stochastic trajectories 分别取各自均值的 70%，单位不可互换。
+
+启动门包括三组各 10k transitions、40 optimizer iterations 的真实 CUDA preflight。
+除了 exact routing、positive source cost、finite metrics、checkpoint 和 kernel-event
+检查，STL preflight 必须满足 dense accumulated cost 严格大于 binary missed-event
+cost，从而直接排除“只在违反时 +1”的执行路径。通过后后台 runner 自动继续 task
+control、预算冻结、Native、STL-dense 和 final evaluation；只监管到成功启动，之后
+由负责人在本机人工观察，不终止健康进程。
+
+本轮使用新的 scoped administrator override，已知 D41 CPU/RAM/discarded-epoch 证据
+仍不完整。该授权不扩展到 D38、Stage II 或五种子 confirmatory study。
+
+启动门现已实际通过：三组 preflight exact routing/finite/checkpoint 均成功；STL 的
+binary event cost 为 `1.10`，C1 dense 与 selected cost 均为 `103.72075`，positive
+step fraction 为 `11.28%`。后台 systemd service `stl-fixed-route-full-dense.service`
+（启动 PID `432905`）已进入正式 task-only 1M cell，交接时完成 20k transitions 并
+写出 `epoch-0.pt`。按负责人要求已退出持续监管，健康训练进程没有被终止。
+
+## 16. 2026-08-14 D47 结果与 D48 验证器修正
+
+后台训练实际完成三组各 1M transitions 和 `epoch-100.pt`。自动 runner 在训练结束后
+退出的原因不是训练或 CUDA 故障，而是 STL progress 第 54 行 selected/dense logger
+聚合值存在 `3.8147e-6` 的 float32 ULP 差（相对约 `9.0e-8`）；其余 99 行完全相同，
+所有值 finite 且无新 kernel stop event。尺度相关容差测试通过，原 failed manifest
+保留，另写 `validated_training_completion.json`，没有重训或改 checkpoint。
+
+相同 100 stochastic seeds 的 fixed final-checkpoint Gold 结果为：
+
+| Condition | Gold missed/trigger | Return mean | Goal success | Native mean |
+|---|---:|---:|---:|---:|
+| Task-only | 0/268 = 0.000 | 35.674 | 100% | 2.420 |
+| Native | 0/345 = 0.000 | 31.694 | 100% | 0.020 |
+| STL-dense | 31/139 = 0.223 | 17.477 | 100% | 8.730 |
+
+Task baseline 为零，因此不报告 relative reduction；Task-minus-STL absolute reduction
+为 `-0.223`，10,000 次 paired episode bootstrap 的描述性 95% interval 为
+`[-0.313,-0.139]`。STL-dense 没有达到预期安全方向。online/oracle 全 episode 一致，
+RTAMT 最大差为零。
+
+C1 training feedback 明确非稀疏，但最后 20 epochs 的 selected cost 均值 `16.535`
+仍高于 limit `10.995`，lambda 均值 `1.444` 且终值 `1.490`，return 仍在变化；不能称
+为收敛。Native 几乎消除 physical contact，但有较小 task-return 代价。四张已人工
+检查图和解释见 `docs/fixed_route_v1_full_dense_result_report.md`。下一步应先做 C1
+trigger/recovery window 机制诊断或前瞻性定义 held-out route/layout evaluation，不应
+直接重复长训练。

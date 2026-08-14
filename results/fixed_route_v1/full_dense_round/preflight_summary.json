@@ -1,0 +1,88 @@
+{
+  "c1_evidence": {
+    "binary_stl_cost": 1.100000023841858,
+    "dense_stl_cost": 103.72074890136719,
+    "positive_cost_step_fraction": 0.1127999946475029,
+    "selected_algorithm_cost": 103.72074890136719
+  },
+  "c1_not_binary_only": true,
+  "kernel_tail_at_gate": "Jul 27 06:35:54 jerry-CORSAIR-VENGEANCE-i7500 kernel: raid6: using avx2x2 recovery algorithm\nJul 27 06:35:54 jerry-CORSAIR-VENGEANCE-i7500 kernel: xor: automatically using best checksumming function   avx       \nJul 27 06:35:54 jerry-CORSAIR-VENGEANCE-i7500 kernel: Btrfs loaded, zoned=yes, fsverity=yes\nJul 28 06:12:26 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1326 audit(1785244346.139:293): auid=1000 uid=1000 gid=1000 ses=3 subj=snap.snap-store.ubuntu-software pid=4137 comm=\"pool-org.gnome.\" exe=\"/snap/snap-store/1216/usr/bin/snap-store\" sig=0 arch=c000003e syscall=93 compat=0 ip=0x715451389b1b code=0x50000\nJul 29 06:12:25 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1326 audit(1785330745.196:294): auid=1000 uid=1000 gid=1000 ses=3 subj=snap.snap-store.ubuntu-software pid=4137 comm=\"pool-org.gnome.\" exe=\"/snap/snap-store/1216/usr/bin/snap-store\" sig=0 arch=c000003e syscall=93 compat=0 ip=0x715451389b1b code=0x50000\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: systemd 249.11-0ubuntu3.21 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY -P11KIT -QRENCODE +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: Detected architecture x86-64.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: Configuration file /run/systemd/system/netplan-ovs-cleanup.service is marked world-inaccessible. This has no effect as configuration data is accessible via APIs without restrictions. Proceeding anyway.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: /etc/systemd/system/teamviewerd.service:9: PIDFile= references a path below legacy directory /var/run/, updating /var/run/teamviewerd.pid \u2192 /run/teamviewerd.pid; please update the unit file accordingly.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: /lib/systemd/system/snapd.service:23: Unknown key name 'RestartMode' in section 'Service', ignoring.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: systemd 249.11-0ubuntu3.21 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY -P11KIT -QRENCODE +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: Detected architecture x86-64.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: Configuration file /run/systemd/system/netplan-ovs-cleanup.service is marked world-inaccessible. This has no effect as configuration data is accessible via APIs without restrictions. Proceeding anyway.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: /etc/systemd/system/teamviewerd.service:9: PIDFile= references a path below legacy directory /var/run/, updating /var/run/teamviewerd.pid \u2192 /run/teamviewerd.pid; please update the unit file accordingly.\nJul 29 06:30:02 jerry-CORSAIR-VENGEANCE-i7500 systemd[1]: /lib/systemd/system/snapd.service:23: Unknown key name 'RestartMode' in section 'Service', ignoring.\nJul 29 15:47:09 jerry-CORSAIR-VENGEANCE-i7500 kernel: eglinfo[256094]: segfault at 1d ip 00007dd495401741 sp 00007fffc9bd6ff0 error 4 in libnvidia-egl-gbm.so.1.1.1[7dd495400000+4000] likely on CPU 14 (core 28, socket 0)\nJul 29 15:47:09 jerry-CORSAIR-VENGEANCE-i7500 kernel: Code: 2e 0f 1f 84 00 00 00 00 00 48 8d 6c 24 30 31 ff ba 01 00 00 00 48 89 ee e8 bc f9 ff ff 85 c0 0f 84 c5 00 00 00 48 8b 44 24 30 <48> 8b 00 48 8b 78 10 48 85 ff 74 2b 31 c0 be 02 00 08 00 e8 87 f9\nJul 30 00:00:03 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785394803.270:295): apparmor=\"DENIED\" operation=\"capable\" class=\"cap\" profile=\"/usr/sbin/cupsd\" pid=257853 comm=\"cupsd\" capability=12  capname=\"net_admin\"\nAug 04 00:00:02 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785826802.239:296): apparmor=\"DENIED\" operation=\"capable\" class=\"cap\" profile=\"/usr/sbin/cupsd\" pid=281329 comm=\"cupsd\" capability=12  capname=\"net_admin\"\nAug 04 21:07:11 jerry-CORSAIR-VENGEANCE-i7500 kernel: loop10: detected capacity change from 0 to 527808\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.250:297): apparmor=\"STATUS\" operation=\"profile_replace\" info=\"same as current profile, skipping\" profile=\"unconfined\" name=\"/snap/snapd/27591/usr/lib/snapd/snap-confine\" pid=285801 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.314:298): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.hook.disconnect-plug-host-hunspell\" pid=285807 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.316:299): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.hook.install\" pid=285808 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.326:300): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.hook.post-refresh\" pid=285809 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.337:301): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.hook.configure\" pid=285806 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.425:302): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap-update-ns.firefox\" pid=285803 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.576:303): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.geckodriver\" pid=285805 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.594:304): apparmor=\"STATUS\" operation=\"profile_replace\" profile=\"unconfined\" name=\"snap.firefox.firefox\" pid=285804 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.598:305): apparmor=\"STATUS\" operation=\"profile_replace\" info=\"same as current profile, skipping\" profile=\"unconfined\" name=\"snap-update-ns.mesa-2404\" pid=285811 comm=\"apparmor_parser\"\nAug 04 21:07:12 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1785902832.599:306): apparmor=\"STATUS\" operation=\"profile_replace\" info=\"same as current profile, skipping\" profile=\"unconfined\" name=\"snap.mesa-2404.hook.connect-plug-kernel-gpu-2404\" pid=285813 comm=\"apparmor_parser\"\nAug 07 00:00:03 jerry-CORSAIR-VENGEANCE-i7500 kernel: kauditd_printk_skb: 4 callbacks suppressed\nAug 07 00:00:03 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1786086003.213:311): apparmor=\"DENIED\" operation=\"capable\" class=\"cap\" profile=\"/usr/sbin/cupsd\" pid=347231 comm=\"cupsd\" capability=12  capname=\"net_admin\"\nAug 11 16:48:22 jerry-CORSAIR-VENGEANCE-i7500 kernel: perf: interrupt took too long (3139 > 3128), lowering kernel.perf_event_max_sample_rate to 63000\nAug 12 00:00:04 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1786518004.227:312): apparmor=\"DENIED\" operation=\"capable\" class=\"cap\" profile=\"/usr/sbin/cupsd\" pid=401585 comm=\"cupsd\" capability=12  capname=\"net_admin\"\nAug 12 22:52:01 jerry-CORSAIR-VENGEANCE-i7500 kernel: mce: [Hardware Error]: Machine check events logged\nAug 12 22:57:29 jerry-CORSAIR-VENGEANCE-i7500 kernel: mce: [Hardware Error]: Machine check events logged\nAug 12 23:03:27 jerry-CORSAIR-VENGEANCE-i7500 kernel: pt_autograd_0[419546]: segfault at 1 ip 000074947cf9fbcb sp 00007492bdffcc00 error 4 in libstdc++.so.6.0.34[74947cf63000+a8000] likely on CPU 9 (core 16, socket 0)\nAug 12 23:03:27 jerry-CORSAIR-VENGEANCE-i7500 kernel: Code: 48 89 df e8 07 b2 fc ff eb 20 48 83 ef 18 e8 ac d7 fc ff 84 c0 75 d7 eb 11 4c 89 e6 48 89 df 48 2b 2b e8 e8 b1 fc ff 48 03 2b <48> 8b 3b 48 89 ee 4c 89 ea 48 03 7f e8 e8 43 06 fd ff 48 8b 03 4c\nAug 12 23:15:31 jerry-CORSAIR-VENGEANCE-i7500 kernel: mce: [Hardware Error]: Machine check events logged\nAug 13 00:00:04 jerry-CORSAIR-VENGEANCE-i7500 kernel: audit: type=1400 audit(1786604404.245:313): apparmor=\"DENIED\" operation=\"capable\" class=\"cap\" profile=\"/usr/sbin/cupsd\" pid=423274 comm=\"cupsd\" capability=12  capname=\"net_admin\"\n",
+  "preflights": [
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-56-05/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "0b41a7a6db833f5fceec2cea30b6e2aa30d2fe41eb1a97294dba2d1c548e5be5",
+      "condition_id": "task_only",
+      "cost_limit": 0.0,
+      "dense_exceeds_binary_event_cost": true,
+      "elapsed_seconds": 66.46156725194305,
+      "last_epoch_cost_metrics": {
+        "binary_stl_cost": 1.100000023841858,
+        "dense_stl_cost": 103.72074890136719,
+        "positive_cost_step_fraction": 0.0,
+        "selected_algorithm_cost": 0.0
+      },
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-56-05/progress.csv",
+      "progress_sha256": "925c8645966b1bba9f6bce19bd3f34be8b8a8310a5aeb49fa110e7afe0eeaac2",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/task_only/preflight/attempts/attempt-0002/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1TaskOnly-v0}/seed-12647-2026-08-13-16-56-05",
+      "transitions": 10000,
+      "transitions_per_second": 150.46289778409707
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-16-57-11/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "faac2cc37d3771ba8320fad54f31b66cf51bf358cd23c7886f70d9adf508cee1",
+      "condition_id": "native_safety",
+      "cost_limit": 0.0,
+      "dense_exceeds_binary_event_cost": true,
+      "elapsed_seconds": 65.45603846991435,
+      "last_epoch_cost_metrics": {
+        "binary_stl_cost": 1.100000023841858,
+        "dense_stl_cost": 103.72074890136719,
+        "positive_cost_step_fraction": 0.056699998676776886,
+        "selected_algorithm_cost": 56.70000076293945
+      },
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-16-57-11/progress.csv",
+      "progress_sha256": "f8cb2e011a9fdf650ce169fdc66875e4fb3e4226f8764b5c112da5c07fedcd22",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/native_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage1SafetyPointGoal1NativeCost-v0}/seed-12647-2026-08-13-16-57-11",
+      "transitions": 10000,
+      "transitions_per_second": 152.7742930027199
+    },
+    {
+      "all_finite": true,
+      "checkpoint": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-16-58-16/torch_save/epoch-1.pt",
+      "checkpoint_sha256": "8d884ee5e85183ffba30ef3ce442adfcdd6218643bd6e3be68a7de4f29a8d227",
+      "condition_id": "stl_dense_safety",
+      "cost_limit": 0.0,
+      "dense_exceeds_binary_event_cost": true,
+      "elapsed_seconds": 65.44079403299838,
+      "last_epoch_cost_metrics": {
+        "binary_stl_cost": 1.100000023841858,
+        "dense_stl_cost": 103.72074890136719,
+        "positive_cost_step_fraction": 0.1127999946475029,
+        "selected_algorithm_cost": 103.72074890136719
+      },
+      "new_kernel_stop_events": [],
+      "peak_gpu_memory_allocated_bytes": 92584448,
+      "positive_selected_source_observed": true,
+      "preflight": true,
+      "progress": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-16-58-16/progress.csv",
+      "progress_sha256": "12fe513019169e3695ec40feb4dc084a23fab2a042e1174f6f30be8f54733b22",
+      "routing_exact": true,
+      "run_dir": "/home/jerry/Desktop/STL/results/fixed_route_v1/full_dense_round/stl_dense_safety/preflight/attempts/attempt-0001/training/FixedRouteQuickTurn-{Stage2SafetyPointGoal1STLDenseCost-v0}/seed-12647-2026-08-13-16-58-16",
+      "transitions": 10000,
+      "transitions_per_second": 152.80988178348693
+    }
+  ],
+  "status": "passed"
+}

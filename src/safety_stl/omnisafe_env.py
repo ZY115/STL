@@ -604,10 +604,14 @@ class Stage1SafetyPointGoalEnv(Stage1TemporalCostWrapper):
                     "fixed-route thresholds must match the executable rule configuration; "
                     "recalibrate K and provide a matching rule_config_path before training",
                 )
+            if bool(kwargs.get("asynchronous", False)):
+                raise ValueError("fixed-route environments require asynchronous=False")
             if num_envs > 1:
-                if bool(kwargs.get("asynchronous", False)):
-                    raise ValueError("fixed-route vector environments require asynchronous=False")
                 kwargs["asynchronous"] = False
+            else:
+                # Safety-Gymnasium's scalar make() does not accept the vector
+                # constructor's asynchronous keyword.
+                kwargs.pop("asynchronous", None)
         max_episode_steps = int(kwargs.get("max_episode_steps", 1000))
         base_env = SafetyGymnasiumEnv(
             BASE_ENVIRONMENT_ID,

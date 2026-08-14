@@ -629,6 +629,130 @@ method superiority or generalization. D41 hardware recovery and the new
 fixed-route deadline calibration remain mandatory launch gates. The exact
 machine-readable protocol is `configs/fixed_route_v1/quick_turn.yaml`.
 
+### D44. Fixed-route v1 uses a separately calibrated 25-step deadline
+
+On 2026-08-13 the D42 lifecycle and calibration gate passed on the real pinned
+environment. Thirty deterministic approach/retreat trials all triggered and
+recovered in 20 environment steps. Applying the predeclared Stage I rule
+`max(5, ceil(1.25 * linear empirical Q95))` gives `K=25`. Online monitor,
+independent oracle and RTAMT agreed on all 30 completed windows with zero event
+mismatches and zero maximum robustness difference.
+
+The fixed-route executable rule is isolated in
+`configs/fixed_route_v1/rule.yaml`; the historical Stage I `0.45/0.55/K=79`
+rule and pilot evidence remain unchanged. This closes the D42 deadline,
+lifecycle and render gates, but does not clear D41 or authorize bypassing its
+administrator CPU/RAM tests and discarded formal epoch.
+
+### D45. Administrator authorizes the bounded D43 run despite uncleared D41 tests
+
+On 2026-08-13 the repository owner and machine administrator explicitly
+authorized starting the modified fixed-route Stage I training and producing its
+figures. This accepts the known prior MCE/segfault risk for D43 only; it does not
+claim that CPU/RAM stability tests or the discarded formal epoch passed.
+
+The override covers the three excluded 10k preflights, one-seed bounded D43
+reported training, fixed-checkpoint evaluation and plotting. All existing stop
+rules remain active. It does not authorize Stage II-A full training, the D38
+matrix, or a confirmatory main study. The machine-readable scope is
+`configs/fixed_route_v1/d41_admin_override.yaml`.
+
+### D46. The D43 fixed-route quick-turn is complete and remains exploratory
+
+The administrator-authorized D43 package completed on 2026-08-13. A throughput
+contract defect was found during execution: the first 10k preflight used one
+optimizer iteration while a reported epoch used 40, so its 150k estimate was
+not comparable. The 150k task-only attempt was stopped after 40k transitions,
+retained as a failed diagnostic attempt and counted against the aggregate time
+cap. The preflight implementation was corrected to use the same 40-iteration
+optimizer workload. Three new excluded preflights then prospectively selected
+70k matched transitions per condition without observing policy outcomes.
+
+Task-only, Native-safety and STL-dense-safety all produced finite final
+checkpoints with exact learner-cost routing and no new logged MCE, segfault,
+CUDA Xid or OOM. Including the interrupted attempt, reported-training time was
+1,395.16 seconds, below the 1,800-second cap. The separate task-control limits
+were 34.23 native-cost units/episode and 67.7021 C1 surrogate-mass
+units/episode; the units are not interchangeable.
+
+On the 20 paired stochastic final-checkpoint episodes, Gold missed obligations
+per trigger were 27/29 (0.931) for task-only, 27/40 (0.675) for Native and
+31/55 (0.564) for STL-dense. The STL-dense point estimate is a 0.367 absolute
+and 39.5% relative reduction versus task-only; all three goal-success rates
+were 100%. This is evidence that the bounded implementation can produce visible
+early behavioral separation. It is not a convergence, significance,
+superiority, generalization or safety-guarantee claim because D43 used one
+training seed and 20 evaluation episodes. Learning curves were still rising,
+selected costs oscillated and both constrained multipliers reached zero during
+the short run. No automatic extension, D38 matrix, Stage II-A restart or
+confirmatory study is authorized by this result.
+
+### D47. Authorize one long fixed-route round with C1 dense learner cost
+
+On 2026-08-13 the repository owner and machine administrator explicitly
+authorized another complete training round and requested a non-sparse STL
+learner cost. The authorized unit is one new matched training seed (`12647`)
+with Task-only, Native-safety and STL-dense-safety each trained from scratch for
+1,000,000 transitions on fixed-route v1. This is a long exploratory round, not
+the five-seed confirmatory main study.
+
+The STL training condition must use the already frozen C1 causal dense
+surrogate. While a recovery obligation is active and has not yet been missed,
+the step cost is the clipped equal mixture of normalized distance deficit and
+deadline urgency; an actual missed obligation still emits one. Inactive steps
+emit zero. This changes neither the Gold STL semantics nor the final primary
+safety metric: fixed-checkpoint evaluation continues to use binary missed
+recovery obligations divided by triggered obligations. Native and C1 budgets
+are derived separately from the new final Task-only checkpoint and remain in
+different units.
+
+Three excluded 10k preflights must first prove exact routing, positive source
+cost, finite CUDA optimization, checkpoint creation and, specifically for the
+STL condition, C1 accumulated cost strictly greater than binary missed-event
+cost. Only then may the background runner continue through the three 1M cells
+and 100 paired final evaluations. The owner requested monitoring only through
+successful startup; after that the healthy process is left running for manual
+observation.
+
+This authorization accepts the known prior MCE/segfault risk only for
+`fixed_route_v1_full_dense_round`; it does not claim D41 passed and does not
+authorize D38, Stage II training or a five-seed confirmation. The frozen
+machine-readable protocol and scoped override are
+`configs/fixed_route_v1/full_dense_round.yaml` and
+`configs/fixed_route_v1/d41_full_dense_admin_override.yaml`.
+
+### D48. The single-seed full C1-dense round is a negative exploratory result
+
+The D47 training process ran all three conditions to their fixed 1,000,000-
+transition checkpoints on 2026-08-13. Its automatic post-run gate initially
+reported the STL cell as failed because one of 100 CSV rows differed between
+the selected-cost and dense-cost logger accumulators by `3.8147e-6` at scale
+`42.2763` (approximately `9.0e-8` relative). The tensors are the same at the
+environment interface, all values were finite, the other 99 rows matched
+exactly, and the final checkpoint was complete. D48 corrects this engineering
+validator to a scale-aware `rel_tol=1e-7, abs_tol=1e-6`, retains the original
+failed manifest, and records a separate validated-completion artifact. This
+does not change any policy, checkpoint or research metric.
+
+On the frozen 100 paired stochastic evaluation episodes, Gold missed recovery
+obligations per trigger were `0/268` for Task-only, `0/345` for Native-safety
+and `31/139=0.223` for STL-dense-safety. Because the Task-only rate is zero,
+the protocol's absolute-difference rule applies: Task-minus-STL is `-0.223`
+(descriptive paired episode-bootstrap 95% interval `-0.313` to `-0.139`). The
+STL condition therefore fails the intended safety direction; no relative
+reduction is defined. All goal-success rates were 100%, but mean return was
+35.674/31.694/17.477 and mean native cost was 2.420/0.020/8.730 for
+Task/Native/STL respectively.
+
+C1 was demonstrably non-sparse, but its last-20-epoch selected cost remained
+above its separately frozen budget (`16.535` versus `10.995`), its Lagrange
+multiplier was still increasing, and its return curve was not stable. This run
+does not support convergence or an STL-specific safety benefit. A plausible
+mechanism is that accumulated pending-obligation mass encourages fewer warning
+entries without teaching reliable recovery after entry, but that remains a
+diagnostic hypothesis. No additional training is authorized by D48; mechanism
+analysis or any held-out route/layout evaluation must be defined before use.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31
