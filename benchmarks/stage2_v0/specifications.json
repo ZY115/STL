@@ -397,8 +397,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -464,8 +464,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -531,8 +531,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "parameter_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -608,8 +608,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -685,8 +685,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -762,8 +762,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -839,8 +839,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -916,8 +916,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -993,8 +993,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1070,8 +1070,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1147,8 +1147,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "parameter_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1194,8 +1194,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1241,8 +1241,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1288,8 +1288,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1335,8 +1335,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1382,8 +1382,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1429,8 +1429,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1476,8 +1476,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1523,8 +1523,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "parameter_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1612,8 +1612,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1701,8 +1701,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1790,8 +1790,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1879,8 +1879,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -1968,8 +1968,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "train",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2057,8 +2057,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2146,8 +2146,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "validation",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2235,8 +2235,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "parameter_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2324,8 +2324,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2413,8 +2413,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2502,8 +2502,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2591,8 +2591,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2680,8 +2680,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2769,8 +2769,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2858,8 +2858,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   },
   {
@@ -2947,8 +2947,8 @@
     "online_use_status": "offline_only_pending_feasibility",
     "split": "structure_test",
     "annotation_author": "Codex_stage2_draft_2026-08-12",
-    "independent_reviewer": null,
-    "review_status": "machine_validated_pending_independent_review",
+    "independent_reviewer": "jiahui",
+    "review_status": "independently_reviewed",
     "source_or_generation_record": "D37 frozen matrix implemented from STAGE2_CONTINUOUS_WORK_ORDER"
   }
 ]

@@ -14,8 +14,7 @@
   ],
   "gates": {
     "reason_final_gate_is_closed": [
-      "35 new specifications have not yet undergone independent review",
-      "six frozen same-index Boolean contrasts are logical aliases and require owner disposition"
+      "owner-selected alias parameter amendment has not reached zero missing witnesses"
     ],
     "stage2_v0_d37_implementation": true,
     "stage2_v0_final_dataset": false,
@@ -971,9 +970,9 @@
   "review": {
     "all_splits_frozen": true,
     "held_out_gold_labels_released_to_model_code": false,
-    "independently_reviewed_specifications": 5,
+    "independently_reviewed_specifications": 40,
     "o7_final_contract_frozen": true,
-    "pending_independent_review_specifications": 35,
+    "pending_independent_review_specifications": 0,
     "released_gold_label_splits": [
       "train",
       "validation"
@@ -983,7 +982,7 @@
   "schema_version": 1,
   "scope": "offline data construction only; no model inference or training",
   "specification_count": 40,
-  "status": "d37_40_item_machine_validated_pending_independent_review",
+  "status": "d37_40_item_current_revision_reviewed_alias_amendment_pending",
   "synthetic_machine_review_all_40_specs": {
     "all_online_oracle_agree": true,
     "case_tags": [

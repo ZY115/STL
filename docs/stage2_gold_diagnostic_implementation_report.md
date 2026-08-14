@@ -5,6 +5,10 @@
 - **Execution status:** implementation/static tests complete; no 300k cell started; D41 hardware-blocked
 - **Gold specification/evaluator:** unchanged `br-v0-001` binary oracle
 
+> **2026-08-14 update:** D52 requires a mechanism analysis of existing D47/D48
+> artifacts before this unchanged matrix runs. No C2 or extra free search is
+> authorized. D49 replaces the absolute compute pause with guarded continuation.
+
 ## Implemented scope
 
 The project-owned runtime leaves OmniSafe 0.5.0 installed files unchanged. It
@@ -82,4 +86,3 @@ No GPU dry run or 300k diagnostic result is claimed. Repeated host MCEs triggere
 D41 before this branch could execute. The next legitimate action is hardware
 recovery, not budget invention or CPU substitution. If no C0/C1 cell later
 passes the predeclared screening gate, Stage II-B must stop.
-

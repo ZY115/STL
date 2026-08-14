@@ -31,8 +31,8 @@ class Stage2BenchmarkTests(unittest.TestCase):
             {"train": 20, "validation": 8, "parameter_test": 4, "structure_test": 8},
         )
         reviews = Counter(review["status"] for review in self.contract["reviews"])
-        self.assertEqual(reviews, {"approved": 5, "pending": 35})
-        self.assertFalse(self.contract["all_held_out_reviewed"])
+        self.assertEqual(reviews, {"approved": 40})
+        self.assertTrue(self.contract["all_held_out_reviewed"])
 
     def test_materialized_matrix_exactly_matches_frozen_builder(self) -> None:
         expected = {row["spec_id"]: row for row in build_specifications()}

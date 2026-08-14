@@ -1,5 +1,5 @@
 {
-  "held_out_label_policy": "forbidden_until_all_held_out_records_independently_reviewed",
+  "held_out_label_policy": "forbidden_until_all_held_out_records_are_reviewed_and_alias_amendment_passes",
   "sample_fields": [
     "sample_index",
     "distance",

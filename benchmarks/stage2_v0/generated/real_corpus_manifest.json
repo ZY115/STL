@@ -1,5 +1,5 @@
 {
-  "all_held_out_reviewed": false,
+  "all_held_out_reviewed": true,
   "artifacts": {
     "real_corpus_selection.json": {
       "bytes": 20778,
@@ -40,5 +40,6 @@
   "rtamt_max_robustness_difference": 0.0,
   "sample_count": 60060,
   "schema_version": 1,
-  "trajectory_count": 60
+  "trajectory_count": 60,
+  "alias_amendment_complete": false
 }

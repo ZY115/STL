@@ -467,19 +467,19 @@ authoritative source；`references/extracted-text/` 仅用于搜索。
 | Work package | 状态 | 下一动作 |
 |---|---|---|
 | WP1 Gold-STL control | 15M pilot、1,500 evaluations、frozen analysis、figures、report、P0 runtime regression 和 existing-checkpoint trajectory diagnosis 已完成；30% target 未通过，goal NI 通过，未收敛 | D38 已选 bounded Gold learner-cost diagnostic；先补真实二维轨迹图，不重跑旧 sparse-cost pilot |
-| WP2 Controlled benchmark | five-item machine foundation complete; D37 freezes the 40-item/five-family expansion and split | implement D37 and complete independent human review |
-| WP3 Offline methods | D37 freezes T5-base formal, MiniLM current-observation direct and MiniLM+GRU history direct plus numerical gates | implement train/validation first; held-out evaluation waits for review |
-| WP4 Online comparison | not started | 等 WP3 trace gate 和 Gold learner-cost gate，然后冻结 common interface 并运行 bounded Stage II-B |
+| WP2 Controlled benchmark | 40-item foundation complete; all current records reviewed by Yuhang/jiahui; D51 rejects six aliases | implement prospective parameter amendment, reach zero missing witnesses and re-review changed records |
+| WP3 Offline methods | T5-base formal, MiniLM current direct and MiniLM+GRU history direct implemented and preflighted | guarded train/validation; held-out evaluation waits for alias amendment and delta review |
+| WP4 Online comparison | not started | 先完成 D48 mechanism report 与冻结 C0/C1 matrix；通过后运行 B1，条件满足再运行 B2；超过 20 小时仅在 D53 strict exception 通过时自动启动 |
 | WP5 Contribution decision | not started | 按预定义 Branch A--E 处理 |
 | WP6 Method/benchmark extension | deferred | 由 WP5 failure mode 决定 |
 | WP7 External validity | deferred | 由前述内部有效性决定 |
 
-D42 fixed-route v1 的 geometry/lifecycle/render 和 deadline gate 已通过；独立规则为
-`0.25/0.28/K=25`。负责人按 D45 只对 bounded D43 接受硬件风险后，该 quick-turn 已
-以每条件 70k transitions 完成。STL-dense 的 Gold missed/trigger 点估计相对 task-only
-下降 39.5%，三组 goal success 均为 100%；但它只有一个训练 seed/20 evaluations，
-仅作为 early visible-separation signal。D41 对 D38、Stage II-A 和任何 confirmatory
-训练仍未解除；下一研究动作必须先完成管理员硬件恢复 gate，不能从 D43 自动外推。
+D42--D48 fixed-route 工作已完成。70k quick-turn 的 early signal 没有在 1M C1 run 中
+保持；D48 是 negative exploratory result。D49 在负责人硬件排查后允许 guarded Stage
+II compute continuation，但保留失败证据、local diagnosis 和 clean retry 规则。D50
+记录 `jiahui` 对 35 条当前版本规格的审核；D51 修改 alias 参数后，所有变化记录必须
+重新审核。D52 禁止在 C0/C1 matrix 外追加自由搜索。D53 将 online 分成 B1/B2，并对
+预计超过 20 小时的 package 设置 owner authorization gate。
 
 新成员完成当前 gate 后，不应停下来问“然后做什么”。应回到本表，进入下一个未完成
 WP；只有遇到 `DECISIONS.md` 明确标记的 blocking decision 才暂停实施，并提交包含

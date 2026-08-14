@@ -28,7 +28,7 @@ class Stage2RealCorpusTests(unittest.TestCase):
                 seed_rows = [row for row in rows if row["training_seed"] == training_seed]
                 self.assertEqual({row["outcome_stratum"] for row in seed_rows}, set(STRATA))
 
-    def test_current_held_out_review_gate_is_closed(self) -> None:
+    def test_current_held_out_alias_amendment_gate_is_closed(self) -> None:
         contract = validate_benchmark_contract(BENCHMARK_ROOT)
         held_out = [
             spec
@@ -36,7 +36,14 @@ class Stage2RealCorpusTests(unittest.TestCase):
             if spec["split"] in {"parameter_test", "structure_test"}
         ]
         self.assertEqual(len(held_out), 12)
-        self.assertFalse(all(spec["review_status"] == "independently_reviewed" for spec in held_out))
+        self.assertTrue(all(spec["review_status"] == "independently_reviewed" for spec in held_out))
+        coverage = json.loads(
+            (BENCHMARK_ROOT / "generated" / "coverage.json").read_text(encoding="utf-8"),
+        )
+        self.assertGreater(
+            coverage["parameter_contrast_coverage"]["missing_witness_count"],
+            0,
+        )
 
     def test_real_corpus_machine_checks_all_specs_but_releases_only_train_validation(self) -> None:
         manifest = json.loads(

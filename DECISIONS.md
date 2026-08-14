@@ -753,6 +753,93 @@ entries without teaching reliable recovery after entry, but that remains a
 diagnostic hypothesis. No additional training is authorized by D48; mechanism
 analysis or any held-out route/layout evaluation must be defined before use.
 
+### D49. Owner authorizes guarded Stage II compute continuation after hardware inspection
+
+On 2026-08-14 the owner reported that the work-computer hardware had been
+investigated and no actionable repair was identified. This does not rewrite the
+historical D41 events as a clean hardware pass. It authorizes resuming the
+frozen Stage II-A and Gold-diagnostic compute path under guarded execution.
+
+Every new training package must retain the existing config/hash checks, smallest
+real update or epoch, finite-metric check, checkpoint proof, GPU/host telemetry
+and kernel-event comparison. If an MCE, native crash, CUDA Xid, OOM or non-finite
+result recurs, the work computer first preserves the failed attempt and performs
+local evidence collection and diagnosis. It may apply reproducible repository,
+environment or user-space fixes and run one clean from-scratch validation retry.
+It must request human help only when the problem requires administrator/hardware
+action, changes a frozen research contract, or remains unresolved after the
+controlled retry. A failed attempt is never promoted to a research result.
+
+### D50. Jiahui independently approves the 35 previously pending specifications
+
+On 2026-08-14 the owner confirmed that engineer `jiahui` independently reviewed
+the 35 records that were pending after the five historical Yuhang approvals.
+For the current specification revision, all nine checklist fields are approved,
+with no disagreement note. `reviews.json` and `specifications.json` record this
+decision while preserving the original five Yuhang records.
+
+This approval is content-specific. D51 changes parameters to remove logical
+aliases; every record whose language, typed AST, STL, grounding or parameters
+changes must automatically return to pending review. The freeze tool preserves
+an approval only when all reviewable content is unchanged. Held-out labels
+remain closed until the alias amendment has full distinguishing-trace coverage
+and every changed record is independently reviewed again.
+
+### D51. Replace the six logical aliases with a prospective parameter amendment
+
+The owner rejects retaining the six D39 aliases as benchmark hard cases. Before
+held-out predictions or labels are exposed, the work computer must implement the
+smallest coherent parameter-matrix amendment that makes every AND/OR record
+distinguishable from its component formulas on at least one deterministic trace.
+
+The amendment must preserve the five formula families, 20/8/4/8 split counts,
+held-out OR structure policy, public signal, finite-trace semantics and absence
+of test leakage. It must record all changed specification IDs and an impact
+analysis, regenerate language/AST/STL/trace artifacts and hashes, reduce
+`missing_witness_count` from six to zero, and produce a delta human-review packet
+containing only changed records. No held-out model evaluation may run before the
+delta review closes. Parameter choices must be made from semantic feasibility
+and witness construction, never from model predictions.
+
+### D52. D48 is followed by mechanism analysis and the unchanged bounded C0/C1 matrix
+
+Before new Gold learner-cost training, analyze the existing D47/D48 artifacts:
+C1 distance/urgency mass around trigger and recovery windows, cost-value and
+advantage scale, reward/cost gradient balance, trigger avoidance, recovery
+reliability, multiplier behavior and budget pressure. This analysis may not
+change the Gold evaluator.
+
+After the report is complete, execute the already registered D38/D40 matrix:
+three seeds, 300k transitions, C0/C1 crossed with the two frozen Lagrange
+initializations and separately derived budgets. Do not add a C2 cost, search
+extra weights, alter limits after outcomes, or otherwise introduce a new free
+parameter search. If no C0/C1 cell passes the predeclared screening gate, end
+the online branch, preserve the negative result and complete Stage II with the
+offline comparison and downstream-bottleneck analysis.
+
+### D53. Stage II online work is split into B1 and conditional B2 with a 20-hour launch gate
+
+Stage II-B1 keeps `br-v0-001` as the minimal online error-propagation pilot. It
+may start only after the reviewed alias-free Stage II-A gate and one Gold
+learner-cost cell pass. Stage II-B2 is conditional on B1 and the offline gate;
+it adds `rp-v0-001` plus the prospectively fixed non-alias composition
+`or-v0-001`. Both B2 specifications require online feasibility calibration and
+unchanged Gold evaluation before training. A failed feasibility check stops B2
+instead of substituting a result-selected specification.
+
+Before B1 or B2, estimate aggregate wall-clock time on the work computer using
+a workload-matched preflight. An online package with projected aggregate
+training time at or below 20 hours may start automatically after all gates pass.
+If the estimate exceeds 20 hours, automatic launch is allowed only under the
+strict upstream-perfect exception: alias/review/leakage gates are clean; both
+primary offline methods pass every admission metric for all three seeds; the
+selected Gold learner-cost cell passes every screening criterion for all three
+seeds; and workload-matched online preflight has no technical warning. B2 also
+requires B1 to pass all three seeds. Otherwise do not launch. Produce a decision
+package with gate evidence, per-condition runtime, total GPU-hours, disk estimate
+and resumable command, then request explicit owner authorization. Long online
+training is not justified merely because its code path works.
+
 ## Open decisions
 
 ### O6. Quantitative Stage I pilot protocol — resolved by D31

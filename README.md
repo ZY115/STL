@@ -54,8 +54,8 @@ train and evaluate a Safe RL agent
 
 Stage I pilot 已完成。D37 的 40 条 Stage II v0 specifications、五个公式族、typed
 AST、train/validation 数据和三条 baseline 已实现并通过 machine checks；5 条历史
-记录已人工复核，35 条新记录仍待独立复核。15 个旧 checkpoint 的完整二维空间
-复放、三张图和固定 60-episode real corpus 也已完成。
+记录由 Yuhang 复核，另外 35 条当前版本记录已由 `jiahui` 独立复核。15 个旧
+checkpoint 的完整二维空间复放、三张图和固定 60-episode real corpus 也已完成。
 
 Stage II-A 独立 CUDA 环境和三方法最小真实 update 均通过；但 full formal cell 的
 首次运行出现 MCE 后 native-thread segfault，干净重试在完成两个 finite epochs 后又
@@ -104,6 +104,20 @@ return 为 35.674/31.694/17.477，native cost 为 2.420/0.020/8.730。C1 确实�
 但本轮 STL 结果更差且仍未满足自身 cost budget，因此是单-seed negative exploratory
 result，不支持方法优越性或收敛。详见
 `docs/fixed_route_v1_full_dense_result_report.md`。
+
+2026-08-14，负责人在未发现可操作硬件修复后以 D49 授权 guarded Stage II compute
+continuation：新异常先由工作电脑保留证据、自行诊断并做一次受控 clean retry，只有
+无法本地解决时才寻求人工帮助。该授权不把历史 MCE 改写成硬件已证明正常。
+
+D50 已登记 `jiahui` 对 35 条当前版本规格的独立审核。D51 决定不接受 6 个 logical
+aliases，而是前瞻性修改参数并要求 `missing_witness_count=0`；任何被修改的规格必须
+重新进入 delta human review，因此 held-out labels 仍未开放。
+
+D52 要求先用 D47/D48 既有数据完成 C1 mechanism analysis，再执行原预注册的 bounded
+C0/C1 matrix，不增加 C2 或新的自由参数搜索；若没有 cell 通过，在线分支结束。D53
+将在线研究拆为 B1 `br-v0-001` 和条件式 B2 `rp-v0-001` + `or-v0-001`。预计总训练
+时间超过 20 小时的 B1/B2 package 只有在 D53 strict upstream-perfect 条件全部通过时
+才能自动启动，否则必须先提交 runtime/evidence 决策包。
 
 ## 2026-08-10 研究定位更新
 
@@ -239,7 +253,8 @@ Stage I pilot 的历史问题是：
   review 为 791 synthetic + 6 historical real traces，online/direct/RTAMT 一致，
   model-visible artifacts 不包含 held-out labels；
 - 已生成 10,000 formal pairs、2,000 direct train traces、400 validation traces，
-  test/OR leakage 为零，并准备 35 条 pending records 的独立人工 review packet；
+  test/OR leakage 为零；35 条新增 current-revision records 已由 `jiahui` 独立审核，
+  alias amendment 变化项仍需生成 delta review packet；
 - 已实现 T5 typed-AST formal、MiniLM current-observation direct、MiniLM+GRU-128
   history direct 和 deterministic grammar sanity；独立 `stl-stage2-offline` 环境可用
   RTX 4090 完成三方法 forward/backward/checkpoint；
@@ -277,18 +292,23 @@ recovery，不是 RL policy，也不是安全实验结果。完整命令、输�
 
 Stage I full pilot 和无训练诊断已完成。D38 授权工作电脑按以下顺序连续推进：
 
-1. 管理员排查重复 MCE，完成 CPU/RAM 稳定性检查和一个不计结果的 clean formal epoch；
-2. 由独立人工 reviewer 审核 35 条新规格，并由 owner 处理 6 组 frozen logical aliases；
-3. hardware gate 通过后恢复 Stage II-A 三方法 × 三 seed train/validation matrix；
-4. 运行 Gold task-only dry run 和三个新 seed 的 300k controls，以其相同 50 paired
-   evaluations 分别冻结 C0/C1 budget，再运行 C0/C1 screening matrix；
-5. 仅在复核后运行 Stage II-A held-out 离线比较；
+1. 按 D51 修改 alias 参数，生成完整 distinguishing traces、更新 hashes，并将所有变化
+   规格放入 delta human-review packet；
+2. 在 guarded compute 下恢复 Stage II-A 三方法 × 三 seed train/validation matrix；
+3. 使用 D47/D48 已有数据先完成 C1 mechanism report；
+4. 不改变候选和搜索空间，运行三个新 seed 的预注册 300k C0/C1 screening matrix；
+5. delta review 完成后运行 Stage II-A held-out 离线比较；
 6. 只有 primary offline methods 与 Gold learner-cost gate 都通过，才冻结统一 online
-   interface 并运行 bounded Stage II-B pilot。
+   interface；
+7. 先执行 B1 `br-v0-001`，通过后再对 `rp-v0-001` 和 `or-v0-001` 做 B2 feasibility 与
+   online pilot；
+8. B1/B2 的 workload-matched 总时间若预计超过 20 小时，仅在 D53 strict
+   upstream-perfect exception 通过时自动启动，否则提交 owner decision package。
 
 完整参数、split、模型、公式、成功门槛、输出和训练监控规则见
 `docs/STAGE2_CONTINUOUS_WORK_ORDER.md`。训练启动后只监测到真实 update、checkpoint
-和 ETA；若预计剩余时间超过 20 分钟，保留 resumable job 运行并停止持续轮询。
+和 ETA；若已授权任务预计剩余时间超过 20 分钟，保留 resumable job 运行并停止持续
+轮询。该监控规则不覆盖 D53 的 20 小时 online automatic-launch cap。
 
 - 正式结果：`docs/stage1_pilot_result_report.md`
 - 代码失败分析与修复建议：

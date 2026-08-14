@@ -3,6 +3,10 @@
 - **Date:** 2026-08-12
 - **Outcome:** software path ready through minimal CUDA updates; research launch blocked by repeated host MCE
 
+> **2026-08-14 owner update:** this report preserves the historical D41 evidence.
+> D49 now permits guarded continuation with failure preservation, local diagnosis
+> and one clean validation retry before escalation. It does not erase the MCEs.
+
 ## Passed software gates
 
 - separate `stl-stage2-offline` environment and pinned model revisions;

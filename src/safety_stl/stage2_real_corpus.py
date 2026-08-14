@@ -91,6 +91,11 @@ def _write_json(path: Path, value: Any) -> None:
         handle.write("\n")
 
 
+def _read_json(path: Path) -> Any:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def _write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> int:
     count = 0
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -169,8 +174,13 @@ def extract_real_policy_corpus(
     all_held_out_reviewed = all(
         spec["review_status"] == "independently_reviewed" for spec in held_out
     )
+    coverage = _read_json(output_root / "coverage.json")
+    contrast_coverage = coverage.get("parameter_contrast_coverage", {})
+    alias_amendment_complete = int(contrast_coverage.get("missing_witness_count", 0)) == 0
     if include_held_out_labels and not all_held_out_reviewed:
         raise PermissionError("held-out Gold labels remain closed until independent review")
+    if include_held_out_labels and not alias_amendment_complete:
+        raise PermissionError("held-out Gold labels remain closed until alias amendment")
     allowed_splits = {"train", "validation"}
     if include_held_out_labels:
         allowed_splits.update({"parameter_test", "structure_test"})
@@ -221,7 +231,9 @@ def extract_real_policy_corpus(
             ],
             "selection_strata": list(STRATA),
             "selection_count_per_condition": 20,
-            "held_out_label_policy": "forbidden_until_all_held_out_records_independently_reviewed",
+            "held_out_label_policy": (
+                "forbidden_until_all_held_out_records_are_reviewed_and_alias_amendment_passes"
+            ),
         },
     )
     manifest = {
@@ -233,6 +245,7 @@ def extract_real_policy_corpus(
         "labeled_splits": sorted(allowed_splits),
         "held_out_labels_released": bool(include_held_out_labels),
         "all_held_out_reviewed": all_held_out_reviewed,
+        "alias_amendment_complete": alias_amendment_complete,
         "rtamt_max_robustness_difference": max_rtamt_difference,
         "inputs": {
             "full_geometry.csv.gz": {

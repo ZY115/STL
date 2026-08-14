@@ -9,11 +9,12 @@ eight structure test; semantic pairs never cross splits.
 ## Current release boundary
 
 All 40 records, typed ASTs, deterministic STL renderings and machine-generated
-boundary traces validate. The five historical `br-v0-001..005` records have
-independent approval; 35 new records remain pending human review. Six frozen
-same-index Boolean contrasts are classified logical aliases and await owner
-disposition. Therefore the final dataset gate and all held-out Gold labels stay
-closed.
+boundary traces validate. The five historical `br-v0-001..005` records were
+approved by Yuhang; the other 35 current-revision records were approved by
+`jiahui` on 2026-08-14. The owner selected a prospective parameter amendment for
+the six same-index Boolean aliases. Therefore the final dataset gate and all
+held-out Gold labels remain closed until the amendment has zero missing
+witnesses and every changed record passes a delta independent review.
 
 Model-visible generated artifacts contain train/validation labels only. The
 builder may evaluate held-out records transiently for machine coverage, but it
@@ -43,7 +44,7 @@ env PYTHONNOUSERSITE=1 PYTHONPATH=src MUJOCO_GL=egl \
 The real-corpus command requires the completed local spatial replay, whose full
 geometry table is intentionally ignored but hash-locked. Do not pass
 `--include-held-out-labels` before every held-out specification has independent
-approval.
+approval and the alias amendment has complete distinguishing-trace coverage.
 
 Future predictions are validated with:
 

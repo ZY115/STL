@@ -6,6 +6,10 @@
 - **Machine-readable contract:** `configs/stage2_v0/baselines.yaml`
 - **Execution boundary:** local train/validation only; held-out Gold remains blocked
 
+> **2026-08-14 update:** D49 authorizes guarded compute continuation. D50 closes
+> the current-revision 35-record review, but D51 keeps held-out Gold closed until
+> alias amendment and delta review pass. Follow `CURRENT_EXECUTION_DIRECTIVE.md`.
+
 ## 1. Comparison being prepared
 
 The experiment must compare two representations while keeping the trace corpus,

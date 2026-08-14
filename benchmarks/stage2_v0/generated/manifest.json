@@ -1,8 +1,8 @@
 {
   "artifacts": {
     "generated/coverage.json": {
-      "bytes": 30533,
-      "sha256": "c815027cb93acea7cab9e43180803a0da5d19d1387f3c60a7fcb006b1372984a"
+      "bytes": 30455,
+      "sha256": "da1e584a18b64ca837e999d9ef830310f7cb1cdc0d6351a65aa282838e3ca59f"
     },
     "generated/gold_labels.jsonl": {
       "bytes": 1437581,

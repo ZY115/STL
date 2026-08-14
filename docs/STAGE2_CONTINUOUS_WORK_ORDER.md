@@ -259,13 +259,33 @@ threshold, deadline/duration, equality, terminal semantics and paraphrase
 equivalence. Disagreements require a versioned adjudication note.
 
 The existing `br-v0-001` through `br-v0-005` records were independently
-approved by Yuhang on 2026-08-12. Preserve those review records when expanding
-the dataset. Each of the 35 new records still requires its own author and
-independent review; the five existing approvals do not transfer by template.
+approved by Yuhang on 2026-08-12. On 2026-08-14 engineer `jiahui` independently
+approved the other 35 current-revision records. All nine checklist fields are
+true in `reviews.json`; this approval is specific to the reviewed content.
 
-The work computer may build models on the frozen train/validation draft while
+The work computer may build models on train/validation while a later delta
 review is pending, but it must not release test Gold labels to model code or run
-the held-out evaluation until every test record is approved.
+the held-out evaluation until every changed test record is approved.
+
+### 4.7 D51 alias-free amendment gate
+
+The six D39 aliases are not accepted as benchmark hard cases. Before held-out
+release, implement a prospective parameter amendment that gives every required
+AND/OR-versus-component contrast at least one deterministic distinguishing
+trace. Preserve the formula families, split counts, public signal, terminal
+semantics and held-out OR policy. Select parameters from semantic feasibility,
+not model output.
+
+Regenerate all affected language, typed AST, STL, trace and hash artifacts. The
+freeze tool preserves an approval only when every reviewable field is unchanged;
+changed records must be set to pending and exported in a delta review packet.
+The gate requires `missing_witness_count=0`, no unclassified missing witness,
+no train/test leakage and independent approval of every changed record.
+
+Write `docs/stage2_v0_alias_amendment_report.md` and
+`benchmarks/stage2_v0/alias_amendment_review_packet.md`. The report must list old
+and new parameters, changed IDs, distinguishing witnesses, split/leakage checks
+and artifact hashes.
 
 ## 5. O7 frozen Stage II-A methods
 
@@ -416,6 +436,18 @@ existing Lagrange initialization with one predeclared early-pressure cell
 - 50 paired evaluation episodes per seed for screening;
 - unchanged Gold evaluator for all policy conclusions.
 
+Before this matrix starts, produce a D48 mechanism report from the completed
+fixed-route artifacts. It must separate C1 distance and urgency mass, inspect
+cost-value/advantage and reward/cost gradient scales, compare trigger avoidance
+with post-trigger recovery, and analyze multiplier and budget pressure. This is
+diagnosis only and may not change Gold semantics, C0/C1 definitions, budgets or
+the registered matrix.
+
+Write `docs/d48_c1_mechanism_analysis_report.md`, a compact machine-readable
+summary under `results/fixed_route_v1/full_dense_round/mechanism_analysis/` and
+the figures needed to support each causal hypothesis. Distinguish measured
+evidence from inference.
+
 This is non-confirmatory configuration diagnosis. Select the simplest cell that
 shows all of:
 
@@ -426,7 +458,8 @@ shows all of:
 - decreasing or stabilizing Gold cost with non-runaway multiplier behavior.
 
 If no cell passes, stop before Stage II-B. Preserve the negative result and
-prepare a method/optimizer decision instead of expanding the search.
+finish the offline comparison and downstream-bottleneck report. Do not add C2,
+search extra mixture weights, or expand optimizer/budget choices.
 
 ## 8. Freeze the fair online cost interface
 
@@ -450,11 +483,11 @@ Create `docs/stage2_online_interface_protocol.md`, frozen configs, tests and a
 dry-run matrix. Any deviation requires a new decision entry before online
 results are viewed.
 
-## 9. Stage II-B bounded online Safe RL pilot
+## 9. Stage II-B bounded online Safe RL study
 
-### 9.1 Conditions
+### 9.1 Shared conditions
 
-For the first calibrated specification `br-v0-001`, compare:
+For each admitted online specification, compare:
 
 1. task only;
 2. native hazard cost;
@@ -467,7 +500,11 @@ Use the same PPO-Lagrangian backend, network, history observation, training
 seeds, transition budget and Gold final evaluator. Models and translator are
 fixed before RL training; do not fine-tune them on policy outcomes.
 
-### 9.2 Execution scale
+### 9.2 Stage II-B1: minimal propagation pilot
+
+Use only the calibrated `br-v0-001`. Its role is to test whether offline
+representation errors propagate through the common cost interface into policy
+behavior; it is not the complex-semantics endpoint.
 
 1. Run a 10k-transition one-seed routing sanity for all six conditions.
 2. If every condition passes, run three matched seeds and `300k` transitions
@@ -477,14 +514,40 @@ fixed before RL training; do not fine-tune them on policy outcomes.
    goal success, multiplier dynamics and prediction error under policy-induced
    distribution shift.
 
-This bounded pilot is authorized after all prior gates pass. A five-seed,
-one-million-transition confirmatory study is not automatically authorized by
-this document.
+### 9.3 Stage II-B2: conditional complex-semantics pilot
+
+B2 requires the offline gate, one Gold learner-cost cell and B1 to pass. Use the
+prospectively fixed specifications `rp-v0-001` and non-alias `or-v0-001`. Before
+training, each must pass causal oracle/RTAMT checks, physical feasibility and a
+workload-matched routing sanity. If either is infeasible, stop B2 rather than
+substituting a result-selected formula.
+
+Apply the same six conditions, matched information, three seeds, `300k`
+transitions and 100 paired Gold evaluations per checkpoint unless a separate
+prospective scale decision is approved before online outcomes are viewed.
+
+### 9.4 Online compute launch gate
+
+Use workload-matched preflights to estimate aggregate B1 and B2 wall-clock time
+separately. A package estimated at 20 hours or less may start automatically once
+all scientific and technical gates pass. If the estimate exceeds 20 hours, do
+not launch it unless the strict D53 upstream-perfect exception passes: zero
+review/alias/leakage warnings; every admission metric passed by both primary
+offline methods for each of three seeds; every Gold screening criterion passed
+by the selected cell for each of three seeds; and no technical warning in the
+workload-matched online preflight. B2 additionally requires three-seed B1 pass.
+Otherwise write an owner decision package with completed gate evidence,
+per-condition runtime, total GPU-hours, projected disk and resumable commands.
+Use `docs/stage2_online_compute_decision_package.md` for that output.
+
+A five-seed, one-million-transition confirmatory study is not automatically
+authorized by this document.
 
 ## 10. Training launch and 20-minute monitoring policy
 
-This policy applies to Stage II-A model training, Gold-cost diagnostics and the
-Stage II-B pilot.
+This policy applies to Stage II-A model training, Gold-cost diagnostics and
+authorized Stage II-B packages. The separate 20-hour online launch gate in
+Section 9.4 applies before B1/B2 startup.
 
 Before launch:
 
@@ -521,6 +584,12 @@ resume/status command
 Stopping active monitoring does not mean terminating the job. On the next
 invocation, inspect the manifest, resume failed/missing cells only, then run the
 predeclared analysis automatically when the matrix completes.
+
+If a new MCE, native crash, CUDA Xid, OOM or non-finite result occurs, preserve
+the attempt and diagnose locally. Apply only reproducible fixes that do not
+change a frozen research contract, then allow one clean from-scratch validation
+retry. Escalate only when administrator/hardware action, a contract change or an
+unresolved controlled retry makes local continuation impossible.
 
 ## 11. Final interpretation branches
 

@@ -1,0 +1,56 @@
+decision_ids:
+  - D49
+  - D50
+  - D51
+  - D52
+  - D53
+
+guarded_compute:
+  authorized: true
+  historical_d41_events_erased: false
+  preserve_failed_attempt: true
+  local_diagnosis_first: true
+  clean_retry_limit_after_fix: 1
+  escalate_on:
+    - administrator_or_hardware_action_required
+    - frozen_research_contract_change_required
+    - controlled_clean_retry_failed
+
+independent_review:
+  historical_reviewer: Yuhang
+  historical_approved_count: 5
+  new_reviewer: jiahui
+  new_approved_count: 35
+  content_specific: true
+  changed_records_return_to_pending: true
+
+alias_amendment:
+  accept_aliases_as_hard_cases: false
+  select_parameters_without_model_results: true
+  required_missing_witness_count: 0
+  preserve_split_counts: true
+  preserve_held_out_or_structure: true
+  require_delta_human_review: true
+
+gold_learner_cost:
+  mechanism_analysis_before_training: true
+  run_registered_c0_c1_matrix: true
+  allow_new_cost_candidate: false
+  allow_extra_free_parameter_search: false
+  stop_online_branch_if_no_cell_passes: true
+
+online:
+  b1_specifications:
+    - br-v0-001
+  b2_specifications:
+    - rp-v0-001
+    - or-v0-001
+  b2_requires_b1_pass: true
+  automatic_launch_wall_clock_hours: 20
+  over_limit_exception:
+    require_alias_review_leakage_gates_clean: true
+    require_each_primary_offline_seed_pass_all_metrics: true
+    require_each_gold_seed_pass_all_screening_criteria: true
+    require_clean_workload_matched_preflight: true
+    require_b1_three_seed_pass_for_b2: true
+  otherwise_require_owner_decision_package: true

@@ -32,7 +32,7 @@ bulk checkpoints, full geometry and raw job logs remain local and ignored.
 |---|---|
 | `docs/PROJECT_INTRODUCTION.md` | Short Chinese and English introduction for group sharing |
 | `docs/END_TO_END_RESEARCH_PIPELINE.md` | Authoritative long-term map: revised objective, benchmark role, method baselines, WP1--WP7 inputs/outputs/gates, result branches, references, and status |
-| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Short current directive for the D37/D38 continuous Stage II package |
+| `docs/CURRENT_EXECUTION_DIRECTIVE.md` | Current D49--D53 directive: alias amendment, guarded compute, mechanism-first Gold matrix and B1/B2 launch gates |
 | `docs/STAGE2_CONTINUOUS_WORK_ORDER.md` | Normative spatial replay, frozen O7, Stage II-A, Gold-cost diagnostic, online-interface and Stage II-B work order |
 | `docs/research_direction_novelty_feasibility.md` | 2026-08-10 novelty correction, closest prior work, revised research question, theoretical feasibility, and staged experiment path |
 | `docs/theory_and_revised_experiment_8.10.md` | 8.10 Chinese theory analysis and revised matched experiment design for explicit NL-to-STL versus direct learned cost |
@@ -57,7 +57,7 @@ bulk checkpoints, full geometry and raw job logs remain local and ignored.
 | `docs/stage2_o7_benchmark_design_proposal.md` | Candidate controlled-language schema, semantic pairs, splits, human review and offline gate |
 | `docs/stage1_trajectory_diagnosis_report.md` | Existing-checkpoint trajectory mechanism analysis and installed OmniSafe runtime contract |
 | `docs/stage1_spatial_trajectory_report.md` | Full fixed-checkpoint coordinate replay, three spatial figures, aggregate interpretation and fixed real corpus |
-| `docs/stage2_v0_benchmark_report.md` | Machine-validated 40-spec/five-family D37 benchmark and remaining review gates |
+| `docs/stage2_v0_benchmark_report.md` | Machine-validated 40-spec/five-family benchmark, 40 current approvals and remaining alias/delta-review gate |
 | `docs/stage2_v0_baseline_review_package.md` | Formal/current-observation/history-aware baseline contracts, fairness table and consolidated decisions |
 | `docs/stage2a_environment_and_preflight_report.md` | Isolated environment, exact versions/model revisions, CUDA preflights, tokenizer repair and MCE evidence |
 | `docs/stage2_gold_diagnostic_implementation_report.md` | D38 C0/C1, bootstrap repair, matched budget order and resumable matrix status |
@@ -168,6 +168,7 @@ These are reference snapshots, not project implementation code.
 | `src/safety_stl/offline_metrics.py` | Common Stage II prediction validation and offline metric computation |
 | `benchmarks/stage2_v0/` | D37 40-spec schemas, review packet, generated train/validation evidence, real selection and hashes |
 | `configs/stage2_v0/baselines.yaml` | Frozen three-method information-access, model, training and admission contract |
+| `configs/stage2_v0/owner_decisions_2026-08-14.yaml` | D49--D53 guarded compute, review, alias, C0/C1 and B1/B2 launch decisions |
 | `tests/` | 101 signal, semantics, wrapper, replay, model, runtime, leakage and runner tests |
 
 ## Excluded files
@@ -267,14 +268,13 @@ checkpoints remain local and ignored. D46 records its exploratory result.
 ## Future additions
 
 The D31 pilot and complete spatial diagnosis are finished; the pilot did not
-meet the 30% target and is not converged. D37 design is implemented, but 35
-independent reviews and six-alias owner disposition still block held-out
-evaluation. D38 software is implemented to its compute gate. Repeated kernel
-MCEs still gate Stage II-A, D38 and future confirmatory training. The one-seed
-D43 quick-turn completed under the scoped administrator override; it does not
-clear D41. Fixed-route geometry, lifecycle, rendering, K=25 calibration and the
-bounded 70k three-condition execution passed. A five-seed 1M confirmatory study
-is not authorized.
+meet the 30% target and is not converged. D37 design is implemented. All current
+records are independently reviewed, but D51 requires an alias-free parameter
+amendment and delta review before held-out release. D49 authorizes guarded Stage
+II compute continuation after owner hardware inspection; recurring failures
+must be preserved, diagnosed locally and cleanly retried once before escalation.
+The one-seed D43 quick-turn and D47/D48 long round are complete. A five-seed 1M
+confirmatory study is not authorized.
 
 D47 adds a separately frozen single-seed long fixed-route round. It uses C1
 causal dense learner cost for the STL condition, three matched 1M-transition
@@ -288,3 +288,8 @@ scale-aware completed-checkpoint validation, combined 300-episode table,
 analysis JSON, figure hash manifest, four inspected PNG figures and result
 report for the D47 round. Bulk checkpoints, per-step stochastic trajectories,
 raw progress and launch logs remain local/ignored.
+
+D49--D53 add guarded compute continuation, `jiahui` review provenance,
+prospective alias amendment with review invalidation, D48 mechanism analysis
+before the unchanged C0/C1 matrix, B1/B2 online staging and the 20-hour automatic
+launch limit. `docs/CURRENT_EXECUTION_DIRECTIVE.md` is the current handoff entry.

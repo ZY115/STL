@@ -863,3 +863,28 @@ trajectory 四张 PNG，并逐张检查。C1 明确提供非稀疏 feedback，�
 安全、return 和 physical contact 均劣于 Task；其最后 20-epoch selected cost 仍高于
 budget 且 lambda 上升，因此记录为 single-seed negative exploratory result，不声称
 收敛或一般性失败。
+
+## 30. 2026-08-14 Stage II owner decisions and review handoff
+
+负责人报告已排查工作电脑硬件但没有发现可操作修复，并授权 guarded Stage II compute
+continuation。新 MCE、native crash、CUDA Xid、OOM 或 non-finite result 必须先保留
+attempt、收集证据、在不改变研究 contract 的前提下自行修复并做一次 clean retry；只有
+需要管理员/硬件操作、改变冻结设计或 retry 仍失败时才请求人工帮助。该授权不把历史
+D41 事件改写成已证明的 clean hardware pass。
+
+工程师 `jiahui` 已独立审核并批准原先 pending 的 35 条 current-revision specifications；
+`reviews.json` 和 `specifications.json` 已登记全部九项检查。freeze 工具新增按内容保存
+review 的规则：未改变的记录保留审核，任何语言/AST/STL/grounding/parameter 变化都会
+自动退回 pending。
+
+负责人选择修改参数而不是接受六个 logical aliases。工作电脑必须在不查看模型结果或
+held-out labels 的情况下生成最小一致 amendment，使所有 AND/OR contrast 都存在
+distinguishing trace，并将 `missing_witness_count` 降到 0。所有变化记录需要 delta human
+review，因此 held-out gate 仍关闭。
+
+D48 后的顺序冻结为：先用既有数据完成 C1 mechanism analysis，再执行原预注册的 bounded
+C0/C1 matrix，不增加 C2 或新的自由参数搜索；无 cell 通过即结束 online branch。Online
+研究拆为 B1 `br-v0-001` 和 conditional B2 `rp-v0-001` + `or-v0-001`。任何 B1/B2 package
+的 workload-matched aggregate estimate 若超过 20 小时，只有在 alias/review/leakage、
+三 seed offline、三 seed Gold 和 technical preflight 均完美通过时才可自动启动；否则
+必须先提交 owner decision package。

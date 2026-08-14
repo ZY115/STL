@@ -67,8 +67,11 @@ def validate_benchmark_contract(root: Path = BENCHMARK_ROOT) -> Dict[str, Any]:
     reviews = _load_json(root / "reviews.json")
     errors: List[str] = []
     expected_families = list(FAMILY_NAMES.values())
-    if benchmark.get("status") != "d37_40_item_contract_implemented_pending_human_review":
-        errors.append("benchmark status must identify the implemented D37 contract")
+    if benchmark.get("status") not in {
+        "d37_40_item_contract_current_revision_reviewed_alias_amendment_pending",
+        "d37_40_item_contract_fully_reviewed_alias_free",
+    }:
+        errors.append("benchmark status must identify the reviewed D37 amendment state")
     if benchmark.get("supported_fragment", {}).get("formula_families") != expected_families:
         errors.append("supported formula families differ from D37")
     if benchmark.get("draft_split_policy", {}).get("status") != "d37_split_frozen":
@@ -834,9 +837,23 @@ def build_benchmark(
     ]
     _write_jsonl(label_path, labels)
     reviewed = sum(review["status"] == "approved" for review in contract["reviews"])
+    final_gate_reasons = []
+    if reviewed != len(specifications):
+        final_gate_reasons.append(
+            f"{len(specifications) - reviewed} specifications require independent review",
+        )
+    if parameter_coverage["missing_witness_count"]:
+        final_gate_reasons.append(
+            "owner-selected alias parameter amendment has not reached zero missing witnesses",
+        )
+    final_dataset_ready = not final_gate_reasons
     coverage = {
         "schema_version": 1,
-        "status": "d37_40_item_machine_validated_pending_independent_review",
+        "status": (
+            "d37_40_item_alias_free_reviewed"
+            if final_dataset_ready
+            else "d37_40_item_current_revision_reviewed_alias_amendment_pending"
+        ),
         "scope": "offline data construction only; no model inference or training",
         "specification_count": len(specifications),
         "formula_families": sorted({spec["formula_family"] for spec in specifications}),
@@ -865,11 +882,8 @@ def build_benchmark(
         "gates": {
             "stage2_v0_machine_foundation": True,
             "stage2_v0_d37_implementation": True,
-            "stage2_v0_final_dataset": False,
-            "reason_final_gate_is_closed": [
-                "35 new specifications have not yet undergone independent review",
-                "six frozen same-index Boolean contrasts are logical aliases and require owner disposition",
-            ],
+            "stage2_v0_final_dataset": final_dataset_ready,
+            "reason_final_gate_is_closed": final_gate_reasons,
         },
     }
     coverage_path = generated / "coverage.json"

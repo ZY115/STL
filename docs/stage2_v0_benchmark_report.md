@@ -1,8 +1,8 @@
 # Stage II v0 Offline Benchmark Implementation Report
 
-- **Updated:** 2026-08-12
-- **Authority:** D37 and D38
-- **Status:** 40-item machine foundation complete; independent review and held-out gate open
+- **Updated:** 2026-08-14
+- **Authority:** D37, D38, D50 and D51
+- **Status:** current 40-item revision reviewed; alias amendment and delta-review gate open
 
 ## Implemented frozen design
 
@@ -56,10 +56,11 @@ they are logical aliases induced by the frozen D37 parameter matrix:
   satisfying avoidance precludes the warning entry needed for recovery failure.
 
 The validator classifies these six cases and reports zero *unclassified*
-missing witnesses. It does not silently edit the frozen specifications. The
-final dataset gate remains closed until the owner either accepts these as
-documented hard aliases or records a prospective D37 amendment with new
-parameters and impact analysis.
+missing witnesses. It does not silently edit the frozen specifications. On
+2026-08-14 the owner selected a prospective parameter amendment. The work
+computer must change the smallest coherent portion of the parameter matrix,
+regenerate all dependent artifacts and demonstrate zero missing witnesses. Any
+changed record loses its previous approval and enters a delta review packet.
 
 ## Train/validation corpora
 
@@ -87,24 +88,27 @@ language-model result: 60 trajectories and 60,060 samples. All 40
 specifications × 60 traces (2,400 combinations) passed internal direct/online/
 RTAMT machine review with maximum difference `0.0`; only the 1,680 train/
 validation label records were serialized for model code. Test labels remain
-unavailable until review.
+unavailable until the alias amendment and delta review both pass.
 
 ## Independent review gate
 
 The five historical `br-v0-001` through `br-v0-005` approvals by Yuhang are
-preserved. The 35 new records are machine validated but still require a named
-human reviewer different from the annotation author. The generated
-`independent_review_packet.md` contains all pending language, AST, STL and the
-nine-field checklist; it does not claim that Codex performed human review and
-does not include held-out trace labels.
+preserved. Engineer `jiahui` independently approved the other 35 current-revision
+records on 2026-08-14, with all nine checklist fields true and no disagreement
+notes. This approval does not transfer to content changed by the alias amendment.
+The next generated packet must contain only changed records and no held-out
+trace labels.
 
 Current gates are therefore:
 
 - D37 implementation: **pass**;
 - machine foundation: **pass**;
-- final reviewed dataset: **closed** (35 reviews plus six-alias disposition);
-- held-out Stage II-A evaluation: **prohibited until the review gate closes**.
+- current-revision independent review: **pass** (40/40);
+- alias-free distinguishing coverage: **closed** (`missing_witness_count=6`);
+- amended-record delta review: **not yet applicable**;
+- held-out Stage II-A evaluation: **prohibited until both amendment gates close**.
 
-Train/validation-only model work remains authorized by D38, but execution is
-currently paused under D41 because the host produced repeated kernel MCEs. This
-hardware stop is independent of the human-review/held-out gate.
+Train/validation-only model work remains authorized. D49 allows guarded compute
+continuation after owner hardware inspection, with failure preservation, local
+diagnosis and one clean retry before escalation. This compute policy is
+independent of the alias/delta-review held-out gate.

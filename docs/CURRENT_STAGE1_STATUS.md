@@ -7,6 +7,12 @@
 > [`CURRENT_EXECUTION_DIRECTIVE.md`](CURRENT_EXECUTION_DIRECTIVE.md). Any older
 > statement below saying that only Stage I is authorized or that O7 awaits an
 > owner decision is historical and superseded.
+>
+> **2026-08-14 update:** D49 authorizes guarded Stage II compute continuation;
+> D50 records `jiahui` approval of the 35 previously pending current-revision
+> specifications; D51 requires an alias-free amendment and delta review before
+> held-out release; D52/D53 define the mechanism-first C0/C1 path and B1/B2
+> online compute gates. Older blocker lists below are historical snapshots.
 
 ## 1. 文档目的
 

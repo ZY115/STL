@@ -1,5 +1,10 @@
 # Stage II-A Environment and CUDA Preflight Report
 
+> **2026-08-14 owner update:** this report preserves the historical D41 failures.
+> D49 now authorizes guarded continuation with preserved attempts, local diagnosis
+> and one clean retry before escalation. Held-out evaluation separately waits for
+> the D51 alias amendment and delta review.
+
 - **Prepared:** 2026-08-12
 - **Environment:** `/home/jerry/anaconda3/envs/stl-stage2-offline`
 - **Scope:** train/validation only; no held-out Gold evaluation

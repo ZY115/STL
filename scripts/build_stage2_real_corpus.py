@@ -27,7 +27,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--include-held-out-labels",
         action="store_true",
-        help="Fails unless every held-out specification has independent approval.",
+        help=(
+            "Fails unless every held-out specification has independent approval "
+            "and the alias amendment has complete distinguishing-trace coverage."
+        ),
     )
     return parser.parse_args(argv)
 

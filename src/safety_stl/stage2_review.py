@@ -39,18 +39,27 @@ def render_review_packet(root: Path) -> str:
         for record in specifications
         if reviews[record["spec_id"]]["status"] != "approved"
     ]
+    reviewer_counts: Dict[str, int] = {}
+    for review in reviews.values():
+        if review["status"] == "approved":
+            reviewer = str(review["reviewer"])
+            reviewer_counts[reviewer] = reviewer_counts.get(reviewer, 0) + 1
+    reviewer_summary = ", ".join(
+        f"{reviewer}: {count}" for reviewer, count in sorted(reviewer_counts.items())
+    )
     lines = [
         "# Stage II v0 Independent Human Review Packet",
         "",
         "- Generated from the frozen D37 specification registry.",
         f"- Records in this packet: **{len(pending)} pending / {len(specifications)} total**.",
+        f"- Current approved-review provenance: {reviewer_summary}.",
         "- The reviewer must be a named human different from `annotation_author`.",
         "- This packet contains specifications only; it does not release held-out trace labels.",
         "- Record decisions in `reviews.json`; do not edit Gold semantics silently.",
         "",
         "For each record, check all nine fields and add an adjudication note for every disagreement.",
-        "The six known same-index logical aliases are listed in `generated/coverage.json`; they need",
-        "owner disposition separately and cannot be solved merely by checking a review box.",
+        "The owner selected a prospective parameter amendment for the six known logical aliases.",
+        "Any specification changed by that amendment returns to pending review automatically.",
         "",
     ]
     for index, spec in enumerate(pending, start=1):
